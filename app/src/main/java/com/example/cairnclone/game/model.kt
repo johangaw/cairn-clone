@@ -1,5 +1,7 @@
 package com.example.cairnclone.game
 
+import kotlin.random.Random
+
 data class Game(
     val board: Board = Board(),
     val shamans: Set<Shaman> = setOf()
@@ -21,6 +23,7 @@ data class Pos(
 )
 
 data class Shaman(
+    val id: Long = Random.nextLong(),
     val team: Team,
     val pos: Pos,
 )

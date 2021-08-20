@@ -4,7 +4,7 @@ fun Game.spawnShaman(team: Team, pos: Pos): Game {
     val posTaken = this.shamans.any { it.pos == pos }
     return when {
         posTaken -> this
-        else -> this.copy(shamans = this.shamans + Shaman(team, pos))
+        else -> this.copy(shamans = this.shamans + Shaman(team = team, pos = pos))
     }
 }
 

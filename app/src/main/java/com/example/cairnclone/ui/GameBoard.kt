@@ -1,6 +1,7 @@
 package com.example.cairnclone.ui
 
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,39 +36,46 @@ fun GameBoard(game: Game, onMoveShaman: (shaman: Shaman, pos: Pos) -> Unit) {
     val tileSize = 75
     var selectedShaman by remember { mutableStateOf<Shaman?>(null) }
 
-    Column() {
-        repeat(game.board.height) { y ->
-            Row() {
-                repeat(game.board.width) { x ->
-                    Box(
-                        Modifier
-                            .size(tileSize.dp)
-                            .padding(2.dp)
-                            .clickable {
-                                if (selectedShaman != null) {
-                                    onMoveShaman(selectedShaman!!, Pos(x, y))
-                                    selectedShaman = null
+    Box() {
+        Column() {
+            repeat(game.board.height) { y ->
+                Row() {
+                    repeat(game.board.width) { x ->
+                        Box(
+                            Modifier
+                                .size(tileSize.dp)
+                                .padding(2.dp)
+                                .clickable {
+                                    if (selectedShaman != null) {
+                                        onMoveShaman(selectedShaman!!, Pos(x, y))
+                                        selectedShaman = null
+                                    }
                                 }
-                            }
-                            .background(Color.LightGray),
-                        Alignment.Center
-                    ) {
-                        val shaman = game.shamanAt(x, y)
-                        if (shaman != null) {
-                            ShamanPiece(
-                                shaman,
-                                modifier = Modifier
-                                    .clickable { selectedShaman = shaman }
-//                                    .offset {
-//                                        IntOffset(
-//                                            offsetX.value.roundToInt(),
-//                                            offsetY.value.roundToInt()
-//                                        )
-//                                    }
-                                    .scale(if (selectedShaman == shaman) 1.3f else 1f)
-                            )
-                        }
+                                .background(Color.LightGray),
+                        )
                     }
+                }
+            }
+        }
+
+        game.shamans.forEach { shaman ->
+            key(shaman.id) {
+                val offsetX by animateDpAsState((tileSize * shaman.pos.x).dp)
+                val offsetY by animateDpAsState((tileSize * shaman.pos.y).dp)
+
+                Box(
+                    Modifier
+                        .size(tileSize.dp)
+                        .padding(2.dp)
+                        .offset(offsetX, offsetY),
+                    Alignment.Center
+                ) {
+                    ShamanPiece(
+                        shaman,
+                        modifier = Modifier
+                            .clickable { selectedShaman = shaman }
+                            .scale(if (selectedShaman == shaman) 1.3f else 1f)
+                    )
                 }
             }
         }
@@ -89,7 +97,10 @@ fun GameBoardPreview() {
     var game by remember {
         mutableStateOf(
             Game(
-                shamans = setOf(Shaman(Team.Sea, Pos(2, 0)), Shaman(Team.Forest, Pos(3, 4)))
+                shamans = setOf(
+                    Shaman(team = Team.Sea, pos = Pos(2, 0)),
+                    Shaman(team = Team.Forest, pos = Pos(3, 4))
+                )
             )
         )
     }
