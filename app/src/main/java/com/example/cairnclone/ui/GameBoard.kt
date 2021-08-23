@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,62 +24,84 @@ import com.example.cairnclone.R
 import com.example.cairnclone.game.*
 import kotlin.random.Random
 
-data class MutableOffset(var x: Float, var y: Float)
-
-fun MutableOffset.asOffset() = Offset(this.x, this.y)
-fun MutableOffset.assign(other: Offset) {
-    this.x = other.x
-    this.y = other.y
-}
-
 @Composable
 fun GameBoard(game: Game, onMoveShaman: (shaman: Shaman, pos: Pos) -> Unit) {
     val tileSize = 75
     var selectedShaman by remember { mutableStateOf<Shaman?>(null) }
-
-    Box() {
-        Column() {
-            repeat(game.board.height) { y ->
-                Row() {
-                    repeat(game.board.width) { x ->
-                        Box(
-                            Modifier
-                                .size(tileSize.dp)
-                                .padding(2.dp)
-                                .clickable {
-                                    if (selectedShaman != null) {
-                                        onMoveShaman(selectedShaman!!, Pos(x, y))
-                                        selectedShaman = null
+    Column {
+        Box() {
+            Column() {
+                repeat(game.board.height) { y ->
+                    Row() {
+                        repeat(game.board.width) { x ->
+                            Box(
+                                Modifier
+                                    .size(tileSize.dp)
+                                    .padding(2.dp)
+                                    .clickable {
+                                        if (selectedShaman != null) {
+                                            onMoveShaman(selectedShaman!!, Pos(x, y))
+                                            selectedShaman = null
+                                        }
                                     }
-                                }
-                                .background(Color.LightGray),
+                                    .background(Color.LightGray),
+                            )
+                        }
+                    }
+                }
+            }
+
+            game.shamans.forEach { shaman ->
+                key(shaman.id) {
+                    val offsetX by animateDpAsState((tileSize * shaman.pos.x).dp)
+                    val offsetY by animateDpAsState((tileSize * shaman.pos.y).dp)
+
+                    Box(
+                        Modifier
+                            .size(tileSize.dp)
+                            .padding(2.dp)
+                            .offset(offsetX, offsetY),
+                        Alignment.Center
+                    ) {
+                        ShamanPiece(
+                            shaman,
+                            modifier = Modifier
+                                .clickable { selectedShaman = shaman }
+                                .scale(if (selectedShaman == shaman) 1.3f else 1f)
                         )
                     }
                 }
             }
         }
 
-        game.shamans.forEach { shaman ->
-            key(shaman.id) {
-                val offsetX by animateDpAsState((tileSize * shaman.pos.x).dp)
-                val offsetY by animateDpAsState((tileSize * shaman.pos.y).dp)
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Box(
-                    Modifier
-                        .size(tileSize.dp)
-                        .padding(2.dp)
-                        .offset(offsetX, offsetY),
-                    Alignment.Center
-                ) {
-                    ShamanPiece(
-                        shaman,
-                        modifier = Modifier
-                            .clickable { selectedShaman = shaman }
-                            .scale(if (selectedShaman == shaman) 1.3f else 1f)
-                    )
-                }
+        InfoPanel(game)
+
+    }
+}
+
+@Composable
+fun InfoPanel(game: Game) {
+    Column {
+        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+            game.actions.forEach {
+                ActionPiece(it)
             }
         }
+    }
+}
+
+@Composable
+fun ActionPiece(it: Action) {
+    Box(
+        Modifier
+            .size(100.dp)
+            .background(Color.Blue)
+            .padding(8.dp),
+        Alignment.Center
+    ) {
+        Text(it.name, color = Color.White)
     }
 }
 
@@ -100,7 +123,8 @@ fun GameBoardPreview() {
                 shamans = setOf(
                     Shaman(team = Team.Sea, pos = Pos(2, 0)),
                     Shaman(team = Team.Forest, pos = Pos(3, 4))
-                )
+                ),
+                actions = listOf(Action.MoveShamanOrthogonally)
             )
         )
     }
