@@ -1,52 +1,48 @@
 package com.example.cairnclone.game
 
-fun Game.spawnShaman(team: Team, pos: Pos): Game {
-    val shamanAtPos = this.shamans.firstOrNull { it.pos == pos }
-    return when {
-        shamanAtPos?.team == team -> this
-        else -> this.copy(
-            shamans = if (shamanAtPos != null) this.shamans - shamanAtPos else this.shamans + Shaman(
-                team = team,
-                pos = pos
-            )
-        )
+
+abstract class GameState(val game: Game) {
+    abstract fun interact(interaction: Interaction): GameState
+}
+
+class WaitingForAction(game: Game) : GameState(game) {
+    override fun interact(interaction: Interaction): GameState {
+        return when(interaction) {
+            is MoveShaman -> {
+                val (shaman, pos) = interaction
+                game.move(shaman, pos).let {
+                    if(it != game) WaitingForTransformationOrEndOfTurn(it) else this
+                }
+            }
+            is SpawnShaman -> {
+                val (team, pos) = interaction
+                game.spawnShaman(team, pos).let {
+                    if(it != game) WaitingForTransformationOrEndOfTurn(it) else this
+                }
+            }
+            is EndTurn -> {
+                WaitingForAction(game.endTurn())
+            }
+            else -> this
+        }
     }
 }
 
-fun Game.endTurn(): Game {
-    return this.copy(activeTeam = when(activeTeam) {
-        Team.Forest -> Team.Sea
-        Team.Sea -> Team.Forest
-    })
-}
-
-fun Game.banishShaman(shaman: Shaman): Game {
-    return this.copy(shamans = this.shamans - shaman)
-}
-
-fun Game.move(shaman: Shaman, pos: Pos): Game {
-    val action =
-        this.possibleMoves(shaman).entries.firstOrNull { (_, positions) -> positions.contains(pos) }
-            ?.component1() ?: return this
-
-    val posTaken = this.shamans.any { it.pos == pos }
-    return when {
-        posTaken -> this
-        else -> this.copy(
-            shamans = this.shamans - shaman + shaman.copy(pos = pos),
-            actions = actions.map { if (it == action) action.flip() else it })
+class WaitingForTransformationOrEndOfTurn(game: Game): GameState(game) {
+    override fun interact(interaction: Interaction): GameState {
+        return when(interaction) {
+            is EndTurn -> {
+                WaitingForAction(game.endTurn())
+            }
+            else -> this
+        }
     }
 }
 
-fun Action.flip(): Action {
-    return when (this) {
-        Action.MoveShamanDiagonally -> Action.MoveShamanOrthogonally
-        Action.MoveShamanOrthogonally -> Action.MoveShamanDiagonally
-        Action.SpawnShamanOnBlack -> Action.SpawnShamanOnWhite
-        Action.SpawnShamanOnWhite -> Action.SpawnShamanOnBlack
-    }
-}
+interface Interaction {}
 
-//fun Game.move(shaman: Shaman, pos: Pos): Game {
-//
-//}
+data class MoveShaman(val shaman: Shaman, val pos: Pos) : Interaction
+
+data class SpawnShaman(val team: Team, val pos: Pos) : Interaction
+
+class EndTurn() : Interaction

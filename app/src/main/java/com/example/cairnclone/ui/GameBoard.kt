@@ -163,26 +163,37 @@ fun ShamanPiece(shaman: Shaman, modifier: Modifier = Modifier) {
     Image(painterResource(id = imageId), contentDescription = "", modifier = modifier)
 }
 
+@Composable
+fun rememberGameState(initial: Game): Pair<Game, (interaction: Interaction) -> Boolean> {
+    var gameState by remember { mutableStateOf<GameState>(WaitingForAction(initial)) }
+
+    return gameState.game to { interaction: Interaction ->
+        val newState = gameState.interact(interaction)
+        val isNewState = newState == gameState
+        gameState = newState
+        isNewState
+    }
+
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GameBoardPreview() {
-    var game by remember {
-        mutableStateOf(
-            Game(
-                shamans = setOf(
-                    Shaman(team = Team.Sea, pos = Pos(2, 0)),
-                    Shaman(team = Team.Forest, pos = Pos(3, 4))
-                ),
-                actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite)
-            )
+    val (game, interact) = rememberGameState(
+        Game(
+            shamans = setOf(
+                Shaman(team = Team.Sea, pos = Pos(2, 0)),
+                Shaman(team = Team.Forest, pos = Pos(3, 4))
+            ),
+            actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite)
         )
-    }
+    )
 
     GameBoard(
         game = game,
-        onMoveShaman = { shaman, pos -> game = game.move(shaman, pos) },
-        onSpawnShaman = { team, pos -> game = game.spawnShaman(team, pos) },
-        onEndTurn = { game = game.endTurn()}
+        onMoveShaman = { shaman, pos -> interact(MoveShaman(shaman, pos)) },
+        onSpawnShaman = { team, pos -> interact(SpawnShaman(team, pos)) },
+        onEndTurn = { interact(EndTurn()) }
     )
 
 }
