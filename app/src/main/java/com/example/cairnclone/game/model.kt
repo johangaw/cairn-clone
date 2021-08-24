@@ -7,6 +7,14 @@ data class Game(
     val shamans: Set<Shaman> = setOf(),
     val actions: List<Action> = listOf(),
     val activeTeam: Team = Team.Forest,
+
+    /* TODO: change game interaction model
+        Create channel of events by which the UI should interact with the game
+        Instead of calling methods directly the UI should only dispatch events
+        Wrap Game in a state machine which listens to the event stream
+        If the event is relevant for the current state, then update game state
+     */
+
 )
 
 data class Board(
