@@ -1,11 +1,23 @@
 package com.example.cairnclone.game
 
 fun Game.spawnShaman(team: Team, pos: Pos): Game {
-    val posTaken = this.shamans.any { it.pos == pos }
+    val shamanAtPos = this.shamans.firstOrNull { it.pos == pos }
     return when {
-        posTaken -> this
-        else -> this.copy(shamans = this.shamans + Shaman(team = team, pos = pos))
+        shamanAtPos?.team == team -> this
+        else -> this.copy(
+            shamans = if (shamanAtPos != null) this.shamans - shamanAtPos else this.shamans + Shaman(
+                team = team,
+                pos = pos
+            )
+        )
     }
+}
+
+fun Game.endTurn(): Game {
+    return this.copy(activeTeam = when(activeTeam) {
+        Team.Forest -> Team.Sea
+        Team.Sea -> Team.Forest
+    })
 }
 
 fun Game.banishShaman(shaman: Shaman): Game {
@@ -30,6 +42,8 @@ fun Action.flip(): Action {
     return when (this) {
         Action.MoveShamanDiagonally -> Action.MoveShamanOrthogonally
         Action.MoveShamanOrthogonally -> Action.MoveShamanDiagonally
+        Action.SpawnShamanOnBlack -> Action.SpawnShamanOnWhite
+        Action.SpawnShamanOnWhite -> Action.SpawnShamanOnBlack
     }
 }
 

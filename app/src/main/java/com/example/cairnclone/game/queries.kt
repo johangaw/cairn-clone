@@ -12,6 +12,7 @@ fun Game.possibleMoves(shaman: Shaman, action: Action): List<Pos> {
     return when(action) {
         Action.MoveShamanOrthogonally -> listOf(Direction.Up, Direction.Down, Direction.Left, Direction.Right).map { shaman.pos + it }
         Action.MoveShamanDiagonally -> listOf(Direction.UpRight, Direction.UpLeft, Direction.DownRight, Direction.DownLeft).map { shaman.pos + it }
+        else -> listOf()
     }
 }
 

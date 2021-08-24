@@ -6,6 +6,7 @@ data class Game(
     val board: Board = Board(),
     val shamans: Set<Shaman> = setOf(),
     val actions: List<Action> = listOf(),
+    val activeTeam: Team = Team.Forest,
 )
 
 data class Board(
@@ -48,4 +49,6 @@ data class Shaman(
 enum class Action {
     MoveShamanDiagonally,
     MoveShamanOrthogonally,
+    SpawnShamanOnWhite,
+    SpawnShamanOnBlack
 }
