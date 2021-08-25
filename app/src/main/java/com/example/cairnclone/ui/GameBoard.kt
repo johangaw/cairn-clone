@@ -38,10 +38,8 @@ fun GameBoard(
                 repeat(game.board.height) { y ->
                     Row() {
                         repeat(game.board.width) { x ->
-                            val isWhiteSpawn =
-                                y == 0 && x == 1 || y == game.board.height - 1 && x == 3
-                            val isBlackSpawn =
-                                y == 0 && x == 3 || y == game.board.height - 1 && x == 1
+                            val isWhiteSpawn = game.board.whiteSpawn.values.contains(Pos(x, y))
+                            val isBlackSpawn = game.board.blackSpawn.values.contains(Pos(x, y))
 
                             Box(
                                 Modifier

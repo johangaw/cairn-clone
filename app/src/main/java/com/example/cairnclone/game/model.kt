@@ -7,19 +7,19 @@ data class Game(
     val shamans: Set<Shaman> = setOf(),
     val actions: List<Action> = listOf(),
     val activeTeam: Team = Team.Forest,
-
-    /* TODO: change game interaction model
-        Create channel of events by which the UI should interact with the game
-        Instead of calling methods directly the UI should only dispatch events
-        Wrap Game in a state machine which listens to the event stream
-        If the event is relevant for the current state, then update game state
-     */
-
 )
 
 data class Board(
     val width: Int = 5,
     val height: Int = 5,
+    val whiteSpawn: Map<Team, Pos> = mapOf(
+        Team.Sea to Pos(1, 0),
+        Team.Forest to Pos(3, height - 1)
+    ),
+    val blackSpawn: Map<Team, Pos> = mapOf(
+        Team.Sea to Pos(3, 0),
+        Team.Forest to Pos(1, height - 1)
+    ),
 )
 
 enum class Team {
@@ -42,9 +42,9 @@ enum class Direction(val dx: Int, val dy: Int) {
     Right(1, 0),
     Left(-1, 0),
 
-    UpRight(1,-1),
+    UpRight(1, -1),
     UpLeft(-1, -1),
-    DownRight(1,1),
+    DownRight(1, 1),
     DownLeft(-1, 1)
 }
 
