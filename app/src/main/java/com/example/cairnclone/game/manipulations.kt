@@ -49,6 +49,18 @@ fun Game.transformShamans(s1: Shaman, s2: Shaman, enemyShaman: Shaman): Game {
     return banishShaman(enemyShaman).copy(transformation = transformation.flip())
 }
 
+fun Game.spawnMonolith(power: MonolithPower, team: Team, pos: Pos): Game {
+    if(!possibleToSpawnMonolith(power, pos)) return this
+
+    return score(team).copy(
+        monoliths = monoliths + Monolith(pos, power),
+    )
+}
+
+fun Game.score(team: Team): Game {
+    return if(team == Team.Forest) copy(forestPoints = forestPoints + 1) else copy(seaPoints = seaPoints + 1)
+}
+
 fun Action.flip(): Action {
     return when (this) {
         Action.MoveShamanDiagonally -> Action.MoveShamanOrthogonally

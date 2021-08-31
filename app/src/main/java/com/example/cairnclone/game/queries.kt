@@ -32,6 +32,10 @@ fun Game.possibleSpawnAction(pos: Pos): Action? {
     }
 }
 
+fun Game.possibleToSpawnMonolith(power: MonolithPower, pos: Pos): Boolean {
+    return monolithAt(pos) == null && nextMonoliths.slice(0..1).contains(power)
+}
+
 fun Game.possibleMoves(shaman: Shaman): Map<Action, List<Pos>> {
     return this.actions.map { it to this.possibleMoves(shaman, it) }.toMap()
 }

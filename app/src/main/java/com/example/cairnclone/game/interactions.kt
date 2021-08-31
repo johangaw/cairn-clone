@@ -39,7 +39,6 @@ class WaitingForTransformationOrEndOfTurn(game: Game) : GameState(game) {
 
                 newGame.monolithAt(enemyShaman.pos)?.let { WaitingForEndOfTurn(newGame) }
                     ?: WaitForSelectingMonolithToSpawn(newGame, shaman1.team)
-
             }
             is EndTurn -> {
                 WaitingForAction(game.endTurn())
@@ -49,18 +48,26 @@ class WaitingForTransformationOrEndOfTurn(game: Game) : GameState(game) {
     }
 }
 
-class WaitForSelectingMonolithToSpawn(game: Game, val activeTeam: Team) : GameState(game) {
+class WaitForSelectingMonolithToSpawn(game: Game, val team: Team) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
-        return this
+        return when (interaction) {
+            is SpawnMonolith -> {
+                val (power, pos) = interaction
+                val newGame = game.spawnMonolith(power, team, pos)
+
+                if(newGame != game) return this
+
+                return WaitingForEndOfTurn(newGame)
+            }
+            else -> this
+        }
     }
 }
 
 class WaitingForEndOfTurn(game: Game) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
-            is EndTurn -> {
-                WaitingForAction(game.endTurn())
-            }
+            is EndTurn -> WaitingForAction(game.endTurn())
             else -> this
         }
     }
@@ -76,6 +83,11 @@ data class TransformShamans(
     val shamanFriend1: Shaman,
     val shamanFriend2: Shaman,
     val shamanEnemy: Shaman
+) : Interaction
+
+data class SpawnMonolith(
+    val power: MonolithPower,
+    val pos: Pos
 ) : Interaction
 
 class EndTurn() : Interaction

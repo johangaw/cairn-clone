@@ -9,6 +9,9 @@ data class Game(
     val actions: List<Action> = listOf(),
     val transformation: Transformation = Transformation.Outnumbered,
     val activeTeam: Team = Team.Forest,
+    val nextMonoliths: List<MonolithPower> = MonolithPower.values().asList().shuffled(),
+    val seaPoints: Int = 0,
+    val forestPoints: Int = 0,
 )
 
 data class Monolith(
