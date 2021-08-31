@@ -1,27 +1,20 @@
 package com.example.cairnclone.ui
 
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
 import com.example.cairnclone.game.*
-import kotlin.random.Random
 
 @Composable
 fun GameBoard(
@@ -163,7 +156,7 @@ fun ShamanPiece(shaman: Shaman, modifier: Modifier = Modifier) {
 
 @Composable
 fun rememberGameState(initial: Game): Pair<Game, (interaction: Interaction) -> Boolean> {
-    var gameState by remember { mutableStateOf<GameState>(WaitingForAction(initial)) }
+    var gameState by remember { mutableStateOf<GameState>(SelectAnAction(initial)) }
 
     return gameState.game to { interaction: Interaction ->
         val newState = gameState.interact(interaction)

@@ -5,30 +5,30 @@ abstract class GameState(val game: Game) {
     abstract fun interact(interaction: Interaction): GameState
 }
 
-class WaitingForAction(game: Game) : GameState(game) {
+class SelectAnAction(game: Game) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
             is MoveShaman -> {
                 val (shaman, pos) = interaction
                 game.move(shaman, pos).let {
-                    if (it != game) WaitingForTransformationOrEndOfTurn(it) else this
+                    if (it != game) SelectATransformationOrEndOfTurn(it) else this
                 }
             }
             is SpawnShaman -> {
                 val (team, pos) = interaction
                 game.spawnShaman(team, pos).let {
-                    if (it != game) WaitingForTransformationOrEndOfTurn(it) else this
+                    if (it != game) SelectATransformationOrEndOfTurn(it) else this
                 }
             }
             is EndTurn -> {
-                WaitingForAction(game.endTurn())
+                SelectAnAction(game.endTurn())
             }
             else -> this
         }
     }
 }
 
-class WaitingForTransformationOrEndOfTurn(game: Game) : GameState(game) {
+class SelectATransformationOrEndOfTurn(game: Game) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
             is TransformShamans -> {
@@ -37,18 +37,18 @@ class WaitingForTransformationOrEndOfTurn(game: Game) : GameState(game) {
 
                 if (newGame == game) return this
 
-                newGame.monolithAt(enemyShaman.pos)?.let { WaitingForEndOfTurn(newGame) }
-                    ?: WaitForSelectingMonolithToSpawn(newGame, shaman1.team)
+                newGame.monolithAt(enemyShaman.pos)?.let { SelectEndOfTurn(newGame) }
+                    ?: SelectingMonolithToSpawn(newGame, shaman1.team)
             }
             is EndTurn -> {
-                WaitingForAction(game.endTurn())
+                SelectAnAction(game.endTurn())
             }
             else -> this
         }
     }
 }
 
-class WaitForSelectingMonolithToSpawn(game: Game, val team: Team) : GameState(game) {
+class SelectingMonolithToSpawn(game: Game, val team: Team) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
             is SpawnMonolith -> {
@@ -57,17 +57,17 @@ class WaitForSelectingMonolithToSpawn(game: Game, val team: Team) : GameState(ga
 
                 if(newGame != game) return this
 
-                return WaitingForEndOfTurn(newGame)
+                return SelectEndOfTurn(newGame)
             }
             else -> this
         }
     }
 }
 
-class WaitingForEndOfTurn(game: Game) : GameState(game) {
+class SelectEndOfTurn(game: Game) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
-            is EndTurn -> WaitingForAction(game.endTurn())
+            is EndTurn -> SelectAnAction(game.endTurn())
             else -> this
         }
     }
