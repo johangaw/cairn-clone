@@ -44,6 +44,11 @@ fun Game.move(shaman: Shaman, pos: Pos): Game {
     }
 }
 
+fun Game.transformShamans(s1: Shaman, s2: Shaman, enemyShaman: Shaman): Game {
+    val transformation = possibleTransformation(s1, s2, enemyShaman) ?: return this
+    return banishShaman(enemyShaman).copy(transformation = transformation.flip())
+}
+
 fun Action.flip(): Action {
     return when (this) {
         Action.MoveShamanDiagonally -> Action.MoveShamanOrthogonally
@@ -56,6 +61,10 @@ fun Action.flip(): Action {
 fun List<Action>.flip(action: Action): List<Action> =
     this.map { if (it == action) action.flip() else it }
 
-//fun Game.move(shaman: Shaman, pos: Pos): Game {
-//
-//}
+
+fun Transformation.flip(): Transformation {
+    return when(this) {
+        Transformation.Outnumbered -> Transformation.Surrounded
+        Transformation.Surrounded -> Transformation.Outnumbered
+    }
+}

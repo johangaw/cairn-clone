@@ -5,9 +5,20 @@ import kotlin.random.Random
 data class Game(
     val board: Board = Board(),
     val shamans: Set<Shaman> = setOf(),
+    val monoliths: Set<Monolith> = setOf(),
     val actions: List<Action> = listOf(),
+    val transformation: Transformation = Transformation.Outnumbered,
     val activeTeam: Team = Team.Forest,
 )
+
+data class Monolith(
+    val pos: Pos,
+    val power: MonolithPower
+)
+
+enum class MonolithPower {
+    MoveShamanAgain
+}
 
 data class Board(
     val width: Int = 5,
@@ -27,6 +38,11 @@ enum class Team {
     Sea,
 }
 
+enum class Transformation {
+    Surrounded,
+    Outnumbered,
+}
+
 data class Pos(
     val x: Int,
     val y: Int,
@@ -34,6 +50,13 @@ data class Pos(
 
 operator fun Pos.plus(dir: Direction): Pos {
     return this.copy(x = this.x + dir.dx, y = this.y + dir.dy)
+}
+
+fun Pos.adjacentDirection(other: Pos): Direction? {
+    val dx = other.x - x
+    val dy = other.y - y
+
+    return Direction.values().find { it.dx == dx && it.dy == dy }
 }
 
 enum class Direction(val dx: Int, val dy: Int) {

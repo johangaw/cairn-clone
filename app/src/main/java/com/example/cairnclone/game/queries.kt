@@ -4,6 +4,26 @@ fun Game.shamanAt(pos: Pos): Shaman? {
     return this.shamans.firstOrNull { it.pos == pos }
 }
 
+fun Game.monolithAt(pos: Pos): Monolith? {
+    return this.monoliths.firstOrNull { it.pos == pos }
+}
+
+fun  Game.possibleTransformation(s1: Shaman, s2: Shaman, enemyShaman: Shaman): Transformation? {
+    return when {
+        s1.team != s2.team -> null
+        s1.team == enemyShaman.team -> null
+        transformation == Transformation.Surrounded -> {
+            val dir = s1.pos.adjacentDirection(enemyShaman.pos) ?: return null
+            return if(enemyShaman.pos + dir == s2.pos) Transformation.Surrounded else null
+        }
+        transformation == Transformation.Outnumbered -> {
+            return enemyShaman.pos.adjacentDirection(s1.pos)?.let { if(s1.pos + it == s2.pos) Transformation.Outnumbered else null }
+                ?: enemyShaman.pos.adjacentDirection(s2.pos)?.let { if(s2.pos + it == s1.pos) Transformation.Outnumbered else null }
+        }
+        else -> return null
+    }
+}
+
 fun Game.possibleSpawnAction(pos: Pos): Action? {
     return when (pos) {
         board.whiteSpawn[activeTeam] -> actions.first { it == Action.SpawnShamanOnWhite }
