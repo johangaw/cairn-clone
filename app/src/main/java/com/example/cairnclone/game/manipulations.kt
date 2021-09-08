@@ -54,11 +54,16 @@ fun Game.spawnMonolith(power: MonolithPower, team: Team, pos: Pos): Game {
 
     return score(team).copy(
         monoliths = monoliths + Monolith(pos = pos, power = power),
+        nextMonoliths = nextMonoliths.shift(power)
     )
 }
 
 fun Game.score(team: Team): Game {
     return if(team == Team.Forest) copy(forestPoints = forestPoints + 1) else copy(seaPoints = seaPoints + 1)
+}
+
+fun List<MonolithPower>.shift(power: MonolithPower): List<MonolithPower> {
+    return this - power + power
 }
 
 fun Action.flip(): Action {
