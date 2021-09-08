@@ -10,7 +10,7 @@ class SelectAnAction(game: Game) : GameState(game) {
         return when (interaction) {
             is MoveShaman -> {
                 val (shaman, pos) = interaction
-                game.move(shaman, pos).let {newGame ->
+                game.moveWithAction(shaman, pos).let { newGame ->
                     if (newGame != game) {
                         newGame.monolithAt(pos)?.let {
                             ActivateMonolith(newGame, it, shaman.team)
@@ -80,7 +80,7 @@ class ActivateMonolith(game: Game, val monolith: Monolith, val team: Team): Game
                  if(shaman.team != team) return this
                  if(monolith.pos.adjacentDirection(pos) == null) return this
 
-                 return game.move(shaman, pos).let {newGame ->
+                 return game.moveWithAction(shaman, pos).let { newGame ->
                      if (newGame != game) {
                          newGame.monolithAt(pos)?.let {
                              ActivateMonolith(newGame, it, shaman.team)

@@ -29,7 +29,7 @@ fun Game.banishShaman(shaman: Shaman): Game {
     return this.copy(shamans = this.shamans - shaman)
 }
 
-fun Game.move(shaman: Shaman, pos: Pos): Game {
+fun Game.moveWithAction(shaman: Shaman, pos: Pos): Game {
     val action =
         this.possibleMoves(shaman).entries.firstOrNull { (_, positions) -> positions.contains(pos) }
             ?.component1() ?: return this
@@ -53,7 +53,7 @@ fun Game.spawnMonolith(power: MonolithPower, team: Team, pos: Pos): Game {
     if(!possibleToSpawnMonolith(power, pos)) return this
 
     return score(team).copy(
-        monoliths = monoliths + Monolith(pos, power),
+        monoliths = monoliths + Monolith(pos = pos, power = power),
     )
 }
 

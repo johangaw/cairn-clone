@@ -3,7 +3,9 @@ package com.example.cairnclone.ui
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.cairnclone.R
 import com.example.cairnclone.game.*
 
@@ -63,6 +68,27 @@ fun GameBoard(
                 }
             }
 
+            game.monoliths.forEach { monolith ->
+                key(monolith.id) {
+                    val offsetX by animateDpAsState((tileSize * monolith.pos.x).dp)
+                    val offsetY by animateDpAsState((tileSize * monolith.pos.y).dp)
+
+                    Box(
+                        Modifier
+                            .size(tileSize.dp)
+                            .padding(2.dp)
+                            .clickable(enabled = false) {}
+                            .offset(offsetX, offsetY),
+                        Alignment.Center
+                    ) {
+                        MonolithPiece(
+                            monolith,
+                            Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
+
             game.shamans.forEach { shaman ->
                 key(shaman.id) {
                     val offsetX by animateDpAsState((tileSize * shaman.pos.x).dp)
@@ -92,6 +118,19 @@ fun GameBoard(
 
         InfoPanel(game, onEndTurn)
 
+    }
+}
+
+@Composable
+fun MonolithPiece(monolith: Monolith, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(50),
+        color = Color.Green,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(monolith.power.name, fontSize = 12.sp, textAlign = TextAlign.Center)
+        }
     }
 }
 
@@ -176,7 +215,8 @@ fun GameBoardPreview() {
                 Shaman(team = Team.Sea, pos = Pos(2, 0)),
                 Shaman(team = Team.Forest, pos = Pos(3, 4))
             ),
-            actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite)
+            actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite),
+            monoliths = setOf(Monolith(pos = Pos(2,4), power = MonolithPower.MoveShamanAgain))
         )
     )
 

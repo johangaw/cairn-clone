@@ -15,8 +15,9 @@ data class Game(
 )
 
 data class Monolith(
+    val id: Long = Random.nextLong(),
     val pos: Pos,
-    val power: MonolithPower
+    val power: MonolithPower,
 )
 
 enum class MonolithPower {

@@ -21,10 +21,11 @@ class MainActivity : ComponentActivity() {
                 val (game, interact) = rememberGameState(
                     Game(
                         shamans = setOf(
-                            Shaman(team = Team.Sea, pos = Pos(2, 0)),
-                            Shaman(team = Team.Forest, pos = Pos(3, 4))
+                            Shaman(team = Team.Sea, pos = Pos(2, 1)),
+                            Shaman(team = Team.Forest, pos = Pos(3, 2))
                         ),
-                        actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite)
+                        actions = listOf(Action.MoveShamanOrthogonally, Action.SpawnShamanOnWhite),
+                        monoliths = setOf(Monolith(pos = Pos(2,2), power = MonolithPower.MoveShamanAgain))
                     )
                 )
 
