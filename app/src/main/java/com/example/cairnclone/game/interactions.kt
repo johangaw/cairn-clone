@@ -10,8 +10,14 @@ class SelectAnAction(game: Game) : GameState(game) {
         return when (interaction) {
             is MoveShaman -> {
                 val (shaman, pos) = interaction
-                game.move(shaman, pos).let {
-                    if (it != game) SelectATransformationOrEndOfTurn(it) else this
+                game.move(shaman, pos).let {newGame ->
+                    if (newGame != game) {
+                        newGame.monolithAt(pos)?.let {
+                            ActivateMonolith(newGame, it, shaman.team)
+                        } ?: SelectATransformationOrEndOfTurn(newGame)
+                    } else {
+                        this
+                    }
                 }
             }
             is SpawnShaman -> {
@@ -48,7 +54,7 @@ class SelectATransformationOrEndOfTurn(game: Game) : GameState(game) {
     }
 }
 
-class SelectingMonolithToSpawn(game: Game, val team: Team) : GameState(game) {
+class SelectingMonolithToSpawn(game: Game, private val team: Team) : GameState(game) {
     override fun interact(interaction: Interaction): GameState {
         return when (interaction) {
             is SpawnMonolith -> {
@@ -62,6 +68,32 @@ class SelectingMonolithToSpawn(game: Game, val team: Team) : GameState(game) {
             else -> this
         }
     }
+}
+
+class ActivateMonolith(game: Game, val monolith: Monolith, val team: Team): GameState(game) {
+    override fun interact(interaction: Interaction): GameState {
+        return when {
+             monolith.power == MonolithPower.MoveShamanAgain && interaction is MoveShaman -> {
+                 val (shaman, pos) = interaction
+
+                 if(shaman.pos != monolith.pos) return this
+                 if(shaman.team != team) return this
+                 if(monolith.pos.adjacentDirection(pos) == null) return this
+
+                 return game.move(shaman, pos).let {newGame ->
+                     if (newGame != game) {
+                         newGame.monolithAt(pos)?.let {
+                             ActivateMonolith(newGame, it, shaman.team)
+                         } ?: SelectATransformationOrEndOfTurn(newGame)
+                     } else {
+                         this
+                     }
+                 }
+             }
+            else -> this
+        }
+    }
+
 }
 
 class SelectEndOfTurn(game: Game) : GameState(game) {
