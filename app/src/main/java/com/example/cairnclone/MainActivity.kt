@@ -3,11 +3,6 @@ package com.example.cairnclone
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.cairnclone.game_old.*
 import com.example.cairnclone.ui.GameBoard
 import com.example.cairnclone.ui.rememberGameState
