@@ -1,4 +1,4 @@
-package com.example.cairnclone.game
+package com.example.cairnclone.game_old
 
 fun Game.shamanAt(pos: Pos): Shaman? {
     return this.shamans.firstOrNull { it.pos == pos }

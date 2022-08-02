@@ -1,4 +1,4 @@
-package com.example.cairnclone.game
+package com.example.cairnclone.game_old
 
 fun Game.spawnShaman(team: Team, pos: Pos): Game {
     val action = possibleSpawnAction(pos) ?: return this

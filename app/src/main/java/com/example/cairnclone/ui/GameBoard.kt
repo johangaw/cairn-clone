@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cairnclone.R
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game_old.*
 
 @Composable
 fun GameBoard(

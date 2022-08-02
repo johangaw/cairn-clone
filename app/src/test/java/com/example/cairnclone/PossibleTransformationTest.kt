@@ -1,6 +1,6 @@
 package com.example.cairnclone
 
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game_old.*
 import org.junit.Test
 import org.junit.Assert.*
 
