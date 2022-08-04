@@ -11,3 +11,5 @@ data class SpawnShaman(val shaman: Shaman): Action
 
 data class MoveShaman(val shamanId: ShamanId, val team: Team, val newPos: Pos): Action
 
+data class BuildMonolith(val pos: Pos, val team: Team) : Action
+

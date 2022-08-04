@@ -4,8 +4,7 @@ import com.example.cairnclone.game.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
-import com.example.cairnclone.game.adjacentDirection
-import com.example.cairnclone.game.plus
+import com.example.cairnclone.game.other
 
 class WaitForAction(boardState: BoardState) : GameState(boardState) {
 
@@ -32,8 +31,11 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
             boardState.activeTeam != action.team -> ActionResult.InvalidAction("the team ${action.team} is not allowed to move a shaman right now")
             shaman == null -> ActionResult.InvalidAction("the selected shaman ${action.shamanId} is not active")
             shaman.team != action.team -> ActionResult.InvalidAction("the selected shaman ${action.shamanId} is not part of the ${action.team} team")
+            action.newPos.x !in -1..boardState.board.width -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
+            action.newPos.y !in -1..boardState.board.height -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
             boardState.shamanAt(action.newPos) != null -> ActionResult.InvalidAction("${action.newPos} already contains a shaman")
             !boardState.moveActionTile.possibleTargets(shaman.pos).contains(action.newPos) -> ActionResult.InvalidAction("${boardState.moveActionTile} does not allow moving $shaman to ${action.newPos}")
+            boardState.isInVillage(action.newPos, action.team) -> ActionResult.InvalidAction("shaman $shaman can't move into it's own village")
             else -> ActionResult.NewState(Moving(boardState), listOf(action))
         }
     }

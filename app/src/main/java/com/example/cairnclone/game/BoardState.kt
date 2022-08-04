@@ -12,11 +12,16 @@ data class BoardState(
 ) {
     fun activeShaman(id: ShamanId): Shaman? = activeShamans.find { it.id == id }
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
+    fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
 }
 
 data class Board(
     val width: Int = 5,
     val height: Int = 5,
+    val villageIndex: Map<Team, Int> = mapOf(
+        Team.Forest to -1,
+        Team.Sea to height
+    )
 )
 
 enum class SpawnActionTile(val positions: List<Pos>) {
@@ -34,6 +39,11 @@ sealed class MoveActionTile(private val moveDirections: List<Direction>) {
 enum class Team {
     Forest,
     Sea,
+}
+
+fun Team.other(): Team = when(this) {
+    Team.Forest -> Team.Sea
+    Team.Sea -> Team.Forest
 }
 
 //enum class Transformation {
