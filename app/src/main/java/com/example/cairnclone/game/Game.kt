@@ -28,6 +28,7 @@ class Game(
                 _gameState = result.state
                 perform(*(tailActions + result.preloadActions).toTypedArray())
             }
+            is ActionResult.NothingToDo -> true
         }
     }
 }

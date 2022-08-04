@@ -36,7 +36,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
                     )
                 )
             )
-        } ?: ActionResult.NothingToBeDone
+        } ?: ActionResult.NothingToDo
 
 
     private fun addShaman(action: AddShaman): ActionResult =
