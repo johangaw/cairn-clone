@@ -29,7 +29,7 @@ data class Board(
 
 enum class SpawnActionTile(val positions: List<Pos>) {
     SpawnWhite(listOf(Pos(0, 1), Pos(4, 3))),
-    Spawn(listOf(Pos(0, 3), Pos(4, 1)))
+    SpawnBlack(listOf(Pos(0, 3), Pos(4, 1)))
 }
 
 enum class Team {
@@ -76,4 +76,5 @@ data class Shaman(
     val pos: Pos,
 ) {
     override fun equals(other: Any?) = other != null && other is Shaman && other.id == id
+    override fun hashCode(): Int = id.hashCode()
 }

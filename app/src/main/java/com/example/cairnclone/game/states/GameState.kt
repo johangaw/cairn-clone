@@ -11,5 +11,6 @@ abstract class GameState(
 
 sealed class ActionResult {
     data class InvalidAction(val msg: String): ActionResult()
-    data class NewState(val state: GameState, val preloadActions: List<Action>): ActionResult()
+    object NothingToBeDone: ActionResult()
+    data class NewState(val state: GameState, val preloadActions: List<Action> = listOf()): ActionResult()
 }
