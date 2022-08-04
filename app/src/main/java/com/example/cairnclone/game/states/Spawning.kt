@@ -27,7 +27,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
     }
 
     private fun removeShaman(action: RemoveShaman): ActionResult =
-        boardState.activeShamanAt(action.pos)?.let {
+        boardState.shamanAt(action.pos)?.let {
             ActionResult.NewState(
                 Spawning(
                     boardState.copy(

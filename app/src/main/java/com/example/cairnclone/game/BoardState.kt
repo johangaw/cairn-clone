@@ -6,10 +6,12 @@ data class BoardState(
     val activeTeam: Team,
     val board: Board,
     val spawnActionTile: SpawnActionTile,
+    val moveActionTile: MoveActionTile,
     val inactiveShamans: List<Shaman>,
     val activeShamans: List<Shaman>
 ) {
-    fun activeShamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
+    fun activeShaman(id: ShamanId): Shaman? = activeShamans.find { it.id == id }
+    fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
 }
 
 data class Board(
@@ -17,19 +19,16 @@ data class Board(
     val height: Int = 5,
 )
 
-//data class Monolith(
-//    val id: Long = Random.nextLong(),
-//    val pos: Pos,
-//    val power: MonolithPower,
-//)
-//
-//enum class MonolithPower {
-//    MoveShamanAgain
-//}
-
 enum class SpawnActionTile(val positions: List<Pos>) {
     SpawnWhite(listOf(Pos(0, 1), Pos(4, 3))),
     SpawnBlack(listOf(Pos(0, 3), Pos(4, 1)))
+}
+
+sealed class MoveActionTile(private val moveDirections: List<Direction>) {
+    object Orthogonally : MoveActionTile(listOf(Direction.Up, Direction.Down, Direction.Left, Direction.Right))
+    object Diagonally : MoveActionTile(listOf(Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight))
+
+    fun possibleTargets(from: Pos): List<Pos> = moveDirections.map { from + it }
 }
 
 enum class Team {
@@ -70,8 +69,11 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownLeft(-1, 1)
 }
 
+@JvmInline
+value class ShamanId(val id: UUID = UUID.randomUUID())
+
 data class Shaman(
-    val id: UUID = UUID.randomUUID(),
+    val id: ShamanId = ShamanId(),
     val team: Team,
     val pos: Pos,
 ) {
