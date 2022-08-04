@@ -13,3 +13,5 @@ data class MoveShaman(val shamanId: ShamanId, val team: Team, val newPos: Pos): 
 
 data class BuildMonolith(val pos: Pos, val team: Team) : Action
 
+object EndTurn : Action
+

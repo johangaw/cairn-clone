@@ -5,6 +5,7 @@ import com.example.cairnclone.game.actions.Action
 
 class BuildingMonolith(val nextState: (boardState: BoardState) -> ActionResult.NewState, boardState: BoardState): GameState(boardState) {
     override fun perform(action: Action): ActionResult {
-        TODO("Not yet implemented")
+        // FIXME
+        return nextState(boardState)
     }
 }

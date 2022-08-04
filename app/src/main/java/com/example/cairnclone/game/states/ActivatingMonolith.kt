@@ -5,6 +5,7 @@ import com.example.cairnclone.game.actions.Action
 
 class ActivatingMonolith(boardState: BoardState): GameState(boardState) {
     override fun perform(action: Action): ActionResult {
-        TODO("Not yet implemented")
+        // FIXME
+        return ActionResult.NewState(WaitForTransformation(boardState))
     }
 }
