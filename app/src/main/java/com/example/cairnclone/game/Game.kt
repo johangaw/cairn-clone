@@ -15,10 +15,6 @@ class Game(
     val gameState: GameState
         get() = _gameState
 
-    init {
-        onBoardStateChange(_gameState.boardState)
-    }
-
     fun perform(vararg actions: Action): Boolean {
         if (actions.isEmpty()) return true
 
