@@ -25,8 +25,8 @@ data class Board(
 )
 
 enum class SpawnActionTile(val positions: List<Pos>) {
-    SpawnWhite(listOf(Pos(0, 1), Pos(4, 3))),
-    SpawnBlack(listOf(Pos(0, 3), Pos(4, 1)))
+    SpawnWhite(listOf(Pos(1, 0), Pos(3, 4))),
+    SpawnBlack(listOf(Pos(3, 0), Pos(1, 4)))
 }
 
 sealed class MoveActionTile(private val moveDirections: List<Direction>) {
@@ -45,11 +45,6 @@ fun Team.other(): Team = when(this) {
     Team.Forest -> Team.Sea
     Team.Sea -> Team.Forest
 }
-
-//enum class Transformation {
-//    Surrounded,
-//    Outnumbered,
-//}
 
 data class Pos(
     val x: Int,

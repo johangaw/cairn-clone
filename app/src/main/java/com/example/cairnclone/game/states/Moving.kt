@@ -28,7 +28,7 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             is FlipMoveTile -> handleFlipMoveTile()
             is CompleteMoving -> handleCompleteMoving()
             is BuildMonolith -> handleSpawnMonolith(action)
-            else -> ActionResult.InvalidAction("${action.javaClass.name} not allowed on ${this.javaClass.name}")
+            else -> ActionResult.InvalidAction(this, action)
         }
     }
 

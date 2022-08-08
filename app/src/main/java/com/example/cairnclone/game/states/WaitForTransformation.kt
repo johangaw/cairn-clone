@@ -9,7 +9,7 @@ class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is EndTurn -> handleEndTurn()
-            else -> ActionResult.InvalidAction("${action.javaClass.name} not allowed on ${this.javaClass.name}")
+            else -> ActionResult.InvalidAction(this, action)
         }
     }
 

@@ -22,7 +22,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
             is AddShaman -> addShaman(action)
             is FlipSpawnTile -> flipActionTile()
             is CompleteSpawning -> completeSpawning()
-            else -> ActionResult.InvalidAction("${action.javaClass.name} not allowed on ${this.javaClass.name}")
+            else -> ActionResult.InvalidAction(this, action)
         }
     }
 

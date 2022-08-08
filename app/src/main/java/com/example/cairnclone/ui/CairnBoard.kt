@@ -34,7 +34,13 @@ fun CairnBoard(
                     repeat(state.board.width) { x ->
                         val pos = Pos(x, y)
                         val shaman = state.shamanAt(pos)
+                        val pieceType = when {
+                            SpawnActionTile.SpawnBlack.positions.contains(pos) -> BoardPieceType.BlackSpawn
+                            SpawnActionTile.SpawnWhite.positions.contains(pos) -> BoardPieceType.WhiteSpawn
+                            else -> BoardPieceType.Normal
+                        }
                         BoardPiece(
+                            type = pieceType,
                             onClick = {
                                 val currentSelectedShaman = selectedShaman
                                 val adjacentSelectedShaman =
@@ -76,16 +82,23 @@ fun Village(team: Team) {
     }
 }
 
+enum class BoardPieceType(val color: Color) {
+    Normal(Color.Gray),
+    WhiteSpawn(Color.LightGray),
+    BlackSpawn(Color.DarkGray)
+}
+
 @Composable
 fun BoardPiece(
     onClick: () -> Unit,
+    type: BoardPieceType,
     content: @Composable () -> Unit
 ) {
     Box(
         Modifier
             .size(75.dp)
             .padding(4.dp)
-            .background(Color.LightGray)
+            .background(type.color)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -126,8 +139,8 @@ fun CairnBoardPreview() {
             MoveActionTile.Orthogonally,
             listOf(),
             listOf(
-                Shaman(team = Team.Sea, pos = Pos(0, 0)),
-                Shaman(team = Team.Forest, pos = Pos(4, 4))
+                Shaman(team = Team.Forest, pos = Pos(0, 0)),
+                Shaman(team = Team.Sea, pos = Pos(4, 4))
             )
         )
     }

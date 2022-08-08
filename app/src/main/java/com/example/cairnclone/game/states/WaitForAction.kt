@@ -4,7 +4,6 @@ import com.example.cairnclone.game.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
-import com.example.cairnclone.game.other
 
 class WaitForAction(boardState: BoardState) : GameState(boardState) {
 
@@ -12,7 +11,7 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
         return when (action) {
             is SpawnShaman -> validateSpawnShaman(action)
             is MoveShaman -> validateMoveShaman(action)
-            else -> ActionResult.InvalidAction("${action.javaClass.name} not allowed on ${this.javaClass.name}")
+            else -> ActionResult.InvalidAction(this, action)
         }
     }
 
