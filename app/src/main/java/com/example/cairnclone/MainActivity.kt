@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.*
+import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.states.WaitForAction
@@ -58,6 +59,9 @@ class MainActivity : ComponentActivity() {
                         if (inactiveShaman != null) game.perform(
                             SpawnShaman(inactiveShaman)
                         ) else false
+                    },
+                    performEndTurn = {
+                        game.perform(EndTurn)
                     }
                 )
             }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ fun CairnBoard(
     state: BoardState,
     performMove: (shamanId: ShamanId, newPos: Pos) -> Boolean,
     performSpawn: () -> Boolean,
+    performEndTurn: () -> Boolean,
 ) {
     var selectedShaman by remember { mutableStateOf<Shaman?>(null) }
 
@@ -49,8 +51,12 @@ fun CairnBoard(
                                     ) != null
                                 val isSpawnTile = state.spawnActionTile.positions.contains(pos)
                                 when {
-                                    shaman != null -> selectedShaman = if(selectedShaman == shaman) null else shaman
-                                    currentSelectedShaman != null && adjacentSelectedShaman -> performMove(currentSelectedShaman.id, pos)
+                                    shaman != null -> selectedShaman =
+                                        if (selectedShaman == shaman) null else shaman
+                                    currentSelectedShaman != null && adjacentSelectedShaman -> performMove(
+                                        currentSelectedShaman.id,
+                                        pos
+                                    )
                                     currentSelectedShaman == null && isSpawnTile -> performSpawn()
                                     else -> {}
                                 }
@@ -63,6 +69,12 @@ fun CairnBoard(
             }
         }
         Village(Team.Sea)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = { performEndTurn() }) {
+            Text(text = "End Turn")
+        }
     }
 }
 
@@ -144,5 +156,10 @@ fun CairnBoardPreview() {
             )
         )
     }
-    CairnBoard(state, { id, pos -> Log.d("Preview", "performMove"); false }, { Log.d("Preview", "performSpawn"); false })
+    CairnBoard(
+        state,
+        { id, pos -> Log.d("Preview", "performMove"); false },
+        { Log.d("Preview", "performSpawn"); false },
+        { false }
+    )
 }
