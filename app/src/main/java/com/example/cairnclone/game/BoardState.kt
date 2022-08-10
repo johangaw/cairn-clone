@@ -7,6 +7,7 @@ data class BoardState(
     val board: Board,
     val spawnActionTile: SpawnActionTile,
     val moveActionTile: MoveActionTile,
+    val transformationTile: TransformationTile,
     val inactiveShamans: List<Shaman>,
     val activeShamans: List<Shaman>
 ) {
@@ -34,6 +35,22 @@ sealed class MoveActionTile(private val moveDirections: List<Direction>) {
     object Diagonally : MoveActionTile(listOf(Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight))
 
     fun possibleTargets(from: Pos): List<Pos> = moveDirections.map { from + it }
+}
+
+sealed class TransformationTile {
+    object Surrounded: TransformationTile() {
+        override fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean {
+            return pos1.adjacentDirection(target)?.let { target + it == pos2 } ?: false
+        }
+    }
+    object Outnumbered: TransformationTile() {
+        override fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean {
+            return pos1.adjacentDirection(pos2)?.let { pos2 + it == target } ?: false
+                    || pos2.adjacentDirection(pos1)?.let { pos1 + it == target } ?: false
+        }
+    }
+
+    abstract fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean
 }
 
 enum class Team {
