@@ -8,12 +8,12 @@ import com.example.cairnclone.game.other
 class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
     override fun perform(action: Action): ActionResult {
         return when (action) {
-            is EndTurn -> handleEndTurn()
+            is EndTurn -> handleEndTurn(action)
             else -> ActionResult.InvalidAction(this, action)
         }
     }
 
-    private fun handleEndTurn(): ActionResult =
-        ActionResult.NewState(WaitForAction(boardState.copy(activeTeam = boardState.activeTeam.other())))
+    private fun handleEndTurn(action: EndTurn): ActionResult =
+        ActionResult.NewState(EndingTurn(boardState), listOf(action))
 
 }
