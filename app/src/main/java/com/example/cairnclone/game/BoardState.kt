@@ -92,13 +92,10 @@ enum class Direction(val dx: Int, val dy: Int) {
 }
 
 @JvmInline
-value class ShamanId(val id: UUID = UUID.randomUUID())
+value class ShamanId(private val id: UUID = UUID.randomUUID())
 
 data class Shaman(
     val id: ShamanId = ShamanId(),
     val team: Team,
     val pos: Pos,
-) {
-    override fun equals(other: Any?) = other != null && other is Shaman && other.id == id
-    override fun hashCode(): Int = id.hashCode()
-}
+)
