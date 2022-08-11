@@ -60,14 +60,13 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
     private fun completeSpawning(): ActionResult =
         ActionResult.NewState(ActivatingMonolith(boardState))
 
+    private data class RemoveShaman(val pos: Pos) : Action
+    private data class AddShaman(val shaman: Shaman) : Action
+    private object FlipSpawnTile : Action
+    private object CompleteSpawning : Action
 }
 
 private fun SpawnActionTile.flip(): SpawnActionTile = when (this) {
     SpawnActionTile.SpawnWhite -> SpawnActionTile.SpawnBlack
     SpawnActionTile.SpawnBlack -> SpawnActionTile.SpawnWhite
 }
-
-private data class RemoveShaman(val pos: Pos) : Action
-private data class AddShaman(val shaman: Shaman) : Action
-private object FlipSpawnTile : Action
-private object CompleteSpawning : Action

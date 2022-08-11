@@ -31,7 +31,7 @@ class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
                 target.pos
             ) -> ActionResult.InvalidAction("unable to perform a ${boardState.transformationTile.javaClass.simpleName} transformation from positions ${trans1.pos} + ${trans2.pos} => ${target.pos}")
 
-            else -> ActionResult.NewState(Transforming(boardState))
+            else -> ActionResult.NewState(Transforming(boardState), listOf(action))
         }
     }
 
