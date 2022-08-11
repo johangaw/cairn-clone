@@ -27,12 +27,12 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             is Move -> handleMove(action)
             is FlipMoveTile -> handleFlipMoveTile()
             is CompleteMoving -> handleCompleteMoving()
-            is BuildMonolith -> handleSpawnMonolith(action)
+            is BuildMonolith -> handleBuildMonolith(action)
             else -> ActionResult.InvalidAction(this, action)
         }
     }
 
-    private fun handleSpawnMonolith(action: BuildMonolith): ActionResult = ActionResult.NewState(
+    private fun handleBuildMonolith(action: BuildMonolith): ActionResult = ActionResult.NewState(
         BuildingMonolith({ ActionResult.NewState(Moving(it)) }, boardState),
         listOf(action)
     )
