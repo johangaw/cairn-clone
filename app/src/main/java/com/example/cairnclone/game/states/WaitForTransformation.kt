@@ -15,13 +15,13 @@ class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
     }
 
     private fun validateTransformation(action: TransformShaman): ActionResult {
-        val trans1 = boardState.activeShaman(action.trans1)
-        val trans2 = boardState.activeShaman(action.trans2)
-        val target = boardState.activeShaman(action.target)
+        val trans1 = action.trans1
+        val trans2 = action.trans2
+        val target = action.target
         return when {
-            trans1 == null -> ActionResult.InvalidAction("no active shaman with id ${action.trans1}")
-            trans2 == null -> ActionResult.InvalidAction("no active shaman with id ${action.trans2}")
-            target == null -> ActionResult.InvalidAction("no active shaman with id ${action.target}")
+            !boardState.activeShamans.contains(trans1) -> ActionResult.InvalidAction(" $trans1 is not an active shaman")
+            !boardState.activeShamans.contains(trans2) -> ActionResult.InvalidAction(" $trans2 is not an active shaman")
+            !boardState.activeShamans.contains(target) -> ActionResult.InvalidAction(" $target is not an active shaman")
             trans1.team != boardState.activeTeam -> ActionResult.InvalidAction("$trans1 is not of the active team")
             trans2.team != boardState.activeTeam -> ActionResult.InvalidAction("$trans2 is not of the active team")
             target.team == boardState.activeTeam -> ActionResult.InvalidAction("$target is of the active team")

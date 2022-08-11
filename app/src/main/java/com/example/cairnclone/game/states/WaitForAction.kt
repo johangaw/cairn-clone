@@ -25,11 +25,11 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
     }
 
     private fun validateMoveShaman(action: MoveShaman): ActionResult {
-        val shaman = boardState.activeShaman(action.shamanId)
+        val shaman = action.shaman
         return when {
+            !boardState.activeShamans.contains(shaman) -> ActionResult.InvalidAction("the selected shaman ${action.shaman} is not active")
             boardState.activeTeam != action.team -> ActionResult.InvalidAction("the team ${action.team} is not allowed to move a shaman right now")
-            shaman == null -> ActionResult.InvalidAction("the selected shaman ${action.shamanId} is not active")
-            shaman.team != action.team -> ActionResult.InvalidAction("the selected shaman ${action.shamanId} is not part of the ${action.team} team")
+            shaman.team != action.team -> ActionResult.InvalidAction("the selected shaman ${action.shaman} is not part of the ${action.team} team")
             action.newPos.x !in -1..boardState.board.width -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
             action.newPos.y !in -1..boardState.board.height -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
             boardState.shamanAt(action.newPos) != null -> ActionResult.InvalidAction("${action.newPos} already contains a shaman")
