@@ -23,7 +23,7 @@ class WaitForNewMonolith(
     private fun validateSelectMonolith(action: SelectMonolith): ActionResult {
         return when {
             !boardState.upcomingMonoliths.contains(action.monolith) -> ActionResult.InvalidAction("${action.monolith} is not an upcoming monolith")
-            else -> ActionResult.NewState(BuildingMonolith(newMonolithPos, newMonolithTeam, nextState, boardState))
+            else -> ActionResult.NewState(BuildingMonolith(newMonolithPos, newMonolithTeam, nextState, boardState), listOf(action))
         }
     }
 }

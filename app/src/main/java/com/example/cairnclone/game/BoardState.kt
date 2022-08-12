@@ -12,7 +12,8 @@ data class BoardState(
     val activeShamans: List<Shaman>,
     val activeMonoliths: List<Monolith>,
     val upcomingMonoliths: List<Monolith>,
-    val inactiveMonoliths: List<Monolith>,
+    val monolithsStack: List<Monolith>,
+    val scores: Scores
 ) {
     fun activeShaman(id: ShamanId): Shaman? = activeShamans.find { it.id == id }
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
@@ -95,7 +96,16 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownLeft(-1, 1)
 }
 
-data class Monolith(val pos: Pos) {}
+data class Monolith(val pos: Pos)
+
+data class Scores(val seaTeam: Score, val forestTeam: Score)
+
+@JvmInline
+value class Score(val value: Int) {
+    init {
+        require(value in 0..3)
+    }
+}
 
 @JvmInline
 value class ShamanId(private val id: UUID = UUID.randomUUID())
