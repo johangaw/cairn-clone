@@ -26,11 +26,16 @@ class MainActivity : ComponentActivity() {
                 Board(),
                 SpawnActionTile.SpawnWhite,
                 MoveActionTile.Orthogonally,
+                TransformationTile.Outnumbered,
                 listOf(),
                 listOf(
                     Shaman(team = Team.Forest, pos = Pos(0, 0)),
                     Shaman(team = Team.Sea, pos = Pos(4, 4))
-                )
+                ),
+                listOf(),
+                listOf(),
+                listOf(),
+                Scores(Score(0), Score(0))
             )
         ),
         ::publishNewBoardState
@@ -44,10 +49,10 @@ class MainActivity : ComponentActivity() {
                 val state by boardStateFlow.collectAsState(initial = game.gameState.boardState)
                 CairnBoard(
                     state = state,
-                    performMove = { shamanId, newPos ->
+                    performMove = { shaman, newPos ->
                         game.perform(
                             MoveShaman(
-                                shamanId,
+                                shaman,
                                 state.activeTeam,
                                 newPos
                             )

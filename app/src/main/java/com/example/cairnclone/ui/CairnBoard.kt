@@ -22,7 +22,7 @@ import com.example.cairnclone.game.*
 @Composable
 fun CairnBoard(
     state: BoardState,
-    performMove: (shamanId: ShamanId, newPos: Pos) -> Boolean,
+    performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
     performSpawn: () -> Boolean,
     performEndTurn: () -> Boolean,
 ) {
@@ -54,7 +54,7 @@ fun CairnBoard(
                                     shaman != null -> selectedShaman =
                                         if (selectedShaman == shaman) null else shaman
                                     currentSelectedShaman != null && adjacentSelectedShaman -> performMove(
-                                        currentSelectedShaman.id,
+                                        currentSelectedShaman,
                                         pos
                                     )
                                     currentSelectedShaman == null && isSpawnTile -> performSpawn()
@@ -149,11 +149,16 @@ fun CairnBoardPreview() {
             Board(),
             SpawnActionTile.SpawnWhite,
             MoveActionTile.Orthogonally,
+            TransformationTile.Outnumbered,
             listOf(),
             listOf(
                 Shaman(team = Team.Forest, pos = Pos(0, 0)),
                 Shaman(team = Team.Sea, pos = Pos(4, 4))
-            )
+            ),
+            listOf(),
+            listOf(),
+            listOf(),
+            Scores(Score(0), Score(0))
         )
     }
     CairnBoard(
