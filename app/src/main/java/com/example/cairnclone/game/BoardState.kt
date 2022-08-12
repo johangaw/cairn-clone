@@ -9,11 +9,15 @@ data class BoardState(
     val moveActionTile: MoveActionTile,
     val transformationTile: TransformationTile,
     val inactiveShamans: List<Shaman>,
-    val activeShamans: List<Shaman>
+    val activeShamans: List<Shaman>,
+    val activeMonoliths: List<Monolith>,
+    val upcomingMonoliths: List<Monolith>,
+    val inactiveMonoliths: List<Monolith>,
 ) {
     fun activeShaman(id: ShamanId): Shaman? = activeShamans.find { it.id == id }
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
+    fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos === pos }
 }
 
 data class Board(
@@ -90,6 +94,8 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownRight(1, 1),
     DownLeft(-1, 1)
 }
+
+data class Monolith(val pos: Pos) {}
 
 @JvmInline
 value class ShamanId(private val id: UUID = UUID.randomUUID())

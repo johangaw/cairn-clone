@@ -2,24 +2,22 @@ package com.example.cairnclone.game.states
 
 import com.example.cairnclone.game.*
 import com.example.cairnclone.game.actions.Action
-import com.example.cairnclone.game.actions.BuildMonolith
 import com.example.cairnclone.game.actions.MoveShaman
 
 class Moving(boardState: BoardState) : GameState(boardState) {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is MoveShaman -> {
-                val shaman = boardState.activeShaman(action.shamanId)!!
                 ActionResult.NewState(
                     this,
                     listOfNotNull(
-                        Move(shaman, action.newPos),
+                        Move(action.shaman, action.newPos),
                         FlipMoveTile,
                         if (boardState.isInVillage(
                                 action.newPos,
-                                shaman.team.other()
+                                action.shaman.team.other()
                             )
-                        ) BuildMonolith(shaman.pos, shaman.team) else null,
+                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team) else null,
                         CompleteMoving
                     )
                 )
@@ -27,15 +25,18 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             is Move -> handleMove(action)
             is FlipMoveTile -> handleFlipMoveTile()
             is CompleteMoving -> handleCompleteMoving()
-            is BuildMonolith -> handleBuildMonolith(action)
+            is StartBuildMonolith -> handleStartBuildMonolith(action)
             else -> ActionResult.InvalidAction(this, action)
         }
     }
 
-    private fun handleBuildMonolith(action: BuildMonolith): ActionResult = ActionResult.NewState(
-        BuildingMonolith({ ActionResult.NewState(Moving(it)) }, boardState),
-        listOf(action)
-    )
+    private fun handleStartBuildMonolith(action: StartBuildMonolith): ActionResult =
+        tryBuildMonolith(
+            action.pos,
+            action.team,
+            boardState,
+        ) { ActionResult.NewState(Moving(it)) }
+
 
     private fun handleCompleteMoving() = ActionResult.NewState(ActivatingMonolith(boardState))
 
@@ -61,3 +62,4 @@ private fun MoveActionTile.flip(): MoveActionTile = when (this) {
 private data class Move(val shaman: Shaman, val newPos: Pos) : Action
 private object FlipMoveTile : Action
 private object CompleteMoving : Action
+private data class StartBuildMonolith(val pos: Pos, val team: Team) : Action
