@@ -11,11 +11,10 @@ data class BoardState(
     val inactiveShamans: List<Shaman>,
     val activeShamans: List<Shaman>,
     val activeMonoliths: List<Monolith>,
-    val upcomingMonoliths: List<Monolith>,
-    val monolithsStack: List<Monolith>,
+    val upcomingMonoliths: List<MonolithType>,
+    val monolithsStack: List<MonolithType>,
     val scores: Scores
 ) {
-    fun activeShaman(id: ShamanId): Shaman? = activeShamans.find { it.id == id }
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
     fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos === pos }
@@ -36,19 +35,29 @@ enum class SpawnActionTile(val positions: List<Pos>) {
 }
 
 sealed class MoveActionTile(private val moveDirections: List<Direction>) {
-    object Orthogonally : MoveActionTile(listOf(Direction.Up, Direction.Down, Direction.Left, Direction.Right))
-    object Diagonally : MoveActionTile(listOf(Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight))
+    object Orthogonally :
+        MoveActionTile(listOf(Direction.Up, Direction.Down, Direction.Left, Direction.Right))
+
+    object Diagonally : MoveActionTile(
+        listOf(
+            Direction.UpLeft,
+            Direction.UpRight,
+            Direction.DownLeft,
+            Direction.DownRight
+        )
+    )
 
     fun possibleTargets(from: Pos): List<Pos> = moveDirections.map { from + it }
 }
 
 sealed class TransformationTile {
-    object Surrounded: TransformationTile() {
+    object Surrounded : TransformationTile() {
         override fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean {
             return pos1.adjacentDirection(target)?.let { target + it == pos2 } ?: false
         }
     }
-    object Outnumbered: TransformationTile() {
+
+    object Outnumbered : TransformationTile() {
         override fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean {
             return pos1.adjacentDirection(pos2)?.let { pos2 + it == target } ?: false
                     || pos2.adjacentDirection(pos1)?.let { pos1 + it == target } ?: false
@@ -63,7 +72,7 @@ enum class Team {
     Sea,
 }
 
-fun Team.other(): Team = when(this) {
+fun Team.other(): Team = when (this) {
     Team.Forest -> Team.Sea
     Team.Sea -> Team.Forest
 }
@@ -96,7 +105,26 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownLeft(-1, 1)
 }
 
-data class Monolith(val pos: Pos)
+data class Monolith(val pos: Pos, val monolithType: MonolithType)
+
+enum class MonolithLevel {
+    Start,
+    Beginner,
+    Advanced
+}
+
+sealed class MonolithType(val name: String, val description: String, val level: MonolithLevel) {
+    object ChaosOfTheGiants : MonolithType(
+        "Chaos of the Giants",
+        "Banish an enemy shaman that is in a space in your first row.",
+        MonolithLevel.Start
+    )
+    object CairnOfDawn : MonolithType(
+        "Cairn of Dawn",
+        "Add a shaman from your village to a space in your first row.",
+        MonolithLevel.Start
+    )
+}
 
 data class Scores(val seaTeam: Score, val forestTeam: Score)
 

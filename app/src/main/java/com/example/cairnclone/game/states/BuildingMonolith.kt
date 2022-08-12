@@ -14,7 +14,7 @@ class BuildingMonolith(
         return when (action) {
             is SelectMonolith -> ActionResult.NewState(
                 this, listOf(
-                    AddUpcomingMonolith(newMonolithPos, action.monolith),
+                    AddUpcomingMonolith(newMonolithPos, action.monolithType),
                     RefillUpcoming,
                     ScoreTeam(newMonolithTeam),
                     CompleteBuildingMonolith,
@@ -35,8 +35,8 @@ class BuildingMonolith(
                 newMonolithTeam,
                 nextState,
                 boardState.copy(
-                    activeMonoliths = boardState.activeMonoliths + action.monolith.copy(pos = action.pos),
-                    upcomingMonoliths = boardState.upcomingMonoliths - action.monolith
+                    activeMonoliths = boardState.activeMonoliths + Monolith(action.pos, action.monolithType),
+                    upcomingMonoliths = boardState.upcomingMonoliths - action.monolithType
                 )
             )
         )
@@ -67,7 +67,7 @@ class BuildingMonolith(
 
     private fun handleCompleteBuildingMonolith(): ActionResult = nextState(boardState)
 
-    private data class AddUpcomingMonolith(val pos: Pos, val monolith: Monolith) : Action
+    private data class AddUpcomingMonolith(val pos: Pos, val monolithType: MonolithType) : Action
     private object RefillUpcoming : Action
     private data class ScoreTeam(val team: Team) : Action
     private object CompleteBuildingMonolith : Action

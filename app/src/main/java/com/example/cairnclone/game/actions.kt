@@ -1,9 +1,6 @@
 package com.example.cairnclone.game.actions
 
-import com.example.cairnclone.game.Monolith
-import com.example.cairnclone.game.Pos
-import com.example.cairnclone.game.Shaman
-import com.example.cairnclone.game.Team
+import com.example.cairnclone.game.*
 
 interface Action
 
@@ -13,7 +10,7 @@ data class MoveShaman(val shaman: Shaman, val team: Team, val newPos: Pos): Acti
 
 data class TransformShaman(val trans1: Shaman,val trans2: Shaman, val target: Shaman): Action
 
-data class SelectMonolith(val monolith: Monolith): Action
+data class SelectMonolith(val monolithType: MonolithType): Action
 
 object EndTurn : Action
 
