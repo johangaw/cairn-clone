@@ -105,27 +105,6 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownLeft(-1, 1)
 }
 
-data class Monolith(val pos: Pos, val type: MonolithType)
-
-enum class MonolithLevel {
-    Start,
-    Beginner,
-    Advanced
-}
-
-sealed class MonolithType(val name: String, val description: String, val level: MonolithLevel) {
-    object ChaosOfTheGiants : MonolithType(
-        "Chaos of the Giants",
-        "Banish an enemy shaman that is in a space in your first row.",
-        MonolithLevel.Start
-    )
-    object CairnOfDawn : MonolithType(
-        "Cairn of Dawn",
-        "Add a shaman from your village to a space in your first row.",
-        MonolithLevel.Start
-    )
-}
-
 data class Scores(val seaTeam: Score, val forestTeam: Score)
 
 @JvmInline
