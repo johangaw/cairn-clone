@@ -17,7 +17,7 @@ data class BoardState(
 ) {
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
-    fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos === pos }
+    fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos == pos }
 }
 
 data class Board(
@@ -105,7 +105,7 @@ enum class Direction(val dx: Int, val dy: Int) {
     DownLeft(-1, 1)
 }
 
-data class Monolith(val pos: Pos, val monolithType: MonolithType)
+data class Monolith(val pos: Pos, val type: MonolithType)
 
 enum class MonolithLevel {
     Start,

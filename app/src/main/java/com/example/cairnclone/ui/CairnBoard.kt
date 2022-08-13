@@ -5,12 +5,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -36,6 +38,7 @@ fun CairnBoard(
                     repeat(state.board.width) { x ->
                         val pos = Pos(x, y)
                         val shaman = state.shamanAt(pos)
+                        val monolith = state.monolithAt(pos)
                         val pieceType = when {
                             SpawnActionTile.SpawnBlack.positions.contains(pos) -> BoardPieceType.BlackSpawn
                             SpawnActionTile.SpawnWhite.positions.contains(pos) -> BoardPieceType.WhiteSpawn
@@ -62,6 +65,7 @@ fun CairnBoard(
                                 }
                             }
                         ) {
+                            monolith?.let { MonolithPiece(monolith.type) }
                             shaman?.let { ShamanPiece(shaman, selected = selectedShaman == shaman) }
                         }
                     }
@@ -139,6 +143,21 @@ fun ShamanPiece(
         })
 }
 
+@Composable
+fun MonolithPiece(monolithType: MonolithType) {
+    Box(
+        contentAlignment = Alignment.Center, modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+            .clip(
+                CircleShape
+            )
+            .background(Color.Yellow)
+    ) {
+        Text(text = monolithType.name)
+    }
+}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -155,7 +174,10 @@ fun CairnBoardPreview() {
                 Shaman(team = Team.Forest, pos = Pos(0, 0)),
                 Shaman(team = Team.Sea, pos = Pos(4, 4))
             ),
-            listOf(),
+            listOf(
+                Monolith(Pos(1, 2), MonolithType.CairnOfDawn),
+                Monolith(Pos(3, 2), MonolithType.ChaosOfTheGiants),
+            ),
             listOf(),
             listOf(),
             Scores(Score(0), Score(0))
