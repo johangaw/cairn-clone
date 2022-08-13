@@ -6,7 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -27,6 +27,7 @@ fun CairnBoard(
     performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
     performSpawn: () -> Boolean,
     performEndTurn: () -> Boolean,
+    performSelectMonolith: (monolith: MonolithType) -> Boolean
 ) {
     var selectedShaman by remember { mutableStateOf<Shaman?>(null) }
 
@@ -65,7 +66,9 @@ fun CairnBoard(
                                 }
                             }
                         ) {
-                            monolith?.let { MonolithPiece(monolith.type) }
+                            monolith?.let {
+                                MonolithPiece(monolith.type)
+                            }
                             shaman?.let { ShamanPiece(shaman, selected = selectedShaman == shaman) }
                         }
                     }
@@ -74,11 +77,32 @@ fun CairnBoard(
         }
         Village(Team.Sea)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
-        Button(onClick = { performEndTurn() }) {
-            Text(text = "End Turn")
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            UpcomingMonoliths(state.upcomingMonoliths, { performSelectMonolith(it) })
+            EndRoundButton(onClick = { performEndTurn() })
         }
+
+
+    }
+}
+
+@Composable
+fun EndRoundButton(onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(75.dp)
+            .clip(CircleShape)
+            .background(Color.Red)
+            .clickable { onClick() },
+        Alignment.Center,
+    ) {
+        Text(text = "End Turn", color = Color.White)
     }
 }
 
@@ -144,7 +168,7 @@ fun ShamanPiece(
 }
 
 @Composable
-fun MonolithPiece(monolithType: MonolithType) {
+fun MonolithPiece(monolithType: MonolithType, onClick: () -> Unit = {}) {
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxSize()
@@ -153,8 +177,25 @@ fun MonolithPiece(monolithType: MonolithType) {
                 CircleShape
             )
             .background(Color.Yellow)
+            .clickable { onClick() }
     ) {
         Text(text = monolithType.name)
+    }
+}
+
+@Composable
+fun UpcomingMonoliths(monoliths: List<MonolithType>, onClick: (monolith: MonolithType) -> Unit) {
+    Row(Modifier.background(Color.LightGray)) {
+        monoliths.forEach {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(75.dp)
+                    .padding(4.dp)
+            ) {
+                MonolithPiece(it, { onClick(it) })
+            }
+        }
     }
 }
 
@@ -178,7 +219,10 @@ fun CairnBoardPreview() {
                 Monolith(Pos(1, 2), MonolithType.CairnOfDawn),
                 Monolith(Pos(3, 2), MonolithType.ChaosOfTheGiants),
             ),
-            listOf(),
+            listOf(
+                MonolithType.CairnOfDawn,
+                MonolithType.ChaosOfTheGiants,
+            ),
             listOf(),
             Scores(Score(0), Score(0))
         )
@@ -187,6 +231,7 @@ fun CairnBoardPreview() {
         state,
         { id, pos -> Log.d("Preview", "performMove"); false },
         { Log.d("Preview", "performSpawn"); false },
+        { false },
         { false }
     )
 }

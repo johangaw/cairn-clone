@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.*
 import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.MoveShaman
+import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.ui.CairnBoard
@@ -67,6 +68,9 @@ class MainActivity : ComponentActivity() {
                     },
                     performEndTurn = {
                         game.perform(EndTurn)
+                    },
+                    performSelectMonolith = {
+                        game.perform(SelectMonolith(it))
                     }
                 )
             }
