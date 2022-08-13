@@ -47,7 +47,7 @@ class Transforming(boardState: BoardState) : GameState(boardState) {
             action.pos,
             action.team,
             boardState,
-        ) { ActionResult.NewState(Transforming(it)) }
+        ) { ActionResult.NewState(Transforming(it), listOf(CompleteTransforming)) }
 
     private fun handleCompleteTransforming(): ActionResult =
         ActionResult.NewState(EndingTurn(boardState), listOf(EndTurn))

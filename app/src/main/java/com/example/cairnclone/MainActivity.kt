@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 ),
                 listOf(),
                 listOf(MonolithType.ChaosOfTheGiants, MonolithType.CairnOfDawn),
-                listOf(),
+                listOf(MonolithType.DeerRock, MonolithType.FairiesCircle),
                 Scores(Score(0), Score(0))
             )
         ),
