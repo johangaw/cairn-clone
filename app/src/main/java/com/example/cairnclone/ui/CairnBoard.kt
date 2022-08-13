@@ -1,6 +1,6 @@
 package com.example.cairnclone.ui
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,9 +28,11 @@ fun CairnBoard(
     performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
     performSpawn: () -> Boolean,
     performEndTurn: () -> Boolean,
+    performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
     performSelectMonolith: (monolith: MonolithType) -> Boolean
 ) {
-    var selectedShaman by remember { mutableStateOf<Shaman?>(null) }
+    var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
+    val context = LocalContext.current
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Village(Team.Forest)
@@ -48,28 +51,33 @@ fun CairnBoard(
                         BoardPiece(
                             type = pieceType,
                             onClick = {
-                                val currentSelectedShaman = selectedShaman
-                                val adjacentSelectedShaman =
-                                    currentSelectedShaman?.pos?.adjacentDirection(
-                                        pos
-                                    ) != null
-                                val isSpawnTile = state.spawnActionTile.positions.contains(pos)
-                                when {
-                                    shaman != null -> selectedShaman =
-                                        if (selectedShaman == shaman) null else shaman
-                                    currentSelectedShaman != null && adjacentSelectedShaman -> performMove(
-                                        currentSelectedShaman,
-                                        pos
-                                    )
-                                    currentSelectedShaman == null && isSpawnTile -> performSpawn()
-                                    else -> {}
+                                if (shaman != null) {
+                                    selectedShamans =
+                                        if (selectedShamans.contains(shaman))
+                                            selectedShamans - shaman
+                                        else
+                                            selectedShamans + shaman
+                                } else if (selectedShamans.size == 1) {
+                                    performMove(selectedShamans.first(), pos)
+                                    selectedShamans = emptySet()
+                                } else if (selectedShamans.size > 1) {
+                                    Toast.makeText(
+                                        context,
+                                        "Can only move ONE shaman at once",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             }
                         ) {
                             monolith?.let {
                                 MonolithPiece(monolith.type)
                             }
-                            shaman?.let { ShamanPiece(shaman, selected = selectedShaman == shaman) }
+                            shaman?.let {
+                                ShamanPiece(
+                                    shaman,
+                                    selected = selectedShamans.contains(shaman)
+                                )
+                            }
                         }
                     }
                 }
@@ -85,24 +93,41 @@ fun CairnBoard(
             modifier = Modifier.fillMaxWidth()
         ) {
             UpcomingMonoliths(state.upcomingMonoliths, { performSelectMonolith(it) })
-            EndRoundButton(onClick = { performEndTurn() })
+            TransformButton(onClick = {
+                fun ensureThreeShamans(shamans: Set<Shaman>) =
+                    if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
+
+                fun ensureTwoTeams(shamans: Set<Shaman>) =
+                    if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
+                        "A transformation requires shamans of different teams"
+                    ) else shamans
+
+                fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
+                    shamans.partition { s -> s.team == Team.Sea }
+                        .toList()
+                        .sortedByDescending { list -> list.size }
+                        .flatten()
+
+                Result.success(selectedShamans)
+                    .mapCatching(::ensureThreeShamans)
+                    .mapCatching(::ensureTwoTeams)
+                    .map(::orderShamansAsTransformationArguments)
+                    .onSuccess {
+                        val (s1, s2, target) = it
+                        performTransformation(s1, s2, target)
+                        selectedShamans = emptySet()
+                    }
+                    .onFailure {
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                    }
+            })
+            EndRoundButton(onClick = {
+                performEndTurn()
+                selectedShamans = emptySet()
+            })
         }
 
 
-    }
-}
-
-@Composable
-fun EndRoundButton(onClick: () -> Unit) {
-    Box(
-        Modifier
-            .size(75.dp)
-            .clip(CircleShape)
-            .background(Color.Red)
-            .clickable { onClick() },
-        Alignment.Center,
-    ) {
-        Text(text = "End Turn", color = Color.White)
     }
 }
 
@@ -168,7 +193,7 @@ fun ShamanPiece(
 }
 
 @Composable
-fun MonolithPiece(monolithType: MonolithType, onClick: () -> Unit = {}) {
+fun MonolithPiece(monolithType: MonolithType, onClick: (() -> Unit)? = null) {
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxSize()
@@ -177,7 +202,7 @@ fun MonolithPiece(monolithType: MonolithType, onClick: () -> Unit = {}) {
                 CircleShape
             )
             .background(Color.Yellow)
-            .clickable { onClick() }
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
     ) {
         Text(text = monolithType.name)
     }
@@ -199,6 +224,34 @@ fun UpcomingMonoliths(monoliths: List<MonolithType>, onClick: (monolith: Monolit
     }
 }
 
+@Composable
+fun EndRoundButton(onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(75.dp)
+            .clip(CircleShape)
+            .background(Color.Red)
+            .clickable { onClick() },
+        Alignment.Center,
+    ) {
+        Text(text = "End Turn", color = Color.White)
+    }
+}
+
+@Composable
+fun TransformButton(onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(75.dp)
+            .clip(CircleShape)
+            .background(Color.Blue)
+            .clickable { onClick() },
+        Alignment.Center,
+    ) {
+        Text(text = "Transform", color = Color.White)
+    }
+}
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -213,6 +266,8 @@ fun CairnBoardPreview() {
             listOf(),
             listOf(
                 Shaman(team = Team.Forest, pos = Pos(0, 0)),
+                Shaman(team = Team.Forest, pos = Pos(1, 1)),
+                Shaman(team = Team.Sea, pos = Pos(2, 1)),
                 Shaman(team = Team.Sea, pos = Pos(4, 4))
             ),
             listOf(
@@ -229,9 +284,10 @@ fun CairnBoardPreview() {
     }
     CairnBoard(
         state,
-        { id, pos -> Log.d("Preview", "performMove"); false },
-        { Log.d("Preview", "performSpawn"); false },
+        { id, pos -> false },
         { false },
-        { false }
+        { false },
+        { s1, s2, s3 -> false },
+        { false },
     )
 }

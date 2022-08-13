@@ -1,16 +1,14 @@
 package com.example.cairnclone
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.*
-import com.example.cairnclone.game.actions.EndTurn
-import com.example.cairnclone.game.actions.MoveShaman
-import com.example.cairnclone.game.actions.SelectMonolith
-import com.example.cairnclone.game.actions.SpawnShaman
+import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.theme.CairnCloneTheme
@@ -18,6 +16,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
+    private val LOG_TAG = Game::javaClass.name
 
     private val boardStateFlow: MutableSharedFlow<BoardState> = MutableSharedFlow(1)
     private val game: Game = Game(
@@ -31,6 +31,8 @@ class MainActivity : ComponentActivity() {
                 listOf(),
                 listOf(
                     Shaman(team = Team.Forest, pos = Pos(0, 0)),
+                    Shaman(team = Team.Forest, pos = Pos(1, 1)),
+                    Shaman(team = Team.Sea, pos = Pos(2, 1)),
                     Shaman(team = Team.Sea, pos = Pos(4, 4))
                 ),
                 listOf(),
@@ -71,6 +73,15 @@ class MainActivity : ComponentActivity() {
                     },
                     performSelectMonolith = {
                         game.perform(SelectMonolith(it))
+                    },
+                    performTransformation = { s1, s2, target ->
+                        game.perform(
+                            TransformShaman(
+                                s1,
+                                s2,
+                                target
+                            )
+                        )
                     }
                 )
             }

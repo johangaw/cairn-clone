@@ -24,8 +24,8 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             }
             is Move -> handleMove(action)
             is FlipMoveTile -> handleFlipMoveTile()
-            is CompleteMoving -> handleCompleteMoving()
             is StartBuildMonolith -> handleStartBuildMonolith(action)
+            is CompleteMoving -> handleCompleteMoving()
             else -> ActionResult.InvalidAction(this, action)
         }
     }
@@ -38,7 +38,11 @@ class Moving(boardState: BoardState) : GameState(boardState) {
         ) { ActionResult.NewState(Moving(it)) }
 
 
-    private fun handleCompleteMoving() = ActionResult.NewState(ActivatingMonolith(boardState))
+    private fun handleCompleteMoving() = tryActivatingMonolith(
+        Pos(0, 0),
+        { ActionResult.NewState(WaitForTransformation(boardState)) },
+        boardState
+    )
 
     private fun handleFlipMoveTile() =
         ActionResult.NewState(Moving(boardState.copy(moveActionTile = boardState.moveActionTile.flip())))

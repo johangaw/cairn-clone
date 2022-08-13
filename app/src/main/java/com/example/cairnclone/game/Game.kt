@@ -26,6 +26,7 @@ class Game(
                 false
             }
             is ActionResult.NewState -> {
+                Log.d(LOG_TAG, "NewState: ${result.state.javaClass.simpleName}")
                 _gameState = result.state
                 onBoardStateChange(_gameState.boardState)
                 perform(*(tailActions + result.preloadActions).toTypedArray())

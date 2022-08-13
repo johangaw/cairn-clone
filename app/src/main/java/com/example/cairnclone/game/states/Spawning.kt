@@ -58,7 +58,11 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
     )
 
     private fun completeSpawning(): ActionResult =
-        ActionResult.NewState(ActivatingMonolith(boardState))
+        tryActivatingMonolith(
+            Pos(0, 0),
+            { ActionResult.NewState(WaitForTransformation(boardState)) },
+            boardState
+        )
 
     private data class RemoveShaman(val pos: Pos) : Action
     private data class AddShaman(val shaman: Shaman) : Action
