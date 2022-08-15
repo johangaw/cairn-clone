@@ -10,41 +10,29 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             is MoveShaman -> {
                 ActionResult.NewState(
                     this,
-                    listOfNotNull(
+                    listOf(
                         Move(action.shaman, action.newPos),
                         FlipMoveTile,
                         if (boardState.isInVillage(
                                 action.newPos,
                                 action.shaman.team.other()
                             )
-                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team) else null
+                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team)
+                        else CompleteMoving
                     )
                 )
             }
             is Move -> handleMove(action)
             is FlipMoveTile -> handleFlipMoveTile()
-            is StartBuildMonolith -> handleStartBuildMonolith(action)
+            is StartBuildMonolith -> handleStartBuildMonolith(
+                action,
+                ActivateMonolith(action.pos, action.team)
+            )
+            is ActivateMonolith -> handleActivateMonolith(action, CompleteMoving)
             is CompleteMoving -> handleCompleteMoving()
             else -> ActionResult.InvalidAction(this, action)
         }
     }
-
-    private fun handleStartBuildMonolith(action: StartBuildMonolith): ActionResult =
-        tryBuildMonolith(
-            action.pos,
-            action.team,
-            boardState,
-        ) { ActionResult.NewState(Moving(it), listOf(CompleteMoving)) }
-
-
-    private fun handleCompleteMoving() = tryActivatingMonolith(
-        Pos(0, 0),
-        { ActionResult.NewState(WaitForTransformation(boardState)) },
-        boardState
-    )
-
-    private fun handleFlipMoveTile() =
-        ActionResult.NewState(Moving(boardState.copy(moveActionTile = boardState.moveActionTile.flip())))
 
     private fun handleMove(action: Move) = ActionResult.NewState(
         Moving(
@@ -55,9 +43,35 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             )
         )
     )
+
+    private fun handleFlipMoveTile() =
+        ActionResult.NewState(Moving(boardState.copy(moveActionTile = boardState.moveActionTile.flip())))
+
+    private fun handleStartBuildMonolith(
+        action: StartBuildMonolith,
+        vararg nextActions: Action
+    ): ActionResult =
+        tryBuildMonolith(
+            action.pos,
+            action.team,
+            boardState,
+        ) { ActionResult.NewState(Moving(it), nextActions.toList()) }
+
+    private fun handleActivateMonolith(
+        action: ActivateMonolith,
+        vararg nextActions: Action
+    ): ActionResult =
+        tryActivatingMonolith(
+            action.pos,
+            { ActionResult.NewState(Moving(it), nextActions.toList()) },
+            boardState
+        )
+
+    private fun handleCompleteMoving() = ActionResult.NewState(WaitForTransformation(boardState))
 }
 
 private data class Move(val shaman: Shaman, val newPos: Pos) : Action
 private object FlipMoveTile : Action
-private object CompleteMoving : Action
 private data class StartBuildMonolith(val pos: Pos, val team: Team) : Action
+private data class ActivateMonolith(val pos: Pos, val team: Team) : Action
+private object CompleteMoving : Action
