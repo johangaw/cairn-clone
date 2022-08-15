@@ -3,6 +3,7 @@ package com.example.cairnclone.game.states
 import com.example.cairnclone.game.*
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.SelectMonolith
+import com.example.cairnclone.game.board.*
 
 class BuildingMonolith(
     private val newMonolithPos: Pos,

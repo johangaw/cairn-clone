@@ -1,7 +1,6 @@
 package com.example.cairnclone
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
@@ -9,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.*
 import com.example.cairnclone.game.actions.*
+import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.theme.CairnCloneTheme

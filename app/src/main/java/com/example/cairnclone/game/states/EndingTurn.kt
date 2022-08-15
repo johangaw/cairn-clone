@@ -1,9 +1,9 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.BoardState
+import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.EndTurn
-import com.example.cairnclone.game.other
+import com.example.cairnclone.game.board.other
 
 class EndingTurn(boardState: BoardState) : GameState(boardState) {
 

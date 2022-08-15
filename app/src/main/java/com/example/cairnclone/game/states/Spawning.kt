@@ -1,9 +1,9 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.BoardState
-import com.example.cairnclone.game.Pos
-import com.example.cairnclone.game.Shaman
-import com.example.cairnclone.game.SpawnActionTile
+import com.example.cairnclone.game.board.BoardState
+import com.example.cairnclone.game.board.Pos
+import com.example.cairnclone.game.board.Shaman
+import com.example.cairnclone.game.board.SpawnActionTile
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.SpawnShaman
 

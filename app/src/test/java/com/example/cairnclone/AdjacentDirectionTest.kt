@@ -1,9 +1,9 @@
 package com.example.cairnclone
 
-import com.example.cairnclone.game.Direction
-import com.example.cairnclone.game.Pos
-import com.example.cairnclone.game.adjacentDirection
-import com.example.cairnclone.game.plus
+import com.example.cairnclone.game.board.Direction
+import com.example.cairnclone.game.board.Pos
+import com.example.cairnclone.game.board.adjacentDirection
+import com.example.cairnclone.game.board.plus
 import org.junit.Test
 import org.junit.Assert.*
 
@@ -20,7 +20,7 @@ class AdjacentDirectionTest {
     @Test
     fun `when the Positions are next to each other the relation looks like pos + dir = pother`() {
         val pos = Pos(2,2)
-        Direction.values().forEach {dir ->
+        Direction.values().forEach { dir ->
             val other = pos + dir
             assertEquals(pos.adjacentDirection(other), dir)
         }

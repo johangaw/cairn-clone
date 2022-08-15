@@ -1,7 +1,7 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.BoardState
-import com.example.cairnclone.game.Pos
+import com.example.cairnclone.game.board.BoardState
+import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.actions.Action
 
 class ActivatingMonolith(boardState: BoardState) : GameState(boardState) {

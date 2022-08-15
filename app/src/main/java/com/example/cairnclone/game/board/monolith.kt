@@ -1,5 +1,7 @@
 package com.example.cairnclone.game
 
+import com.example.cairnclone.game.board.Pos
+
 data class Monolith(val pos: Pos, val type: MonolithType)
 
 enum class MonolithLevel {

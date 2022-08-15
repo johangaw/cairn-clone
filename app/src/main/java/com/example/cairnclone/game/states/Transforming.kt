@@ -1,9 +1,9 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.*
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.TransformShaman
+import com.example.cairnclone.game.board.*
 
 class Transforming(boardState: BoardState) : GameState(boardState) {
     override fun perform(action: Action): ActionResult {

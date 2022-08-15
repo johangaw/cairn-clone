@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
 import com.example.cairnclone.game.*
+import com.example.cairnclone.game.board.*
 
 @Composable
 fun CairnBoard(
