@@ -16,13 +16,11 @@ class BuildingMonolith(
             is SelectMonolith -> ActionResult.NewState(
                 this, listOf(
                     AddUpcomingMonolith(newMonolithPos, action.monolithType),
-                    RefillUpcoming,
                     ScoreTeam(newMonolithTeam),
                     CompleteBuildingMonolith,
                 )
             )
             is AddUpcomingMonolith -> handleAddUpcomingMonolith(action)
-            is RefillUpcoming -> handleRefillUpcoming()
             is ScoreTeam -> handleScoreTeam(action)
             is CompleteBuildingMonolith -> handleCompleteBuildingMonolith()
             else -> ActionResult.InvalidAction(this, action)
@@ -37,23 +35,10 @@ class BuildingMonolith(
                 nextState,
                 boardState.copy(
                     activeMonoliths = boardState.activeMonoliths + Monolith(action.pos, action.monolithType),
-                    upcomingMonoliths = boardState.upcomingMonoliths - action.monolithType
+                    monolithsStack = boardState.monolithsStack - action.monolithType
                 )
             )
         )
-
-
-    private fun handleRefillUpcoming(): ActionResult = ActionResult.NewState(
-        BuildingMonolith(
-            newMonolithPos,
-            newMonolithTeam,
-            nextState,
-            boardState.copy(
-                upcomingMonoliths = boardState.upcomingMonoliths + boardState.monolithsStack.first(),
-                monolithsStack = boardState.monolithsStack.drop(1)
-            )
-        )
-    )
 
     private fun handleScoreTeam(action: ScoreTeam): ActionResult = ActionResult.NewState(
         BuildingMonolith(
@@ -69,7 +54,6 @@ class BuildingMonolith(
     private fun handleCompleteBuildingMonolith(): ActionResult = nextState(boardState)
 
     private data class AddUpcomingMonolith(val pos: Pos, val monolithType: MonolithType) : Action
-    private object RefillUpcoming : Action
     private data class ScoreTeam(val team: Team) : Action
     private object CompleteBuildingMonolith : Action
 }

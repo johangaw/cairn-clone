@@ -279,7 +279,6 @@ fun CairnBoardPreview() {
                 MonolithType.CairnOfDawn,
                 MonolithType.ChaosOfTheGiants,
             ),
-            listOf(),
             Scores(Score(0), Score(0))
         )
     }

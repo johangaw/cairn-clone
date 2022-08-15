@@ -36,8 +36,7 @@ class MainActivity : ComponentActivity() {
                     Shaman(team = Team.Sea, pos = Pos(4, 4))
                 ),
                 listOf(),
-                listOf(MonolithType.ChaosOfTheGiants, MonolithType.CairnOfDawn),
-                listOf(MonolithType.DeerRock, MonolithType.FairiesCircle),
+                listOf(MonolithType.ChaosOfTheGiants, MonolithType.CairnOfDawn, MonolithType.DeerRock, MonolithType.FairiesCircle),
                 Scores(Score(0), Score(0))
             )
         ),

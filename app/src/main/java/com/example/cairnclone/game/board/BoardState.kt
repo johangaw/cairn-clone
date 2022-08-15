@@ -12,13 +12,13 @@ data class BoardState(
     val inactiveShamans: List<Shaman>,
     val activeShamans: List<Shaman>,
     val activeMonoliths: List<Monolith>,
-    val upcomingMonoliths: List<MonolithType>,
     val monolithsStack: List<MonolithType>,
     val scores: Scores
 ) {
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
     fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos == pos }
+    val upcomingMonoliths get() = monolithsStack.take(2)
 }
 
 
