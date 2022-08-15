@@ -17,8 +17,7 @@ class Moving(boardState: BoardState) : GameState(boardState) {
                                 action.newPos,
                                 action.shaman.team.other()
                             )
-                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team) else null,
-                        CompleteMoving
+                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team) else null
                     )
                 )
             }
@@ -35,7 +34,7 @@ class Moving(boardState: BoardState) : GameState(boardState) {
             action.pos,
             action.team,
             boardState,
-        ) { ActionResult.NewState(Moving(it)) }
+        ) { ActionResult.NewState(Moving(it), listOf(CompleteMoving)) }
 
 
     private fun handleCompleteMoving() = tryActivatingMonolith(
