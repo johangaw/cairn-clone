@@ -87,6 +87,18 @@ fun CairnBoard(
         Village(Team.Sea)
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
+        
+        Row(
+            Modifier.fillMaxWidth(),
+            Arrangement.SpaceAround,
+            Alignment.CenterVertically
+        ) {
+            SpawnTilePiece(state.spawnActionTile)
+            MovementTilePiece(state.moveActionTile)
+            TransformationTilePiece(state.transformationTile)
+        }
+
+        Spacer(Modifier.height(8.dp))
 
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
