@@ -57,11 +57,6 @@ class Moving(boardState: BoardState) : GameState(boardState) {
     )
 }
 
-private fun MoveActionTile.flip(): MoveActionTile = when (this) {
-    is MoveActionTile.Diagonally -> MoveActionTile.Orthogonally
-    is MoveActionTile.Orthogonally -> MoveActionTile.Diagonally
-}
-
 private data class Move(val shaman: Shaman, val newPos: Pos) : Action
 private object FlipMoveTile : Action
 private object CompleteMoving : Action

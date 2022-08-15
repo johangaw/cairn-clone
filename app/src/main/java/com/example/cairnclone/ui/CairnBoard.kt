@@ -258,29 +258,11 @@ fun TransformButton(onClick: () -> Unit) {
 @Composable
 fun CairnBoardPreview() {
     val state = remember {
-        BoardState(
-            Team.Sea,
-            Board(),
-            SpawnActionTile.SpawnWhite,
-            MoveActionTile.Orthogonally,
-            TransformationTile.Outnumbered,
-            listOf(),
-            listOf(
-                Shaman(team = Team.Forest, pos = Pos(0, 0)),
-                Shaman(team = Team.Forest, pos = Pos(1, 1)),
-                Shaman(team = Team.Sea, pos = Pos(2, 1)),
-                Shaman(team = Team.Sea, pos = Pos(4, 4))
-            ),
-            listOf(
-                Monolith(Pos(1, 2), MonolithType.CairnOfDawn),
-                Monolith(Pos(3, 2), MonolithType.ChaosOfTheGiants),
-            ),
-            listOf(
-                MonolithType.CairnOfDawn,
-                MonolithType.ChaosOfTheGiants,
-            ),
-            Scores(Score(0), Score(0))
-        )
+        buildBoard {
+            emptyBoard()
+            positionStartShamans()
+            positionStartMonoliths()
+        }
     }
     CairnBoard(
         state,

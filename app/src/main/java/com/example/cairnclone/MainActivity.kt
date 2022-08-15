@@ -22,23 +22,11 @@ class MainActivity : ComponentActivity() {
     private val boardStateFlow: MutableSharedFlow<BoardState> = MutableSharedFlow(1)
     private val game: Game = Game(
         WaitForAction(
-            BoardState(
-                Team.Forest,
-                Board(),
-                SpawnActionTile.SpawnWhite,
-                MoveActionTile.Orthogonally,
-                TransformationTile.Outnumbered,
-                listOf(),
-                listOf(
-                    Shaman(team = Team.Forest, pos = Pos(0, 0)),
-                    Shaman(team = Team.Forest, pos = Pos(1, 1)),
-                    Shaman(team = Team.Sea, pos = Pos(2, 1)),
-                    Shaman(team = Team.Sea, pos = Pos(4, 4))
-                ),
-                listOf(),
-                listOf(MonolithType.ChaosOfTheGiants, MonolithType.CairnOfDawn, MonolithType.DeerRock, MonolithType.FairiesCircle),
-                Scores(Score(0), Score(0))
-            )
+            buildBoard {
+                emptyBoard()
+                positionStartShamans()
+                positionStartMonoliths()
+            }
         ),
         ::publishNewBoardState
     )

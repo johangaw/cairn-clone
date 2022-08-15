@@ -57,9 +57,3 @@ class Transforming(boardState: BoardState) : GameState(boardState) {
     private data class StartBuildMonolith(val pos: Pos, val team: Team) : Action
     private object CompleteTransforming : Action
 }
-
-private fun TransformationTile.flip(): TransformationTile =
-    when (this) {
-        is TransformationTile.Outnumbered -> TransformationTile.Surrounded
-        is TransformationTile.Surrounded -> TransformationTile.Outnumbered
-    }

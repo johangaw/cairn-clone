@@ -2,7 +2,12 @@ package com.example.cairnclone.game.board
 
 enum class SpawnActionTile(val positions: List<Pos>) {
     SpawnWhite(listOf(Pos(1, 0), Pos(3, 4))),
-    SpawnBlack(listOf(Pos(3, 0), Pos(1, 4)))
+    SpawnBlack(listOf(Pos(3, 0), Pos(1, 4))),
+}
+
+fun SpawnActionTile.flip(): SpawnActionTile = when (this) {
+    SpawnActionTile.SpawnWhite -> SpawnActionTile.SpawnBlack
+    SpawnActionTile.SpawnBlack -> SpawnActionTile.SpawnWhite
 }
 
 sealed class MoveActionTile(private val moveDirections: List<Direction>) {
@@ -17,6 +22,11 @@ sealed class MoveActionTile(private val moveDirections: List<Direction>) {
             Direction.DownRight
         )
     )
+
+    fun flip(): MoveActionTile = when (this) {
+        is Diagonally -> Orthogonally
+        is Orthogonally -> Diagonally
+    }
 
     fun possibleTargets(from: Pos): List<Pos> = moveDirections.map { from + it }
 }
@@ -34,6 +44,12 @@ sealed class TransformationTile {
                     || pos2.adjacentDirection(pos1)?.let { pos1 + it == target } ?: false
         }
     }
+
+    fun flip(): TransformationTile =
+        when (this) {
+            is Outnumbered -> Surrounded
+            is Surrounded -> Outnumbered
+        }
 
     abstract fun isApplicable(pos1: Pos, pos2: Pos, target: Pos): Boolean
 }

@@ -94,4 +94,23 @@ sealed class MonolithType(val name: String, val description: String, val level: 
         "Replace a megalith in the field with one of the two upcoming megaliths. Tuck the replaced megalith under the deck and draw a new upcoming megalith.",
         MonolithLevel.Advanced
     )
+
+    companion object {
+        fun getAll(): List<MonolithType> = listOf(
+            ChaosOfTheGiants,
+            CairnOfDawn,
+            CromlechOfTheStars,
+            PillarsOfSpring,
+            AlleyOfDusk,
+            DeerRock,
+            MenhirOfTheDancers,
+            SanctuaryOfTheAges,
+            TumulusOfShadows,
+            Stormwell,
+            FairiesCircle,
+            HavenOfPurity,
+            MemorialMound,
+            SourceOfSilver,
+        )
+    }
 }
