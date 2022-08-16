@@ -28,7 +28,7 @@ class Game(
                 Log.d(LOG_TAG, "NewState: ${result.state.javaClass.simpleName}")
                 _gameState = result.state
                 onBoardStateChange(_gameState.boardState)
-                perform(*(tailActions + result.preloadActions).toTypedArray())
+                perform(*(result.preloadActions + tailActions).toTypedArray())
             }
             is ActionResult.NothingToDo -> true
         }

@@ -11,7 +11,7 @@ class EndingTurn(boardState: BoardState) : GameState(boardState) {
         return when (action) {
             is EndTurn -> handleEndTurn()
             is SwitchActiveTeam -> handleSwitchActiveTeam()
-            is ResetMovedShamans -> ActionResult.NothingToDo // TODO: use this later
+            is ResetMovedShamans -> handleResetMovedShamans()
             is RestartTurn -> handleRestartTurn()
             else -> ActionResult.InvalidAction(this, action)
         }
@@ -22,6 +22,9 @@ class EndingTurn(boardState: BoardState) : GameState(boardState) {
 
     private fun handleSwitchActiveTeam(): ActionResult =
         ActionResult.NewState(EndingTurn(boardState.copy(activeTeam = boardState.activeTeam.other())))
+
+    private fun handleResetMovedShamans(): ActionResult =
+        ActionResult.NewState(EndingTurn(boardState.copy(movedShamanIds = emptyList())))
 
     private fun handleRestartTurn(): ActionResult =
         ActionResult.NewState(WaitForAction(boardState))

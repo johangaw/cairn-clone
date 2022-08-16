@@ -25,6 +25,7 @@ class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
             trans1.team != boardState.activeTeam -> ActionResult.InvalidAction("$trans1 is not of the active team")
             trans2.team != boardState.activeTeam -> ActionResult.InvalidAction("$trans2 is not of the active team")
             target.team == boardState.activeTeam -> ActionResult.InvalidAction("$target is of the active team")
+            listOf(trans1, trans2, target).all { !boardState.movedShamanIds.contains(it.id) } -> ActionResult.InvalidAction("none of the selected shamans have been moved this turn")
             !boardState.transformationTile.isApplicable(
                 trans1.pos,
                 trans2.pos,

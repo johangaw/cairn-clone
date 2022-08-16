@@ -14,7 +14,8 @@ data class BoardState(
     val activeShamans: List<Shaman>,
     val activeMonoliths: List<Monolith>,
     val monolithsStack: List<MonolithType>,
-    val scores: Scores
+    val scores: Scores,
+    val movedShamanIds: List<ShamanId>,
 ) {
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageIndex[team] == pos.y
@@ -37,7 +38,8 @@ class BoardStateBuilder {
             activeShamans = emptyList(),
             activeMonoliths = emptyList(),
             monolithsStack = emptyList(),
-            scores = Scores(Score(0), Score(0))
+            scores = Scores(Score(0), Score(0)),
+            movedShamanIds = emptyList()
         )
     }
 
