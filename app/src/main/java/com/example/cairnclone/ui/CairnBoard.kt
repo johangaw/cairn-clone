@@ -20,14 +20,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.*
+
+private val SpawnActionTile.positions: List<Pos> get() = listOf(this.forest, this.sea)
 
 @Composable
 fun CairnBoard(
     state: BoardState,
     performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
-    performSpawn: () -> Boolean,
+    performSpawn: (pos: Pos) -> Boolean,
     performEndTurn: () -> Boolean,
     performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
     performSelectMonolith: (monolith: MonolithType) -> Boolean
@@ -45,8 +47,8 @@ fun CairnBoard(
                         val shaman = state.shamanAt(pos)
                         val monolith = state.monolithAt(pos)
                         val pieceType = when {
-                            SpawnActionTile.SpawnBlack.positions.contains(pos) -> BoardPieceType.BlackSpawn
-                            SpawnActionTile.SpawnWhite.positions.contains(pos) -> BoardPieceType.WhiteSpawn
+                            SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
+                            SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
                             else -> BoardPieceType.Normal
                         }
                         BoardPiece(
@@ -67,6 +69,11 @@ fun CairnBoard(
                                         "Can only move ONE shaman at once",
                                         Toast.LENGTH_LONG
                                     ).show()
+                                } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
+                                        state.activeTeam
+                                    ) == pos
+                                ) {
+                                    performSpawn(pos)
                                 }
                             }
                         ) {
@@ -87,7 +94,7 @@ fun CairnBoard(
         Village(Team.Sea)
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
-        
+
         Row(
             Modifier.fillMaxWidth(),
             Arrangement.SpaceAround,

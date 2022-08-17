@@ -12,9 +12,9 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
         return when (action) {
             is SpawnShaman -> ActionResult.NewState(
                 this, listOf(
-                    RemoveShaman(action.shaman.pos),
-                    AddShaman(action.shaman),
-                    MarkShamanAsMoved(action.shaman),
+                    RemoveShaman(action.pos),
+                    AddShaman(boardState.inactiveShamans.first { it.team == action.team }.copy(pos = action.pos)),
+                    MarkShamanAsMoved(boardState.inactiveShamans.first { it.team == action.team }),
                     FlipSpawnTile,
                     CompleteSpawning,
                 )
@@ -83,6 +83,6 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
 }
 
 private fun SpawnActionTile.flip(): SpawnActionTile = when (this) {
-    SpawnActionTile.SpawnWhite -> SpawnActionTile.SpawnBlack
-    SpawnActionTile.SpawnBlack -> SpawnActionTile.SpawnWhite
+    SpawnActionTile.White -> SpawnActionTile.Black
+    SpawnActionTile.Black -> SpawnActionTile.White
 }

@@ -2,11 +2,9 @@ package com.example.cairnclone.game
 
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SelectMonolith
+import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.actions.TransformShaman
-import com.example.cairnclone.game.board.MoveActionTile
-import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.board.TransformationTile
+import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.game.states.WaitForTransformation
 import org.junit.Assert
@@ -97,5 +95,39 @@ class TransformationTest {
 
         Assert.assertFalse(result)
         Assert.assertTrue(game.gameState is WaitForTransformation)
+    }
+
+    @Test
+    fun `after a spawn action a transformation may be performed`() {
+        val spawn = SpawnActionTile.White
+        val game = game {
+            emptyBoard()
+            addInactiveShamans()
+            positionForestShaman(Pos(2, 0))
+            positionSeaShaman(Pos(3, 0))
+            spawnAction(spawn)
+            transformation(TransformationTile.Outnumbered)
+            activeTeam = Team.Forest
+        }
+        val newMonolith = game.gameState.boardState.monolithsStack.first()
+
+        game.apply {
+            Assert.assertEquals(spawn.forest, Pos(1, 0))
+            perform(
+                SpawnShaman(Team.Forest, spawn.forest)
+            )
+            perform(
+                TransformShaman(
+                    game.gameState.boardState.shamanAt(Pos(1, 0))!!,
+                    game.gameState.boardState.shamanAt(Pos(2, 0))!!,
+                    game.gameState.boardState.shamanAt(Pos(3, 0))!!,
+                )
+            )
+            perform(SelectMonolith(newMonolith))
+        }
+
+        Assert.assertTrue(game.gameState is WaitForAction)
+        Assert.assertNull(game.gameState.boardState.shamanAt(Pos(3, 0)))
+        Assert.assertEquals(game.gameState.boardState.monolithAt(Pos(3, 0))?.type, newMonolith)
     }
 }

@@ -31,7 +31,7 @@ class BoardStateBuilder {
         boardState = BoardState(
             activeTeam = Team.Forest,
             board = Board(),
-            spawnActionTile = SpawnActionTile.SpawnBlack,
+            spawnActionTile = SpawnActionTile.Black,
             moveActionTile = MoveActionTile.Orthogonally,
             transformationTile = TransformationTile.Surrounded,
             inactiveShamans = emptyList(),
@@ -68,9 +68,9 @@ class BoardStateBuilder {
 
     fun addInactiveShamans() {
         fun createInactiveShamans(team: Team) =
-            (boardState.activeShamans.count { it.team == Team.Sea } until MAX_SHAMANS).map {
+            (boardState.activeShamans.count { it.team == team } until MAX_SHAMANS).map {
                 Shaman(
-                    team = Team.Sea,
+                    team = team,
                     pos = Pos(0, 0)
                 )
             }
@@ -124,6 +124,14 @@ class BoardStateBuilder {
             spawnActionTile = tile
         )
     }
+
+    var activeTeam: Team
+        get() = boardState.activeTeam
+        set(value) {
+            value.also {
+                boardState = boardState.copy(activeTeam = it)
+            }
+        }
 
     fun emptyBoard(randomize: Boolean = false) {
         addMonolithStack(randomize)

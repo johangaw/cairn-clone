@@ -6,9 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.actions.*
-import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.board.BoardState
+import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.theme.CairnCloneTheme
@@ -48,12 +49,8 @@ class MainActivity : ComponentActivity() {
                             )
                         )
                     },
-                    performSpawn = {
-                        val inactiveShaman =
-                            state.inactiveShamans.find { shaman -> shaman.team == state.activeTeam }
-                        if (inactiveShaman != null) game.perform(
-                            SpawnShaman(inactiveShaman)
-                        ) else false
+                    performSpawn = { pos ->
+                        game.perform(SpawnShaman(state.activeTeam, pos))
                     },
                     performEndTurn = {
                         game.perform(EndTurn)

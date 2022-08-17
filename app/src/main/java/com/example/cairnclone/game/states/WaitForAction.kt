@@ -4,6 +4,7 @@ import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
+import com.example.cairnclone.game.board.posFor
 
 class WaitForAction(boardState: BoardState) : GameState(boardState) {
 
@@ -17,9 +18,11 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
 
     private fun validateSpawnShaman(action: SpawnShaman): ActionResult {
         return when {
-            boardState.activeTeam != action.shaman.team -> ActionResult.InvalidAction("a shaman for team ${action.shaman.team} can not be spawn right now")
-            !boardState.inactiveShamans.contains(action.shaman) -> ActionResult.InvalidAction("the selected shaman ${action.shaman.id} is not inactive")
-            boardState.shamanAt(action.shaman.pos)?.team == action.shaman.team -> ActionResult.InvalidAction("the selected span location (${action.shaman.pos}) already contains a shaman from the same team")
+            boardState.activeTeam != action.team -> ActionResult.InvalidAction("a shaman for team ${action.team} can not be spawn right now")
+            @Suppress("ReplaceSizeZeroCheckWithIsEmpty")
+            boardState.inactiveShamans.count { it.team == action.team } == 0 -> ActionResult.InvalidAction("there are no shamans to spawn for team ${action.team}")
+            boardState.spawnActionTile.posFor(action.team) != action.pos -> ActionResult.InvalidAction("the selected location (${action.pos}) is not an active spawn location for the current team ${action.team}")
+            boardState.shamanAt(action.pos)?.team == action.team -> ActionResult.InvalidAction("the selected spawn location (${action.pos}) already contains a shaman from the same team")
             else -> ActionResult.NewState(Spawning(boardState), listOf(action))
         }
     }

@@ -30,7 +30,7 @@ class Game(
                 onBoardStateChange(_gameState.boardState)
                 perform(*(result.preloadActions + tailActions).toTypedArray())
             }
-            is ActionResult.NothingToDo -> true
+            is ActionResult.NothingToDo -> perform(*tailActions.toTypedArray())
         }
     }
 }

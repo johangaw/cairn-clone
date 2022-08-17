@@ -69,7 +69,7 @@ fun SpawnTilePiece(tile: SpawnActionTile) {
             Icons.Filled.PersonAdd,
             "",
             tint =
-            if (tile == SpawnActionTile.SpawnWhite) Color.White
+            if (tile == SpawnActionTile.White) Color.White
             else Color.Black,
             modifier = Modifier.padding(10.dp).fillMaxSize()
         )
@@ -155,9 +155,9 @@ fun TilesPreview() {
             TransformationTilePiece(TransformationTile.Outnumbered)
         }
         Row {
-            SpawnTilePiece(SpawnActionTile.SpawnWhite)
+            SpawnTilePiece(SpawnActionTile.White)
             Spacer(modifier = Modifier.width(16.dp))
-            SpawnTilePiece(SpawnActionTile.SpawnBlack)
+            SpawnTilePiece(SpawnActionTile.Black)
         }
     }
 }

@@ -1,13 +1,18 @@
 package com.example.cairnclone.game.board
 
-enum class SpawnActionTile(val positions: List<Pos>) {
-    SpawnWhite(listOf(Pos(1, 0), Pos(3, 4))),
-    SpawnBlack(listOf(Pos(3, 0), Pos(1, 4))),
+enum class SpawnActionTile(val forest: Pos, val sea: Pos) {
+    White(forest = Pos(1, 0), sea = Pos(3, 4)),
+    Black(forest = Pos(3, 0), sea = Pos(1, 4)),
 }
 
 fun SpawnActionTile.flip(): SpawnActionTile = when (this) {
-    SpawnActionTile.SpawnWhite -> SpawnActionTile.SpawnBlack
-    SpawnActionTile.SpawnBlack -> SpawnActionTile.SpawnWhite
+    SpawnActionTile.White -> SpawnActionTile.Black
+    SpawnActionTile.Black -> SpawnActionTile.White
+}
+
+fun SpawnActionTile.posFor(team: Team): Pos = when(team) {
+    Team.Forest -> this.forest
+    Team.Sea -> this.sea
 }
 
 sealed class MoveActionTile(private val moveDirections: List<Direction>) {

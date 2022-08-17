@@ -7,7 +7,7 @@ import com.example.cairnclone.game.board.Team
 
 interface Action
 
-data class SpawnShaman(val shaman: Shaman): Action
+data class SpawnShaman(val team: Team, val pos: Pos): Action
 
 data class MoveShaman(val shaman: Shaman, val team: Team, val newPos: Pos): Action
 
