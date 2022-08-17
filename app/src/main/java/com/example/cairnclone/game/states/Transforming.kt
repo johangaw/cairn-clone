@@ -28,7 +28,7 @@ class Transforming(boardState: BoardState) : GameState(boardState) {
             Transforming(
                 boardState.copy(
                     activeShamans = boardState.activeShamans - action.shaman,
-                    inactiveShamans = boardState.inactiveShamans + action.shaman
+                    inactiveShamans = boardState.inactiveShamans + action.shaman.toInactiveShaman()
                 )
             )
         )

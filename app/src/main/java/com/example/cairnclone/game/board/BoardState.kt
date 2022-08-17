@@ -10,7 +10,7 @@ data class BoardState(
     val spawnActionTile: SpawnActionTile,
     val moveActionTile: MoveActionTile,
     val transformationTile: TransformationTile,
-    val inactiveShamans: List<Shaman>,
+    val inactiveShamans: List<InactiveShaman>,
     val activeShamans: List<Shaman>,
     val activeMonoliths: List<Monolith>,
     val monolithsStack: List<MonolithType>,
@@ -69,10 +69,7 @@ class BoardStateBuilder {
     fun addInactiveShamans() {
         fun createInactiveShamans(team: Team) =
             (boardState.activeShamans.count { it.team == team } until MAX_SHAMANS).map {
-                Shaman(
-                    team = team,
-                    pos = Pos(0, 0)
-                )
+                InactiveShaman(team = team)
             }
         boardState = boardState.copy(
             inactiveShamans = createInactiveShamans(Team.Forest) + createInactiveShamans(Team.Sea)

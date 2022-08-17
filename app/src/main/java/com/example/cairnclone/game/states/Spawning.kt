@@ -2,10 +2,7 @@ package com.example.cairnclone.game.states
 
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.SpawnShaman
-import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Shaman
-import com.example.cairnclone.game.board.SpawnActionTile
+import com.example.cairnclone.game.board.*
 
 class Spawning(boardState: BoardState) : GameState(boardState) {
     override fun perform(action: Action): ActionResult {
@@ -13,8 +10,8 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
             is SpawnShaman -> ActionResult.NewState(
                 this, listOf(
                     RemoveShaman(action.pos),
-                    AddShaman(boardState.inactiveShamans.first { it.team == action.team }.copy(pos = action.pos)),
-                    MarkShamanAsMoved(boardState.inactiveShamans.first { it.team == action.team }),
+                    AddShaman(boardState.inactiveShamans.first { it.team == action.team }.toShaman(action.pos)),
+                    MarkShamanAsMoved(boardState.inactiveShamans.first { it.team == action.team }.id),
                     FlipSpawnTile,
                     CompleteSpawning,
                 )
@@ -32,7 +29,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
         ActionResult.NewState(
             Spawning(
                 boardState = boardState.copy(
-                    movedShamanIds = boardState.movedShamanIds + action.shaman.id
+                    movedShamanIds = boardState.movedShamanIds + action.shamanId
                 )
             )
         )
@@ -42,7 +39,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
             ActionResult.NewState(
                 Spawning(
                     boardState.copy(
-                        inactiveShamans = boardState.inactiveShamans + it,
+                        inactiveShamans = boardState.inactiveShamans + it.toInactiveShaman(),
                         activeShamans = boardState.activeShamans - it
                     )
                 )
@@ -54,7 +51,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
         ActionResult.NewState(
             Spawning(
                 boardState.copy(
-                    inactiveShamans = boardState.inactiveShamans - action.shaman,
+                    inactiveShamans = boardState.inactiveShamans - action.shaman.toInactiveShaman(),
                     activeShamans = boardState.activeShamans + action.shaman,
                 )
             )
@@ -77,7 +74,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
 
     private data class RemoveShaman(val pos: Pos) : Action
     private data class AddShaman(val shaman: Shaman) : Action
-    private data class MarkShamanAsMoved(val shaman: Shaman) : Action
+    private data class MarkShamanAsMoved(val shamanId: ShamanId) : Action
     private object FlipSpawnTile : Action
     private object CompleteSpawning : Action
 }

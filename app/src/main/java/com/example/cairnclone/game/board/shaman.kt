@@ -10,3 +10,8 @@ data class Shaman(
     val team: Team,
     val pos: Pos,
 )
+
+data class InactiveShaman(val id: ShamanId = ShamanId(), val team: Team)
+
+fun Shaman.toInactiveShaman(): InactiveShaman = InactiveShaman(id, team)
+fun InactiveShaman.toShaman(pos: Pos): Shaman = Shaman(id, team, pos)
