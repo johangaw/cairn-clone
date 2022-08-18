@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -25,9 +26,17 @@ import com.example.cairnclone.game.board.*
 
 private val SpawnActionTile.positions: List<Pos> get() = listOf(this.forest, this.sea)
 
+enum class GameStage {
+    Action,
+    SelectMonolith,
+    Transformation,
+    End
+}
+
 @Composable
 fun CairnBoard(
     state: BoardState,
+    stage: GameStage,
     performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
     performSpawn: (pos: Pos) -> Boolean,
     performEndTurn: () -> Boolean,
@@ -112,39 +121,43 @@ fun CairnBoard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            UpcomingMonoliths(state.upcomingMonoliths, { performSelectMonolith(it) })
-            TransformButton(onClick = {
-                fun ensureThreeShamans(shamans: Set<Shaman>) =
-                    if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
+            UpcomingMonoliths(state.upcomingMonoliths, { performSelectMonolith(it) }, stage != GameStage.SelectMonolith)
+            TransformButton(
+                disabled = stage != GameStage.Transformation,
+                onClick = {
+                    fun ensureThreeShamans(shamans: Set<Shaman>) =
+                        if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
 
-                fun ensureTwoTeams(shamans: Set<Shaman>) =
-                    if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
-                        "A transformation requires shamans of different teams"
-                    ) else shamans
+                    fun ensureTwoTeams(shamans: Set<Shaman>) =
+                        if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
+                            "A transformation requires shamans of different teams"
+                        ) else shamans
 
-                fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
-                    shamans.partition { s -> s.team == Team.Sea }
-                        .toList()
-                        .sortedByDescending { list -> list.size }
-                        .flatten()
+                    fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
+                        shamans.partition { s -> s.team == Team.Sea }
+                            .toList()
+                            .sortedByDescending { list -> list.size }
+                            .flatten()
 
-                Result.success(selectedShamans)
-                    .mapCatching(::ensureThreeShamans)
-                    .mapCatching(::ensureTwoTeams)
-                    .map(::orderShamansAsTransformationArguments)
-                    .onSuccess {
-                        val (s1, s2, target) = it
-                        performTransformation(s1, s2, target)
-                        selectedShamans = emptySet()
-                    }
-                    .onFailure {
-                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                    }
-            })
-            EndRoundButton(onClick = {
-                performEndTurn()
-                selectedShamans = emptySet()
-            })
+                    Result.success(selectedShamans)
+                        .mapCatching(::ensureThreeShamans)
+                        .mapCatching(::ensureTwoTeams)
+                        .map(::orderShamansAsTransformationArguments)
+                        .onSuccess {
+                            val (s1, s2, target) = it
+                            performTransformation(s1, s2, target)
+                            selectedShamans = emptySet()
+                        }
+                        .onFailure {
+                            Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                        }
+                })
+            EndRoundButton(
+                disabled = stage != GameStage.Transformation,
+                onClick = {
+                    performEndTurn()
+                    selectedShamans = emptySet()
+                })
         }
 
 
@@ -159,11 +172,13 @@ fun Village(team: Team, active: Boolean) {
             .fillMaxWidth()
             .padding(4.dp)
             .background(
-                team.let {
-                    if (team == Team.Sea) Color.Blue else Color.Green
-                }.let {
-                    if(active) it else it.copy(alpha = 0.2f)
-                }
+                team
+                    .let {
+                        if (team == Team.Sea) Color.Blue else Color.Green
+                    }
+                    .let {
+                        if (active) it else it.copy(alpha = 0.2f)
+                    }
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -233,29 +248,33 @@ fun MonolithPiece(monolithType: MonolithType, onClick: (() -> Unit)? = null) {
 }
 
 @Composable
-fun UpcomingMonoliths(monoliths: List<MonolithType>, onClick: (monolith: MonolithType) -> Unit) {
+fun UpcomingMonoliths(monoliths: List<MonolithType>, onClick: (monolith: MonolithType) -> Unit, disabled: Boolean) {
     Row(Modifier.background(Color.LightGray)) {
         monoliths.forEach {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(75.dp)
-                    .padding(4.dp)
+                    .drawWithContent {
+                        drawContent();
+                        if(disabled) drawRect(Color.White.copy(alpha = 0.8f))
+                    }
+                    .padding(4.dp),
             ) {
-                MonolithPiece(it, { onClick(it) })
+                MonolithPiece(it, if(disabled) null else ({ onClick(it) } ))
             }
         }
     }
 }
 
 @Composable
-fun EndRoundButton(onClick: () -> Unit) {
+fun EndRoundButton(onClick: () -> Unit, disabled: Boolean) {
     Box(
         Modifier
             .size(75.dp)
             .clip(CircleShape)
-            .background(Color.Red)
-            .clickable { onClick() },
+            .background(Color.Red.copy(alpha = if (disabled) 0.1f else 1f))
+            .clickable(enabled = !disabled) { onClick() },
         Alignment.Center,
     ) {
         Text(text = "End Turn", color = Color.White)
@@ -263,13 +282,13 @@ fun EndRoundButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun TransformButton(onClick: () -> Unit) {
+fun TransformButton(onClick: () -> Unit, disabled: Boolean) {
     Box(
         Modifier
             .size(75.dp)
             .clip(CircleShape)
-            .background(Color.Blue)
-            .clickable { onClick() },
+            .background(Color.Blue.copy(alpha = if (disabled) 0.1f else 1f))
+            .clickable(enabled = !disabled) { onClick() },
         Alignment.Center,
     ) {
         Text(text = "Transform", color = Color.White)
@@ -289,6 +308,7 @@ fun CairnBoardPreview() {
     }
     CairnBoard(
         state,
+        GameStage.Action,
         { id, pos -> false },
         { false },
         { false },
