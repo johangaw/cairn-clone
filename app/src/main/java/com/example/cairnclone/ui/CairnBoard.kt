@@ -38,7 +38,7 @@ fun CairnBoard(
     val context = LocalContext.current
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Village(Team.Forest)
+        Village(Team.Forest, state.activeTeam == Team.Forest)
         Column {
             repeat(state.board.height) { y ->
                 Row {
@@ -91,7 +91,7 @@ fun CairnBoard(
                 }
             }
         }
-        Village(Team.Sea)
+        Village(Team.Sea, state.activeTeam == Team.Sea)
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
@@ -152,14 +152,18 @@ fun CairnBoard(
 }
 
 @Composable
-fun Village(team: Team) {
+fun Village(team: Team, active: Boolean) {
     Box(
         Modifier
             .height(75.dp)
             .fillMaxWidth()
             .padding(4.dp)
             .background(
-                if (team == Team.Sea) Color.Blue else Color.Green
+                team.let {
+                    if (team == Team.Sea) Color.Blue else Color.Green
+                }.let {
+                    if(active) it else it.copy(alpha = 0.2f)
+                }
             ),
         contentAlignment = Alignment.Center
     ) {
