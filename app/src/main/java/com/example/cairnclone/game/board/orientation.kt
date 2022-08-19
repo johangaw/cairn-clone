@@ -7,8 +7,8 @@ data class Board(
         Team.Forest to -1,
         Team.Sea to height
     ),
-    val forestVillageRow: List<Pos> = (0 until width).map { Pos(it, -1) },
-    val seaVillageRow: List<Pos> = (0 until width).map { Pos(it, height) },
+    val forestVillageRow: List<Pos> = (-1..width).map { Pos(it, -1) },
+    val seaVillageRow: List<Pos> = (-1..width).map { Pos(it, height) },
 
     val forestFirstRow: List<Pos> = (0 until width).map { Pos(it, 0) },
     val seaFirstRow: List<Pos> = (0 until width).map { Pos(it, height - 1) },

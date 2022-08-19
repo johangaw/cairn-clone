@@ -48,7 +48,7 @@ class Moving(boardState: BoardState) : GameState(boardState) {
         action: TryStartBuildMonolith,
         vararg next: Action,
     ): ActionResult =
-        if (boardState.isInVillage(action.moveFromPos, action.team.other()))
+        if (boardState.isInVillage(action.moveToPos, action.team.other()))
             tryBuildMonolith(
                 action.moveFromPos,
                 action.team,

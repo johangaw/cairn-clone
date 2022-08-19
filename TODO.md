@@ -1,5 +1,4 @@
 # This left todo
-- UI - exit through village
 - Improve Game design with recursive calls only fo new "sub states"
 - JUMP action
 - UI - JUMP action
