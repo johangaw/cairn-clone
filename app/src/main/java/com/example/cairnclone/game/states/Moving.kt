@@ -14,23 +14,17 @@ class Moving(boardState: BoardState) : GameState(boardState) {
                         Move(action.shaman, action.newPos),
                         MarkShamanAsMoved(action.shaman),
                         FlipMoveTile,
-                        if (boardState.isInVillage(
-                                action.newPos,
-                                action.shaman.team.other()
-                            )
-                        ) StartBuildMonolith(action.shaman.pos, action.shaman.team)
-                        else CompleteMoving
+                        TryStartBuildMonolith(action.shaman.pos, action.shaman.team),
+                        TryActivateMonolith(action.newPos, action.shaman.team),
+                        CompleteMoving
                     )
                 )
             }
             is Move -> handleMove(action)
             is MarkShamanAsMoved -> handleMarkShamanAsMoved(action)
             is FlipMoveTile -> handleFlipMoveTile()
-            is StartBuildMonolith -> handleStartBuildMonolith(
-                action,
-                ActivateMonolith(action.pos, action.team)
-            )
-            is ActivateMonolith -> handleActivateMonolith(action, CompleteMoving)
+            is TryStartBuildMonolith -> handleTryStartBuildMonolith(action)
+            is TryActivateMonolith -> handleTryActivateMonolith(action)
             is CompleteMoving -> handleCompleteMoving()
             else -> ActionResult.InvalidAction(this, action)
         }
@@ -52,23 +46,24 @@ class Moving(boardState: BoardState) : GameState(boardState) {
     private fun handleFlipMoveTile() =
         ActionResult.NewState(Moving(boardState.copy(moveActionTile = boardState.moveActionTile.flip())))
 
-    private fun handleStartBuildMonolith(
-        action: StartBuildMonolith,
-        vararg nextActions: Action
+    private fun handleTryStartBuildMonolith(
+        action: TryStartBuildMonolith,
     ): ActionResult =
-        tryBuildMonolith(
-            action.pos,
-            action.team,
-            boardState,
-        ) { ActionResult.NewState(Moving(it), nextActions.toList()) }
+        if (boardState.isInVillage(action.pos, action.team.other()))
+            tryBuildMonolith(
+                action.pos,
+                action.team,
+                boardState,
+            ) { ActionResult.NewState(Moving(it)) }
+        else ActionResult.NothingToDo
 
-    private fun handleActivateMonolith(
-        action: ActivateMonolith,
-        vararg nextActions: Action
+    private fun handleTryActivateMonolith(
+        action: TryActivateMonolith
     ): ActionResult =
         tryActivatingMonolith(
             action.pos,
-            { ActionResult.NewState(Moving(it), nextActions.toList()) },
+            action.team,
+            { ActionResult.NewState(Moving(it)) },
             boardState
         )
 
@@ -78,6 +73,6 @@ class Moving(boardState: BoardState) : GameState(boardState) {
 private data class Move(val shaman: Shaman, val newPos: Pos) : Action
 private data class MarkShamanAsMoved(val shaman: Shaman) : Action
 private object FlipMoveTile : Action
-private data class StartBuildMonolith(val pos: Pos, val team: Team) : Action
-private data class ActivateMonolith(val pos: Pos, val team: Team) : Action
+private data class TryStartBuildMonolith(val pos: Pos, val team: Team) : Action
+private data class TryActivateMonolith(val pos: Pos, val team: Team) : Action
 private object CompleteMoving : Action

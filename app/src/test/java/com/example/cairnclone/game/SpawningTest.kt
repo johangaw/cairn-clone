@@ -4,6 +4,7 @@ import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.SpawnActionTile
 import com.example.cairnclone.game.board.Team
+import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForTransformation
 import org.junit.Assert.*
 import org.junit.Test
@@ -114,5 +115,21 @@ class SpawningTest {
         assertTrue(result)
         assertEquals(game.boardState.shamanAt(spawn.forest)?.team, Team.Forest)
         assertEquals(game.boardState.activeShamans.count { it.team == Team.Sea }, 0)
+    }
+
+    @Test
+    fun `when spawning a shaman onto a monolith it activates that monolith`() {
+        val spawn = SpawnActionTile.White
+        val game = game {
+            emptyBoard()
+            addInactiveShamans()
+            positionMonolith(MonolithType.ChaosOfTheGiants, spawn.forest)
+            activeTeam = Team.Forest
+            spawnAction = spawn
+        }
+        val result = game.perform(SpawnShaman(Team.Forest, spawn.forest))
+
+        assertTrue(result)
+        assertTrue("not correct class ${game.boardState.javaClass.simpleName}", game.gameState is ActivatingChaosOfTheGiants)
     }
 }

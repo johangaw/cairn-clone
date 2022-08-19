@@ -5,6 +5,7 @@ import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.board.MoveActionTile
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team
+import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForAction
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -59,5 +60,21 @@ class MovementTest {
         assertTrue(result)
         assertTrue(game.gameState is WaitForAction)
         assertEquals(game.gameState.boardState.activeTeam, Team.Sea)
+    }
+
+    @Test
+    fun `when moving a shaman onto a monolith it activates that monolith`() {
+        val game = game {
+            emptyBoard()
+            positionForestShaman(Pos(0,0))
+            positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0,1))
+            activeTeam = Team.Forest
+            moveAction = MoveActionTile.Orthogonally
+        }
+        val shaman = game.boardState.shamanAt(Pos(0,0))!!
+        val result = game.perform(MoveShaman(shaman, Team.Forest, Pos(0,1)))
+
+        assertTrue(result)
+        assertTrue("not correct class ${game.boardState.javaClass.simpleName}", game.gameState is ActivatingChaosOfTheGiants)
     }
 }

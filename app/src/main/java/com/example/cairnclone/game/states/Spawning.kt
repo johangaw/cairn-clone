@@ -13,6 +13,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
                     AddShaman(boardState.inactiveShamans.first { it.team == action.team }.toShaman(action.pos)),
                     MarkShamanAsMoved(boardState.inactiveShamans.first { it.team == action.team }.id),
                     FlipSpawnTile,
+                    TryActivateMonolith(action.pos, action.team),
                     CompleteSpawning,
                 )
             )
@@ -20,6 +21,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
             is AddShaman -> addShaman(action)
             is MarkShamanAsMoved -> markShamanAsMoved(action)
             is FlipSpawnTile -> flipActionTile()
+            is TryActivateMonolith -> handleTryActivateMonolith(action)
             is CompleteSpawning -> completeSpawning()
             else -> ActionResult.InvalidAction(this, action)
         }
@@ -65,17 +67,24 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
         )
     )
 
-    private fun completeSpawning(): ActionResult =
+    private fun handleTryActivateMonolith(
+        action: TryActivateMonolith,
+    ): ActionResult =
         tryActivatingMonolith(
-            Pos(0, 0),
-            { ActionResult.NewState(WaitForTransformation(boardState)) },
+            action.pos,
+            action.team,
+            { ActionResult.NewState(Spawning(it)) },
             boardState
         )
+
+    private fun completeSpawning(): ActionResult =
+        ActionResult.NewState(WaitForTransformation(boardState))
 
     private data class RemoveShaman(val pos: Pos) : Action
     private data class AddShaman(val shaman: Shaman) : Action
     private data class MarkShamanAsMoved(val shamanId: ShamanId) : Action
     private object FlipSpawnTile : Action
+    private data class TryActivateMonolith(val pos: Pos, val team: Team) : Action
     private object CompleteSpawning : Action
 }
 
