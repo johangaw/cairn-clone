@@ -13,6 +13,18 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class MovementTest {
+    @Test
+    fun `when a shaman tries to move off the field it return false`() {
+        val game = game {
+            emptyBoard()
+            positionForestShaman(Pos(4, 2))
+            moveAction = MoveActionTile.Orthogonally
+        }
+        val shaman = game.gameState.boardState.activeShamans.first()
+        val result = game.perform(MoveShaman(shaman, Team.Forest, newPos = Pos(5, 2)))
+
+        assertFalse(result)
+    }
 
     @Test
     fun `when a shaman performs a valid orthogonal move it updates its position and return true`() {
