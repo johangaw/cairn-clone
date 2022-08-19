@@ -11,3 +11,4 @@
 - rename positionForestShaman => addForestShaman
 - rename Shaman => Druid
 - rename monolith => megalith
+- propagate error message to UI
