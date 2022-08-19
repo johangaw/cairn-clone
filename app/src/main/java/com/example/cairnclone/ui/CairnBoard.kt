@@ -1,10 +1,14 @@
 package com.example.cairnclone.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -34,6 +38,11 @@ sealed class GameStage {
     object End : GameStage()
 }
 
+
+fun IntRange.allPairs(other: IntRange): List<Pair<Int, Int>> =
+    this.flatMap { left -> other.map { right -> Pair(left, right) } }
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CairnBoard(
     state: BoardState,
@@ -52,52 +61,54 @@ fun CairnBoard(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Village(Team.Forest, state.activeTeam == Team.Forest)
         Column {
-            repeat(state.board.height) { y ->
-                Row {
-                    repeat(state.board.width) { x ->
-                        val pos = Pos(x, y)
-                        val shaman = state.shamanAt(pos)
-                        val monolith = state.monolithAt(pos)
-                        val pieceType = when {
-                            SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
-                            SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
-                            else -> BoardPieceType.Normal
+
+            LazyVerticalGrid(cells = GridCells.Fixed(state.board.width), Modifier.padding(horizontal = 24.dp)) {
+                val positions = (0 until state.board.height)
+                    .allPairs((0 until state.board.width))
+                    .map {(y, x) -> Pos(x, y) }
+
+                items(positions) { pos ->
+                    val shaman = state.shamanAt(pos)
+                    val monolith = state.monolithAt(pos)
+                    val pieceType = when {
+                        SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
+                        SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
+                        else -> BoardPieceType.Normal
+                    }
+                    BoardPiece(
+                        type = pieceType,
+                        onClick = {
+                            if (shaman != null) {
+                                selectedShamans =
+                                    if (selectedShamans.contains(shaman))
+                                        selectedShamans - shaman
+                                    else
+                                        selectedShamans + shaman
+                            } else if (selectedShamans.size == 1) {
+                                performMove(selectedShamans.first(), pos)
+                                selectedShamans = emptySet()
+                            } else if (selectedShamans.size > 1) {
+                                Toast.makeText(
+                                    context,
+                                    "Can only move ONE shaman at once",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
+                                    state.activeTeam
+                                ) == pos
+                            ) {
+                                performSpawn(pos)
+                            }
                         }
-                        BoardPiece(
-                            type = pieceType,
-                            onClick = {
-                                if (shaman != null) {
-                                    selectedShamans =
-                                        if (selectedShamans.contains(shaman))
-                                            selectedShamans - shaman
-                                        else
-                                            selectedShamans + shaman
-                                } else if (selectedShamans.size == 1) {
-                                    performMove(selectedShamans.first(), pos)
-                                    selectedShamans = emptySet()
-                                } else if (selectedShamans.size > 1) {
-                                    Toast.makeText(
-                                        context,
-                                        "Can only move ONE shaman at once",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
-                                        state.activeTeam
-                                    ) == pos
-                                ) {
-                                    performSpawn(pos)
-                                }
-                            }
-                        ) {
-                            monolith?.let {
-                                MonolithPiece(monolith.type)
-                            }
-                            shaman?.let {
-                                ShamanPiece(
-                                    shaman,
-                                    selected = selectedShamans.contains(shaman)
-                                )
-                            }
+                    ) {
+                        monolith?.let {
+                            MonolithPiece(monolith.type)
+                        }
+                        shaman?.let {
+                            ShamanPiece(
+                                shaman,
+                                selected = selectedShamans.contains(shaman)
+                            )
                         }
                     }
                 }
