@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 positionStartShamans()
                 positionStartMonoliths()
 
-//                positionSeaShaman(Pos(1, 0))
+                positionForestShaman(Pos(1, 4))
                 positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0, 1))
             }
         ),

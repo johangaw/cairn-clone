@@ -1,5 +1,6 @@
 package com.example.cairnclone.ui
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -38,9 +39,29 @@ sealed class GameStage {
     object End : GameStage()
 }
 
-
 fun IntRange.allPairs(other: IntRange): List<Pair<Int, Int>> =
     this.flatMap { left -> other.map { right -> Pair(left, right) } }
+
+fun ensureOneShamans(shamans: Set<Shaman>) =
+    if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
+
+fun ensureThreeShamans(shamans: Set<Shaman>) =
+    if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
+
+fun ensureTwoTeams(shamans: Set<Shaman>) =
+    if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
+        "A transformation requires shamans of different teams"
+    ) else shamans
+
+fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
+    shamans.partition { s -> s.team == Team.Sea }
+        .toList()
+        .sortedByDescending { list -> list.size }
+        .flatten()
+
+fun showError(ctx: Context) =
+    { err: Throwable -> Toast.makeText(ctx, err.message, Toast.LENGTH_LONG).show() }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -58,14 +79,29 @@ fun CairnBoard(
     var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
     val context = LocalContext.current
 
+    fun onVillageClick(team: Team): () -> Unit = {
+        Result.success(selectedShamans)
+            .mapCatching(::ensureOneShamans)
+            .onSuccess {
+                val shaman = selectedShamans.first()
+                state.board.villageRowFor(team).firstOrNull { performMove(shaman, it) }
+                selectedShamans = emptySet()
+            }
+            .onFailure(showError(context))
+    }
+
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Village(Team.Forest, state.activeTeam == Team.Forest)
+        Village(Team.Forest, state.activeTeam == Team.Forest, onVillageClick(Team.Forest))
         Column {
 
-            LazyVerticalGrid(cells = GridCells.Fixed(state.board.width), Modifier.padding(horizontal = 24.dp)) {
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(state.board.width),
+                Modifier.padding(horizontal = 24.dp)
+            ) {
                 val positions = (0 until state.board.height)
                     .allPairs((0 until state.board.width))
-                    .map {(y, x) -> Pos(x, y) }
+                    .map { (y, x) -> Pos(x, y) }
 
                 items(positions) { pos ->
                     val shaman = state.shamanAt(pos)
@@ -114,7 +150,7 @@ fun CairnBoard(
                 }
             }
         }
-        Village(Team.Sea, state.activeTeam == Team.Sea)
+        Village(Team.Sea, state.activeTeam == Team.Sea, onVillageClick(Team.Sea))
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
@@ -144,20 +180,6 @@ fun CairnBoard(
             if (stage == GameStage.Transformation)
                 TransformButton(
                     onClick = {
-                        fun ensureThreeShamans(shamans: Set<Shaman>) =
-                            if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
-
-                        fun ensureTwoTeams(shamans: Set<Shaman>) =
-                            if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
-                                "A transformation requires shamans of different teams"
-                            ) else shamans
-
-                        fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
-                            shamans.partition { s -> s.team == Team.Sea }
-                                .toList()
-                                .sortedByDescending { list -> list.size }
-                                .flatten()
-
                         Result.success(selectedShamans)
                             .mapCatching(::ensureThreeShamans)
                             .mapCatching(::ensureTwoTeams)
@@ -167,9 +189,7 @@ fun CairnBoard(
                                 performTransformation(s1, s2, target)
                                 selectedShamans = emptySet()
                             }
-                            .onFailure {
-                                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                            }
+                            .onFailure(showError(context))
                     })
 
             if (stage == GameStage.Transformation)
@@ -181,16 +201,11 @@ fun CairnBoard(
 
             if (stage is GameStage.ActivatingMonolith)
                 ActivateMonolithButton(onClick = {
-                    fun ensureOneShamans(shamans: Set<Shaman>) =
-                        if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
-
                     when (stage.monolith) {
                         MonolithType.ChaosOfTheGiants -> Result.success(selectedShamans)
                             .mapCatching(::ensureOneShamans)
                             .onSuccess { activateChaosOfTheGiants(selectedShamans.first()) }
-                            .onFailure {
-                                Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
-                            }
+                            .onFailure(showError(context))
                         else -> Toast.makeText(
                             context,
                             "unknown monolith ${stage.monolith.name}",
@@ -211,12 +226,11 @@ fun CairnBoard(
 }
 
 @Composable
-fun Village(team: Team, active: Boolean) {
+fun Village(team: Team, active: Boolean, onClick: () -> Unit) {
     Box(
         Modifier
             .height(75.dp)
             .fillMaxWidth()
-            .padding(4.dp)
             .background(
                 team
                     .let {
@@ -225,7 +239,8 @@ fun Village(team: Team, active: Boolean) {
                     .let {
                         if (active) it else it.copy(alpha = 0.2f)
                     }
-            ),
+            )
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Village", color = Color.White, style = MaterialTheme.typography.h3)
