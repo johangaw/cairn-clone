@@ -1,14 +1,16 @@
 # This left todo
-- Activate monolith
 - UI - exit through village
 - Improve Game design with recursive calls only fo new "sub states"
-- UI - drag and drop movement
 - JUMP action
 - UI - JUMP action
+- propagate error message to UI
+- Implement 5 more monoliths
 - **User testing**
-
-# Not Prioritized
+- UI - drag and drop movement
+- Implement rest of monoliths
 - rename positionForestShaman => addForestShaman
 - rename Shaman => Druid
 - rename monolith => megalith
-- propagate error message to UI
+
+# Not Prioritized
+
