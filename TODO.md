@@ -4,6 +4,7 @@
 - JUMP action
 - UI - JUMP action
 - propagate error message to UI
+- UI - show score
 - Implement 5 more monoliths
 - **User testing**
 - UI - drag and drop movement
