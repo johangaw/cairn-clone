@@ -6,3 +6,8 @@
 - JUMP action
 - UI - JUMP action
 - **User testing**
+
+# Not Prioritized
+- rename positionForestShaman => addForestShaman
+- rename Shaman => Druid
+- rename monolith => megalith
