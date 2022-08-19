@@ -6,8 +6,15 @@ data class Board(
     val villageIndex: Map<Team, Int> = mapOf(
         Team.Forest to -1,
         Team.Sea to height
-    )
-)
+    ),
+    val forestFirstRow: List<Pos> = (0 until width).map { Pos(it, 0) },
+    val seaFirstRow: List<Pos> = (0 until width).map { Pos(it, height - 1) },
+) {
+    fun firstRowFor(team: Team) = when(team) {
+        Team.Forest -> forestFirstRow
+        Team.Sea -> seaFirstRow
+    }
+}
 
 data class Pos(
     val x: Int,

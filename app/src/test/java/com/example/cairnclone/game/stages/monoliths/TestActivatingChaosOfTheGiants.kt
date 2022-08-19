@@ -73,4 +73,22 @@ class TestActivatingChaosOfTheGiants {
         assertTrue(game.boardState.inactiveShamans.contains(shaman.toInactiveShaman()))
         assertTrue("invalid final state ${game.gameState}", game.gameState is WaitForAction)
     }
+
+    @Test
+    fun `when trying to skip while there is a shaman to banish, it returns an error`() {
+        val pos = Pos(0, 0)
+        val (game) = monolithGame {
+            positionSeaShaman(pos)
+        }
+        val result = game.perform(ActivatingChaosOfTheGiants.Skipp)
+        assertFalse(result)
+    }
+
+    @Test
+    fun `when trying to skip while there is no shaman to banish, it returns success and moves on to the next state`() {
+        val (game) = monolithGame {}
+        val result = game.perform(ActivatingChaosOfTheGiants.Skipp)
+        assertTrue(result)
+        assertTrue("invalid final state ${game.gameState}", game.gameState is WaitForAction)
+    }
 }
