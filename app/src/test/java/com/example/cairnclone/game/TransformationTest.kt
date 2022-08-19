@@ -19,8 +19,8 @@ class TransformationTest {
             positionForestShaman(Pos(0, 0))
             positionForestShaman(Pos(2, 0))
             positionSeaShaman(Pos(3, 0))
-            moveAction(MoveActionTile.Orthogonally)
-            transformation(TransformationTile.Outnumbered)
+            moveAction = MoveActionTile.Orthogonally
+            transformation = TransformationTile.Outnumbered
         }
         val s1 = game.gameState.boardState.shamanAt(Pos(0, 0))!!
 
@@ -48,8 +48,8 @@ class TransformationTest {
             positionForestShaman(Pos(0, 0))
             positionSeaShaman(Pos(2, 0))
             positionForestShaman(Pos(3, 0))
-            moveAction(MoveActionTile.Orthogonally)
-            transformation(TransformationTile.Surrounded)
+            moveAction = MoveActionTile.Orthogonally
+            transformation = TransformationTile.Surrounded
         }
         val s1 = game.gameState.boardState.shamanAt(Pos(0, 0))!!
         val newMonolith = game.gameState.boardState.monolithsStack.first()
@@ -79,8 +79,8 @@ class TransformationTest {
             positionForestShaman(Pos(1, 0))
             positionForestShaman(Pos(2, 0))
             positionSeaShaman(Pos(3, 0))
-            moveAction(MoveActionTile.Orthogonally)
-            transformation(TransformationTile.Outnumbered)
+            moveAction = MoveActionTile.Orthogonally
+            transformation = TransformationTile.Outnumbered
         }
         val s1 = game.gameState.boardState.shamanAt(Pos(0, 0))!!
 
@@ -105,8 +105,8 @@ class TransformationTest {
             addInactiveShamans()
             positionForestShaman(Pos(2, 0))
             positionSeaShaman(Pos(3, 0))
-            spawnAction(spawn)
-            transformation(TransformationTile.Outnumbered)
+            spawnAction = spawn
+            transformation = TransformationTile.Outnumbered
             activeTeam = Team.Forest
         }
         val newMonolith = game.gameState.boardState.monolithsStack.first()

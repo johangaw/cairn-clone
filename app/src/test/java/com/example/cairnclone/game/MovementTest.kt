@@ -2,9 +2,12 @@ package com.example.cairnclone.game
 
 import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.MoveShaman
-import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.board.MoveActionTile
+import com.example.cairnclone.game.board.Pos
+import com.example.cairnclone.game.board.Team
 import com.example.cairnclone.game.states.WaitForAction
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MovementTest {
@@ -14,7 +17,7 @@ class MovementTest {
         val game = game {
             emptyBoard()
             positionForestShaman(Pos(1, 1))
-            moveAction(MoveActionTile.Orthogonally)
+            moveAction = MoveActionTile.Orthogonally
         }
         val shaman = game.gameState.boardState.activeShamans.first()
 
@@ -29,7 +32,7 @@ class MovementTest {
         val game = game {
             emptyBoard()
             positionForestShaman(Pos(3, 3))
-            moveAction(MoveActionTile.Diagonally)
+            moveAction = MoveActionTile.Diagonally
         }
         val shaman = game.gameState.boardState.activeShamans.first()
 
@@ -44,7 +47,7 @@ class MovementTest {
         val game = game {
             emptyBoard()
             positionForestShaman(Pos(1, 0))
-            moveAction(MoveActionTile.Orthogonally)
+            moveAction = MoveActionTile.Orthogonally
         }
         val shaman = game.gameState.boardState.activeShamans.first()
 

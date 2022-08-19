@@ -104,23 +104,30 @@ class BoardStateBuilder {
         positionMonolith(m2, Pos(3, 2))
     }
 
-    fun transformation(tile: TransformationTile) {
-        boardState = boardState.copy(
-            transformationTile = tile
-        )
-    }
+    var transformation: TransformationTile
+        get() = boardState.transformationTile
+        set(value) {
+            boardState = boardState.copy(
+                transformationTile = value
+            )
+        }
 
-    fun moveAction(tile: MoveActionTile) {
-        boardState = boardState.copy(
-            moveActionTile = tile
-        )
-    }
+    var moveAction: MoveActionTile
+        get() = boardState.moveActionTile
+        set(value) {
+            boardState = boardState.copy(
+                moveActionTile = value
+            )
+        }
 
-    fun spawnAction(tile: SpawnActionTile) {
-        boardState = boardState.copy(
-            spawnActionTile = tile
-        )
-    }
+    var spawnAction: SpawnActionTile
+        get() = boardState.spawnActionTile
+        set(value) {
+            boardState = boardState.copy(
+                spawnActionTile = value
+            )
+        }
+
 
     var activeTeam: Team
         get() = boardState.activeTeam
@@ -132,9 +139,9 @@ class BoardStateBuilder {
 
     fun emptyBoard(randomize: Boolean = false) {
         addMonolithStack(randomize)
-        transformation(if (randomize && Random.nextBoolean()) boardState.transformationTile.flip() else boardState.transformationTile)
-        moveAction(if (randomize && Random.nextBoolean()) boardState.moveActionTile.flip() else boardState.moveActionTile)
-        spawnAction(if (randomize && Random.nextBoolean()) boardState.spawnActionTile.flip() else boardState.spawnActionTile)
+        transformation = if (randomize && Random.nextBoolean()) boardState.transformationTile.flip() else boardState.transformationTile
+        moveAction = if (randomize && Random.nextBoolean()) boardState.moveActionTile.flip() else boardState.moveActionTile
+        spawnAction = if (randomize && Random.nextBoolean()) boardState.spawnActionTile.flip() else boardState.spawnActionTile
     }
 }
 

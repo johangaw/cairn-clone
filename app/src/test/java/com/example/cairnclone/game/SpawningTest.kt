@@ -1,7 +1,9 @@
 package com.example.cairnclone.game
 
 import com.example.cairnclone.game.actions.SpawnShaman
-import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.board.Pos
+import com.example.cairnclone.game.board.SpawnActionTile
+import com.example.cairnclone.game.board.Team
 import com.example.cairnclone.game.states.WaitForTransformation
 import org.junit.Assert.*
 import org.junit.Test
@@ -11,24 +13,24 @@ val Game.boardState get() = this.gameState.boardState
 class SpawningTest {
 
     @Test
-    fun `when spawning on a none spawning tile, it returns false`(){
+    fun `when spawning on a none spawning tile, it returns false`() {
         val team = Team.Forest
         val game = game {
             emptyBoard()
             activeTeam = team
             addInactiveShamans()
         }
-        val result = game.perform(SpawnShaman(team, Pos(3,3)))
+        val result = game.perform(SpawnShaman(team, Pos(3, 3)))
         assertFalse(result)
     }
 
     @Test
-    fun `when spawning on a inactive spawning tile, it returns false`(){
+    fun `when spawning on a inactive spawning tile, it returns false`() {
         val team = Team.Forest
         val game = game {
             emptyBoard()
             addInactiveShamans()
-            spawnAction(SpawnActionTile.Black)
+            spawnAction = SpawnActionTile.Black
             activeTeam = team
         }
         val result = game.perform(SpawnShaman(team, SpawnActionTile.White.forest))
@@ -36,27 +38,27 @@ class SpawningTest {
     }
 
     @Test
-    fun `when spawning on the other teams spawning tile, it returns false`(){
+    fun `when spawning on the other teams spawning tile, it returns false`() {
         val team = Team.Forest
         val game = game {
             emptyBoard()
             addInactiveShamans()
             activeTeam = team
-            spawnAction(SpawnActionTile.Black)
+            spawnAction = SpawnActionTile.Black
         }
         val result = game.perform(SpawnShaman(team, SpawnActionTile.Black.sea))
         assertFalse(result)
     }
 
     @Test
-    fun `when there are no inactive shamans, it returns false`(){
+    fun `when there are no inactive shamans, it returns false`() {
         val team = Team.Forest
         val game = game {
             emptyBoard()
-            spawnAction(SpawnActionTile.White)
+            spawnAction = SpawnActionTile.White
             activeTeam = team
             repeat(5) {
-                positionForestShaman(Pos(1,it))
+                positionForestShaman(Pos(1, it))
             }
         }
         val result = game.perform(SpawnShaman(team, SpawnActionTile.White.forest))
@@ -64,12 +66,12 @@ class SpawningTest {
     }
 
     @Test
-    fun `when the spawn position contains a team mate, it returns false`(){
+    fun `when the spawn position contains a team mate, it returns false`() {
         val team = Team.Forest
         val spawn = SpawnActionTile.White
         val game = game {
             emptyBoard()
-            spawnAction(spawn)
+            spawnAction = spawn
             activeTeam = team
             positionForestShaman(spawn.forest)
             addInactiveShamans()
@@ -79,12 +81,12 @@ class SpawningTest {
     }
 
     @Test
-    fun `when spawning on a valid spawning tile, it returns true, adds shaman to that position and wait for a transformation`(){
+    fun `when spawning on a valid spawning tile, it returns true, adds shaman to that position and wait for a transformation`() {
         val team = Team.Forest
         val spawn = SpawnActionTile.Black
         val game = game {
             emptyBoard()
-            spawnAction(spawn)
+            spawnAction = spawn
             activeTeam = team
             addInactiveShamans()
         }
@@ -97,12 +99,12 @@ class SpawningTest {
     }
 
     @Test
-    fun `when the spawning tile contains an opposing shaman, it returns true and replace the opposing shaman with one of your inactive ones`(){
+    fun `when the spawning tile contains an opposing shaman, it returns true and replace the opposing shaman with one of your inactive ones`() {
         val team = Team.Forest
         val spawn = SpawnActionTile.Black
         val game = game {
             emptyBoard()
-            spawnAction(spawn)
+            spawnAction = spawn
             activeTeam = team
             positionSeaShaman(spawn.forest)
             addInactiveShamans()
