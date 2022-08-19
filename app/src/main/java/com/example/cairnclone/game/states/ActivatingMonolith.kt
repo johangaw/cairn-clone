@@ -20,7 +20,7 @@ fun tryActivatingMonolith(
 ): ActionResult.NewState {
     val monolith = boardState.monolithAt(pos)
     return when(monolith?.type) {
-        MonolithType.ChaosOfTheGiants -> ActionResult.NewState(ActivatingChaosOfTheGiants(boardState, monolith.pos, team))
+        MonolithType.ChaosOfTheGiants -> ActionResult.NewState(ActivatingChaosOfTheGiants(boardState, team, nextState))
         else -> nextState(boardState)
     }
 }
