@@ -29,7 +29,7 @@ class Game(
                 onGameStateChange(_gameState)
                 perform(*(result.preloadActions + tailActions).toTypedArray())
             }
-            is ActionResult.NothingToDo -> perform(*tailActions.toTypedArray())
+            is ActionResult.NothingToDo -> perform(*(result.preloadActions + tailActions).toTypedArray())
         }
     }
 }

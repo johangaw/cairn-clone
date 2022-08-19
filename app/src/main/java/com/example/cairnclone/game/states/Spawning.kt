@@ -14,14 +14,13 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
                     MarkShamanAsMoved(boardState.inactiveShamans.first { it.team == action.team }.id),
                     FlipSpawnTile,
                     TryActivateMonolith(action.pos, action.team),
-                    CompleteSpawning,
                 )
             )
             is RemoveShaman -> removeShaman(action)
             is AddShaman -> addShaman(action)
             is MarkShamanAsMoved -> markShamanAsMoved(action)
             is FlipSpawnTile -> flipActionTile()
-            is TryActivateMonolith -> handleTryActivateMonolith(action)
+            is TryActivateMonolith -> handleTryActivateMonolith(action, CompleteSpawning)
             is CompleteSpawning -> completeSpawning()
             else -> ActionResult.InvalidAction(this, action)
         }
@@ -46,7 +45,7 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
                     )
                 )
             )
-        } ?: ActionResult.NothingToDo
+        } ?: ActionResult.NothingToDo()
 
 
     private fun addShaman(action: AddShaman): ActionResult =
@@ -69,11 +68,12 @@ class Spawning(boardState: BoardState) : GameState(boardState) {
 
     private fun handleTryActivateMonolith(
         action: TryActivateMonolith,
+        vararg next: Action,
     ): ActionResult =
         tryActivatingMonolith(
             action.pos,
             action.team,
-            { ActionResult.NewState(Spawning(it)) },
+            { ActionResult.NewState(Spawning(it), next.toList()) },
             boardState
         )
 

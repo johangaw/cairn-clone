@@ -75,6 +75,6 @@ class MovementTest {
         val result = game.perform(MoveShaman(shaman, Team.Forest, Pos(0,1)))
 
         assertTrue(result)
-        assertTrue("not correct class ${game.boardState.javaClass.simpleName}", game.gameState is ActivatingChaosOfTheGiants)
+        assertTrue("not correct class ${game.gameState.javaClass.simpleName}", game.gameState is ActivatingChaosOfTheGiants)
     }
 }
