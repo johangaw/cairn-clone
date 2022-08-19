@@ -8,3 +8,5 @@ fun game(init: BoardStateBuilder.() -> Unit) = Game(
     WaitForAction(buildBoard(init)),
     {}
 )
+
+val Game.boardState get() = this.gameState.boardState

@@ -9,8 +9,6 @@ import com.example.cairnclone.game.states.WaitForTransformation
 import org.junit.Assert.*
 import org.junit.Test
 
-val Game.boardState get() = this.gameState.boardState
-
 class SpawningTest {
 
     @Test
