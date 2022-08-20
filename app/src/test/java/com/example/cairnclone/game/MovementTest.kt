@@ -6,9 +6,9 @@ import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.board.MoveActionTile
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.game.states.WaitForTransformation
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import org.junit.Assert.*
 import org.junit.Test
 

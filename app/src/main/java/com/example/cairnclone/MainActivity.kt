@@ -13,6 +13,7 @@ import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.GameStage
 import com.example.cairnclone.ui.theme.CairnCloneTheme

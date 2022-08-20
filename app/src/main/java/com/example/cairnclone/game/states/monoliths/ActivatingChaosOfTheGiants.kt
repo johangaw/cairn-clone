@@ -1,7 +1,9 @@
-package com.example.cairnclone.game.states
+package com.example.cairnclone.game.states.monoliths
 
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.states.ActionResult
+import com.example.cairnclone.game.states.GameState
 
 class ActivatingChaosOfTheGiants(
     boardState: BoardState,

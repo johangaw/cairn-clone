@@ -5,8 +5,8 @@ import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.boardState
 import com.example.cairnclone.game.states.ActionResult
-import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForAction
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import org.junit.Assert.*
 import org.junit.Test
 

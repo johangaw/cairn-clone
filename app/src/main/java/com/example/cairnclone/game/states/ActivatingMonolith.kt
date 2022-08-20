@@ -4,6 +4,7 @@ import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 
 fun tryActivatingMonolith(
     pos: Pos,

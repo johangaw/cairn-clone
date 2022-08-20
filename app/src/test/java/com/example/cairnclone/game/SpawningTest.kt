@@ -4,8 +4,8 @@ import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.SpawnActionTile
 import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForTransformation
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import org.junit.Assert.*
 import org.junit.Test
 

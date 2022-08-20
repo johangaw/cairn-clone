@@ -2,8 +2,8 @@ package com.example.cairnclone.game
 
 import com.example.cairnclone.game.actions.JumpOverShaman
 import com.example.cairnclone.game.board.*
-import com.example.cairnclone.game.states.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.WaitForTransformation
+import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import org.junit.Assert.*
 import org.junit.Test
 
