@@ -11,7 +11,7 @@ data class SpawnShaman(val team: Team, val pos: Pos): Action
 
 data class MoveShaman(val shaman: Shaman, val team: Team, val newPos: Pos): Action
 
-data class JumpOverShaman(val jumper: Shaman, val springboard: Shaman): Action
+data class JumpOverShaman(val jumper: Shaman, val newPos: Pos): Action
 
 data class TransformShaman(val trans1: Shaman, val trans2: Shaman, val target: Shaman): Action
 

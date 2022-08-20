@@ -26,38 +26,36 @@ class JumpingTest {
             JumpOverShaman(
                 game.boardState.inactiveShamans.first { it.team == Team.Forest }
                     .toShaman(Pos(1, 1)),
-                game.boardState.activeShamans.first()
+                Pos(3,3)
             )
         )
         assertFalse(result)
     }
 
     @Test
-    fun `when the springboard is not an active shaman it returns false`() {
+    fun `when the jump is too long it returns false`() {
+        val game = jumpGame {
+            positionForestShaman(Pos(0, 0))
+            positionForestShaman(Pos(1, 1))
+        }
+        val result = game.perform(
+            JumpOverShaman(
+                game.boardState.shamanAt(Pos(0,0))!!,
+                Pos(3,2),
+            )
+        )
+        assertFalse(result)
+    }
+
+    @Test
+    fun `when there is no one to jump over it returns false`() {
         val game = jumpGame {
             positionForestShaman(Pos(2, 2))
-            addInactiveShamans()
         }
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.activeShamans.first(),
-                game.boardState.inactiveShamans.first { it.team == Team.Forest }
-                    .toShaman(Pos(1, 1)),
-            )
-        )
-        assertFalse(result)
-    }
-
-    @Test
-    fun `when the two shamans are not adjacent to one another it returns false`() {
-        val game = jumpGame {
-            positionForestShaman(Pos(2, 2))
-            positionForestShaman(Pos(0, 2))
-        }
-        val result = game.perform(
-            JumpOverShaman(
-                game.boardState.activeShamans[0],
-                game.boardState.activeShamans[1],
+                Pos(2, 4)
             )
         )
         assertFalse(result)
@@ -72,7 +70,7 @@ class JumpingTest {
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.shamanAt(Pos(3,4))!!,
-                game.boardState.shamanAt(Pos(4,4))!!,
+                Pos(5,4),
             )
         )
         assertFalse(result)
@@ -88,7 +86,7 @@ class JumpingTest {
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.shamanAt(Pos(0,0))!!,
-                game.boardState.shamanAt(Pos(1,1))!!,
+                Pos(2,2),
             )
         )
         assertFalse(result)
@@ -104,14 +102,14 @@ class JumpingTest {
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.shamanAt(Pos(0,0))!!,
-                game.boardState.shamanAt(Pos(1,1))!!,
+                Pos(2,2),
             )
         )
         assertFalse(result)
     }
 
     @Test
-    fun `when the springboard should be an team mate but is not it returns false`() {
+    fun `when the springboard should be a team mate but is not it returns false`() {
         val game = jumpGame {
             jumpAction = JumpActionTile.OverTeamMate
             positionForestShaman(Pos(0, 0))
@@ -120,7 +118,7 @@ class JumpingTest {
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.shamanAt(Pos(0,0))!!,
-                game.boardState.shamanAt(Pos(1,1))!!,
+                Pos(2,2),
             )
         )
         assertFalse(result)
@@ -136,7 +134,7 @@ class JumpingTest {
         val result = game.perform(
             JumpOverShaman(
                 game.boardState.shamanAt(Pos(0,0))!!,
-                game.boardState.shamanAt(Pos(1,1))!!,
+                Pos(2,2),
             )
         )
         assertFalse(result)
@@ -152,7 +150,7 @@ class JumpingTest {
         val jumper = game.boardState.shamanAt(Pos(1, 1))!!
         val springboard = game.boardState.shamanAt(Pos(2, 2))!!
 
-        val result = game.perform(JumpOverShaman(jumper, springboard))
+        val result = game.perform(JumpOverShaman(jumper, Pos(3,3),))
 
         assertTrue(result)
         assertEquals(game.boardState.shamanAt(Pos(2,2)), springboard)
@@ -173,9 +171,8 @@ class JumpingTest {
             positionMonolith(MonolithType.ChaosOfTheGiants, Pos(3,3))
         }
         val jumper = game.boardState.shamanAt(Pos(1, 1))!!
-        val springboard = game.boardState.shamanAt(Pos(2, 2))!!
 
-        val result = game.perform(JumpOverShaman(jumper, springboard))
+        val result = game.perform(JumpOverShaman(jumper, Pos(3,3),))
 
         assertTrue(result)
         assertTrue(
