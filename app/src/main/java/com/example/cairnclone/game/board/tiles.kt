@@ -1,5 +1,7 @@
 package com.example.cairnclone.game.board
 
+import com.example.cairnclone.game.states.Jumping
+
 enum class SpawnActionTile(val forest: Pos, val sea: Pos) {
     White(forest = Pos(1, 0), sea = Pos(3, 4)),
     Black(forest = Pos(3, 0), sea = Pos(1, 4)),
@@ -34,6 +36,24 @@ sealed class MoveActionTile(private val moveDirections: List<Direction>) {
     }
 
     fun possibleTargets(from: Pos): List<Pos> = moveDirections.map { from + it }
+}
+
+sealed class JumpActionTile {
+    object OverTeamMate: JumpActionTile() {
+        override fun isApplicable(jumper: Team, springboard: Team): Boolean =
+            jumper == springboard
+    }
+    object OverOpponent: JumpActionTile() {
+        override fun isApplicable(jumper: Team, springboard: Team): Boolean =
+            jumper != springboard
+    }
+
+    abstract fun isApplicable(jumper: Team, springboard: Team): Boolean
+
+    fun flip() = when(this) {
+        OverOpponent -> OverTeamMate
+        OverTeamMate -> OverOpponent
+    }
 }
 
 sealed class TransformationTile {

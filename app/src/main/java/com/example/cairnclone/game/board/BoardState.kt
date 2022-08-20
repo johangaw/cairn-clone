@@ -9,6 +9,7 @@ data class BoardState(
     val board: Board,
     val spawnActionTile: SpawnActionTile,
     val moveActionTile: MoveActionTile,
+    val jumpActionTile: JumpActionTile,
     val transformationTile: TransformationTile,
     val inactiveShamans: List<InactiveShaman>,
     val activeShamans: List<Shaman>,
@@ -33,6 +34,7 @@ class BoardStateBuilder {
             board = Board(),
             spawnActionTile = SpawnActionTile.Black,
             moveActionTile = MoveActionTile.Orthogonally,
+            jumpActionTile = JumpActionTile.OverTeamMate,
             transformationTile = TransformationTile.Surrounded,
             inactiveShamans = emptyList(),
             activeShamans = emptyList(),
@@ -125,6 +127,14 @@ class BoardStateBuilder {
         set(value) {
             boardState = boardState.copy(
                 spawnActionTile = value
+            )
+        }
+
+    var jumpAction: JumpActionTile
+        get() = boardState.jumpActionTile
+        set(value) {
+            boardState = boardState.copy(
+                jumpActionTile = value
             )
         }
 

@@ -1,6 +1,7 @@
 package com.example.cairnclone.game.states
 
 import com.example.cairnclone.game.actions.Action
+import com.example.cairnclone.game.actions.JumpOverShaman
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.board.*
@@ -11,6 +12,7 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
         return when (action) {
             is SpawnShaman -> validateSpawnShaman(action)
             is MoveShaman -> validateMoveShaman(action)
+            is JumpOverShaman -> validateJumpOverShaman(action)
             else -> ActionResult.InvalidAction(this, action)
         }
     }
@@ -49,6 +51,22 @@ class WaitForAction(boardState: BoardState) : GameState(boardState) {
             else -> ActionResult.NewState(Moving(boardState), listOf(action))
         }
     }
+
+    private fun validateJumpOverShaman(action: JumpOverShaman): ActionResult {
+        val (jumper, springboard) = action
+        val direction = jumper.pos.adjacentDirection(springboard.pos)
+        return when {
+            !boardState.activeShamans.contains(jumper) -> ActionResult.InvalidAction("the selected shaman $jumper is not active")
+            !boardState.activeShamans.contains(springboard) -> ActionResult.InvalidAction("the selected shaman $jumper is not active")
+            jumper.team != boardState.activeTeam -> ActionResult.InvalidAction("the jumper must be of the active team ${boardState.activeTeam}")
+            !boardState.jumpActionTile.isApplicable(jumper.team, springboard.team) -> ActionResult.InvalidAction("the jumper and the springboard are from incorrect teams")
+            direction == null -> ActionResult.InvalidAction("the two shamans are not located next to each other")
+            !boardState.board.isOnBoardOrInVillage(jumper.pos + direction + direction) -> ActionResult.InvalidAction("the shaman would end up outside the board ${jumper.pos + direction + direction}")
+            boardState.shamanAt(jumper.pos + direction + direction) != null -> ActionResult.InvalidAction("the landing location ${jumper.pos + direction + direction} is occupied")
+            else -> ActionResult.NewState(Jumping(boardState), listOf(action))
+        }
+    }
+
 }
 
 fun Board.isOnBoard(pos: Pos) =
