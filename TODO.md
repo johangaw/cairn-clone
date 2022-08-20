@@ -1,7 +1,5 @@
-# This left todo
-- UI - JUMP action
+# This left todoi
 - propagate error message to UI
-- UI - show score
 - Implement 5 more monoliths
 - **User testing**
 - Improve Game design with recursive calls only fo new "sub states"

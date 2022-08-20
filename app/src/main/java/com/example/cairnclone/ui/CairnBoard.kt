@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -93,7 +92,7 @@ fun CairnBoard(
 
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Village(Team.Forest, state.activeTeam == Team.Forest, onVillageClick(Team.Forest))
+        Village(Team.Forest, state.activeTeam == Team.Forest, state.scores.forestTeam ,onVillageClick(Team.Forest))
         Column {
 
             LazyVerticalGrid(
@@ -156,7 +155,7 @@ fun CairnBoard(
                 }
             }
         }
-        Village(Team.Sea, state.activeTeam == Team.Sea, onVillageClick(Team.Sea))
+        Village(Team.Sea, state.activeTeam == Team.Sea, state.scores.seaTeam, onVillageClick(Team.Sea))
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
@@ -229,28 +228,6 @@ fun CairnBoard(
         }
 
 
-    }
-}
-
-@Composable
-fun Village(team: Team, active: Boolean, onClick: () -> Unit) {
-    Box(
-        Modifier
-            .height(75.dp)
-            .fillMaxWidth()
-            .background(
-                team
-                    .let {
-                        if (team == Team.Sea) Color.Blue else Color.Green
-                    }
-                    .let {
-                        if (active) it else it.copy(alpha = 0.2f)
-                    }
-            )
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Village", color = Color.White, style = MaterialTheme.typography.h3)
     }
 }
 
