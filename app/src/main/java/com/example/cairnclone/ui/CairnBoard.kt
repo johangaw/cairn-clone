@@ -69,6 +69,7 @@ fun CairnBoard(
     state: BoardState,
     stage: GameStage,
     performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
+    performJump: (shaman: Shaman, newPos: Pos) -> Boolean,
     performSpawn: (pos: Pos) -> Boolean,
     performEndTurn: () -> Boolean,
     performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
@@ -121,7 +122,12 @@ fun CairnBoard(
                                     else
                                         selectedShamans + shaman
                             } else if (selectedShamans.size == 1) {
-                                performMove(selectedShamans.first(), pos)
+                                val selectedShaman = selectedShamans.first()
+                                val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
+                                if(isAdjacent)
+                                    performMove(selectedShaman, pos)
+                                else
+                                    performJump(selectedShaman, pos)
                                 selectedShamans = emptySet()
                             } else if (selectedShamans.size > 1) {
                                 Toast.makeText(
@@ -161,6 +167,7 @@ fun CairnBoard(
         ) {
             SpawnTilePiece(state.spawnActionTile)
             MovementTilePiece(state.moveActionTile)
+            JumpTilePiece(state.jumpActionTile)
             TransformationTilePiece(state.transformationTile)
         }
 
@@ -346,6 +353,7 @@ fun CairnBoardPreview() {
     CairnBoard(
         state,
         GameStage.Action,
+        { id, pos -> false },
         { id, pos -> false },
         { false },
         { false },

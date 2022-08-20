@@ -58,6 +58,9 @@ class MainActivity : ComponentActivity() {
                             )
                         )
                     },
+                    performJump = { shaman, newPos ->
+                        game.perform(JumpOverShaman(shaman, newPos))
+                    },
                     performSpawn = { pos ->
                         game.perform(SpawnShaman(state.activeTeam, pos))
                     },

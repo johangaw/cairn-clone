@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
+import com.example.cairnclone.game.board.JumpActionTile
 import com.example.cairnclone.game.board.MoveActionTile
 import com.example.cairnclone.game.board.SpawnActionTile
 import com.example.cairnclone.game.board.TransformationTile
@@ -73,6 +74,22 @@ fun SpawnTilePiece(tile: SpawnActionTile) {
             else Color.Black,
             modifier = Modifier.padding(10.dp).fillMaxSize()
         )
+    }
+}
+
+@Composable
+fun JumpTilePiece(tile: JumpActionTile) {
+    Box(
+        Modifier
+            .size(75.dp)
+            .background(Color.Black)
+            .padding(4.dp)
+            .background(Color.Magenta),
+        Alignment.Center
+    ) {
+        Image(painterResource(R.drawable.jump_arrow), "")
+        val color = if(tile == JumpActionTile.OverTeamMate) Color.Black else Color.Red
+        Icon(Icons.Default.Person, "", tint = color)
     }
 }
 
@@ -158,6 +175,11 @@ fun TilesPreview() {
             SpawnTilePiece(SpawnActionTile.White)
             Spacer(modifier = Modifier.width(16.dp))
             SpawnTilePiece(SpawnActionTile.Black)
+        }
+        Row {
+            JumpTilePiece(JumpActionTile.OverTeamMate)
+            Spacer(modifier = Modifier.width(16.dp))
+            JumpTilePiece(JumpActionTile.OverOpponent)
         }
     }
 }
