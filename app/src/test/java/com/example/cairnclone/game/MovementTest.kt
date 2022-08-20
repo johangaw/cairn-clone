@@ -83,6 +83,8 @@ class MovementTest {
             positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0, 1))
             activeTeam = Team.Forest
             moveAction = MoveActionTile.Orthogonally
+
+            positionSeaShaman(Pos(2, 0))  // shaman to banish
         }
         val shaman = game.boardState.shamanAt(Pos(0, 0))!!
         val result = game.perform(MoveShaman(shaman, Team.Forest, Pos(0, 1)))

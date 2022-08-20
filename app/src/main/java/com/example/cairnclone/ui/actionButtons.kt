@@ -48,9 +48,3 @@ fun ActivateMonolithButton(onClick: () -> Unit, disabled: Boolean = false) {
     val darkGreen = Color(0, 100, 0)
     ActionButton(onClick, disabled, "Activate", darkGreen, Color.White)
 }
-
-@Composable
-fun SkipMonolithButton(onClick: () -> Unit, disabled: Boolean = false) {
-    val darkOrange = Color(255,140,0)
-    ActionButton(onClick, disabled, "Skipp", darkOrange, Color.White)
-}

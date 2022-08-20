@@ -9,21 +9,16 @@ class ActivatingChaosOfTheGiants(
     boardState: BoardState,
     val team: Team,
     val nextState: (boardState: BoardState) -> ActionResult.NewState
-) : GameState(boardState) {
+) : GameState(boardState), MonolithGameState {
+
+    override fun canActivate(): Boolean = banishableShamans.isNotEmpty()
+
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is Activate -> activate(action)
-            is Skipp -> skipp()
             else -> ActionResult.InvalidAction(this, action)
         }
     }
-
-    private fun skipp(): ActionResult =
-        if (banishableShamans.isNotEmpty())
-            ActionResult.InvalidAction("there are banishable shamans at ${banishableShamans.map { it.pos }}")
-        else
-            nextState(boardState)
-
 
     private fun activate(action: Activate): ActionResult =
         when {
@@ -44,14 +39,12 @@ class ActivatingChaosOfTheGiants(
             )
         }
 
-    val banishableShamans
+    private val banishableShamans
         get() = boardState.board.firstRowFor(team)
             .mapNotNull { boardState.shamanAt(it) }
             .filter { it.team != team }
 
     data class Activate(val shamanToBanish: Shaman) : Action
-    object Skipp : Action
 }
 
 private fun Board.isInFirstRow(pos: Pos, team: Team) = firstRowFor(team).contains(pos)
-

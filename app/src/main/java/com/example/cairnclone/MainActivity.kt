@@ -12,8 +12,12 @@ import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
-import com.example.cairnclone.game.states.*
+import com.example.cairnclone.game.states.EndingTurn
+import com.example.cairnclone.game.states.GameState
+import com.example.cairnclone.game.states.WaitForAction
+import com.example.cairnclone.game.states.WaitForTransformation
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
+import com.example.cairnclone.game.states.monoliths.MonolithGameState
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.GameStage
 import com.example.cairnclone.ui.theme.CairnCloneTheme
@@ -81,7 +85,6 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     activateChaosOfTheGiants = { game.perform(ActivatingChaosOfTheGiants.Activate(it)) },
-                    skipChaosOfTheGiants = { game.perform(ActivatingChaosOfTheGiants.Skipp) }
                 )
             }
         }
@@ -93,7 +96,7 @@ class MainActivity : ComponentActivity() {
             when (gs) {
                 is WaitForAction -> gamePhaseFlow.emit(GameStage.Action)
                 is WaitForTransformation -> gamePhaseFlow.emit(GameStage.Transformation)
-                is WaitForNewMonolith -> gamePhaseFlow.emit(GameStage.SelectMonolith)
+                is MonolithGameState -> gamePhaseFlow.emit(GameStage.SelectMonolith)
                 is EndingTurn -> gamePhaseFlow.emit(GameStage.End)
                 is ActivatingChaosOfTheGiants -> gamePhaseFlow.emit(
                     GameStage.ActivatingMonolith(

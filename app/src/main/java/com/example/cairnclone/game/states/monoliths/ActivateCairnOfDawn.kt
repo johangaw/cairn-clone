@@ -12,11 +12,16 @@ class ActivateCairnOfDawn(
     boardState: BoardState,
     val team: Team,
     val nextState: (boardState: BoardState) -> ActionResult.NewState
-) : GameState(boardState) {
+) : GameState(boardState), MonolithGameState {
+
+
+    override fun canActivate(): Boolean =
+        boardState.board.firstRowFor(team).any { boardState.shamanAt(it) == null } &&
+                boardState.inactiveShamans.any { it.team == team }
+
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is Activate -> activate(action)
-            is Skipp -> skipp()
             else -> ActionResult.InvalidAction(this, action)
         }
     }
@@ -36,14 +41,5 @@ class ActivateCairnOfDawn(
         }
     }
 
-
-    private fun skipp(): ActionResult =
-        if (
-            boardState.board.firstRowFor(team).any { boardState.shamanAt(it) == null } &&
-            boardState.inactiveShamans.any { it.team == team }
-        ) ActionResult.InvalidAction("it is possible to spawn a shaman in the first row of team $team")
-        else nextState(boardState)
-
     data class Activate(val pos: Pos) : Action
-    object Skipp : Action
 }

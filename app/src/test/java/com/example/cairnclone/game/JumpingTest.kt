@@ -166,6 +166,7 @@ class JumpingTest {
     @Test
     fun `when the jumper ends up on a monolith it activates the monolith and returns true`() {
         val game = jumpGame {
+            positionSeaShaman(Pos(2, 0))  // shaman to banish
             positionForestShaman(Pos(1, 1))
             positionForestShaman(Pos(2, 2))
             positionMonolith(MonolithType.ChaosOfTheGiants, Pos(3,3))

@@ -74,7 +74,6 @@ fun CairnBoard(
     performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
     performSelectMonolith: (monolith: MonolithType) -> Boolean,
     activateChaosOfTheGiants: (shaman: Shaman) -> Boolean,
-    skipChaosOfTheGiants: () -> Boolean,
 ) {
     var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
     val context = LocalContext.current
@@ -220,14 +219,7 @@ fun CairnBoard(
                     }
 
                 })
-
-            if (stage is GameStage.ActivatingMonolith)
-                SkipMonolithButton(onClick = {
-                    skipChaosOfTheGiants()
-                })
         }
-
-
     }
 }
 
@@ -335,7 +327,6 @@ fun CairnBoardPreview() {
         { false },
         { false },
         { s1, s2, s3 -> false },
-        { false },
         { false },
         { false },
     )

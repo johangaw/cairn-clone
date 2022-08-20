@@ -124,6 +124,8 @@ class SpawningTest {
             positionMonolith(MonolithType.ChaosOfTheGiants, spawn.forest)
             activeTeam = Team.Forest
             spawnAction = spawn
+
+            positionSeaShaman(Pos(2, 0))  // shaman to banish
         }
         val result = game.perform(SpawnShaman(Team.Forest, spawn.forest))
 

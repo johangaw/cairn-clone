@@ -9,22 +9,23 @@ import com.example.cairnclone.game.states.WaitForAction
 import org.junit.Assert.*
 import org.junit.Test
 
-private fun monolithGame(init: BoardStateBuilder.() -> Unit): Triple<Game, Team, Pos> {
+private fun monolithGame(init: BoardStateBuilder.() -> Unit): Pair<Game, ActivatingChaosOfTheGiants> {
     val team = Team.Forest
     val pos = Pos(2, 2)
+    val monolithState = ActivatingChaosOfTheGiants(
+        buildBoard {
+            emptyBoard()
+            addInactiveShamans()
+            positionMonolith(MonolithType.ChaosOfTheGiants, pos)
+            positionForestShaman(pos)
+            this.init()
+        },
+        team
+    ) { ActionResult.NewState(WaitForAction(it)) }
     val game = Game(
-        ActivatingChaosOfTheGiants(
-            buildBoard {
-                emptyBoard()
-                addInactiveShamans()
-                positionMonolith(MonolithType.ChaosOfTheGiants, pos)
-                positionForestShaman(pos)
-                this.init()
-            },
-            team
-        ) { ActionResult.NewState(WaitForAction(it)) }
+        monolithState
     )
-    return Triple(game, team, pos)
+    return Pair(game, monolithState )
 }
 
 class TestActivatingChaosOfTheGiants {
@@ -74,20 +75,17 @@ class TestActivatingChaosOfTheGiants {
     }
 
     @Test
-    fun `when trying to skip while there is a shaman to banish, it returns an error`() {
+    fun `when there is a shaman to banish, canActivate returns true`() {
         val pos = Pos(0, 0)
-        val (game) = monolithGame {
+        val (_, state) = monolithGame {
             positionSeaShaman(pos)
         }
-        val result = game.perform(ActivatingChaosOfTheGiants.Skipp)
-        assertFalse(result)
+        assertTrue(state.canActivate())
     }
 
     @Test
-    fun `when trying to skip while there is no shaman to banish, it returns success and moves on to the next state`() {
-        val (game) = monolithGame {}
-        val result = game.perform(ActivatingChaosOfTheGiants.Skipp)
-        assertTrue(result)
-        assertTrue("invalid final state ${game.gameState}", game.gameState is WaitForAction)
+    fun `when there is not a shaman to banish, canActivate returns false`() {
+        val (_, state) = monolithGame {}
+        assertFalse(state.canActivate())
     }
 }
