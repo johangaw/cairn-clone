@@ -92,5 +92,6 @@ class ActivateCairnOfDawnTest {
         assertTrue(result)
         assertEquals(game.boardState.shamanAt(Pos(2, 0))?.team, team)
         assertTrue(game.gameState is WaitForAction)
+        assertTrue(game.boardState.shamanAt(Pos(2, 0))?.id in game.boardState.movedShamanIds)
     }
 }

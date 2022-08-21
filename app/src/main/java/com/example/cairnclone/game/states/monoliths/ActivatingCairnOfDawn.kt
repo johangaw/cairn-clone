@@ -37,7 +37,8 @@ class ActivatingCairnOfDawn(
             else -> nextState(
                 boardState.copy(
                     inactiveShamans = boardState.inactiveShamans - inactiveShaman,
-                    activeShamans = boardState.activeShamans + inactiveShaman.toShaman(action.pos)
+                    activeShamans = boardState.activeShamans + inactiveShaman.toShaman(action.pos),
+                    movedShamanIds = boardState.movedShamanIds + inactiveShaman.id
                 )
             )
         }
