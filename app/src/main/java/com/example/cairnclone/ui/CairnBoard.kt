@@ -1,18 +1,19 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.example.cairnclone.ui
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,6 +77,7 @@ fun CairnBoard(
     activateChaosOfTheGiants: (shaman: Shaman) -> Boolean,
 ) {
     var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
+    var selectedMonolith by remember { mutableStateOf<MonolithType?>(null) }
     val context = LocalContext.current
 
     fun onVillageClick(team: Team): () -> Unit = {
@@ -91,7 +93,12 @@ fun CairnBoard(
 
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Village(Team.Forest, state.activeTeam == Team.Forest, state.scores.forestTeam ,onVillageClick(Team.Forest))
+        Village(
+            Team.Forest,
+            state.activeTeam == Team.Forest,
+            state.scores.forestTeam,
+            onVillageClick(Team.Forest)
+        )
         Column {
 
             LazyVerticalGrid(
@@ -122,7 +129,7 @@ fun CairnBoard(
                             } else if (selectedShamans.size == 1) {
                                 val selectedShaman = selectedShamans.first()
                                 val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
-                                if(isAdjacent)
+                                if (isAdjacent)
                                     performMove(selectedShaman, pos)
                                 else
                                     performJump(selectedShaman, pos)
@@ -142,7 +149,11 @@ fun CairnBoard(
                         }
                     ) {
                         monolith?.let {
-                            MonolithPiece(monolith.type)
+                            MonolithPiece(
+                                monolithType = monolith.type,
+                                onLongClick = {
+                                    selectedMonolith = monolith.type
+                                })
                         }
                         shaman?.let {
                             ShamanPiece(
@@ -154,7 +165,12 @@ fun CairnBoard(
                 }
             }
         }
-        Village(Team.Sea, state.activeTeam == Team.Sea, state.scores.seaTeam, onVillageClick(Team.Sea))
+        Village(
+            Team.Sea,
+            state.activeTeam == Team.Sea,
+            state.scores.seaTeam,
+            onVillageClick(Team.Sea)
+        )
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
@@ -220,6 +236,14 @@ fun CairnBoard(
 
                 })
         }
+
+        if (selectedMonolith != null)
+            AlertDialog(
+                onDismissRequest = { selectedMonolith = null },
+                confirmButton = { TextButton({ selectedMonolith = null }) { Text("Ok") } },
+                title = { Text(selectedMonolith?.name ?: "") },
+                text = { Text(selectedMonolith?.description ?: "") }
+            )
     }
 }
 
@@ -269,7 +293,11 @@ fun ShamanPiece(
 }
 
 @Composable
-fun MonolithPiece(monolithType: MonolithType, onClick: (() -> Unit)? = null) {
+fun MonolithPiece(
+    monolithType: MonolithType,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null
+) {
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
             .fillMaxSize()
@@ -278,7 +306,11 @@ fun MonolithPiece(monolithType: MonolithType, onClick: (() -> Unit)? = null) {
                 CircleShape
             )
             .background(Color.Yellow)
-            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .combinedClickable(
+                enabled = true,
+                onClick = { onClick?.invoke() },
+                onLongClick = { onLongClick?.invoke() }
+            )
     ) {
         Text(text = monolithType.name)
     }
