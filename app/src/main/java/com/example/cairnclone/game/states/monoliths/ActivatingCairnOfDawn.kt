@@ -8,6 +8,7 @@ import com.example.cairnclone.game.board.Team
 import com.example.cairnclone.game.board.toShaman
 import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.GameState
+import com.example.cairnclone.game.states.tryActivatingMonolith
 
 class ActivatingCairnOfDawn(
     boardState: BoardState,
@@ -34,8 +35,8 @@ class ActivatingCairnOfDawn(
             inactiveShaman == null -> ActionResult.InvalidAction("no inactive shamans to spawn")
             boardState.shamanAt(action.pos) != null -> ActionResult.InvalidAction("the selected pos ${action.pos} is occupied")
             action.pos !in boardState.board.firstRowFor(team) -> ActionResult.InvalidAction("the selected pos ${action.pos} it not in the first row of $team")
-            else -> nextState(
-                boardState.copy(
+            else -> tryActivatingMonolith(
+                action.pos, team, nextState, boardState.copy(
                     inactiveShamans = boardState.inactiveShamans - inactiveShaman,
                     activeShamans = boardState.activeShamans + inactiveShaman.toShaman(action.pos),
                     movedShamanIds = boardState.movedShamanIds + inactiveShaman.id

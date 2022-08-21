@@ -94,4 +94,15 @@ class ActivateCairnOfDawnTest {
         assertTrue(game.gameState is WaitForAction)
         assertTrue(game.boardState.shamanAt(Pos(2, 0))?.id in game.boardState.movedShamanIds)
     }
+
+    @Test
+    fun `when a shaman is spawned on a monolith it is activated`() {
+        val (game) = monolithGame {
+            positionMonolith(MonolithType.CromlechOfTheStars, Pos(2,0))
+            positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0,3))
+        }
+        val result = game.perform(ActivatingCairnOfDawn.Activate(Pos(2, 0)))
+        assertTrue(result)
+        assertTrue(game.gameState is ActivatingCromlechOfTheStars)
+    }
 }
