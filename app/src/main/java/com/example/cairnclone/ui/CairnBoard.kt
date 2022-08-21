@@ -2,8 +2,6 @@
 
 package com.example.cairnclone.ui
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -14,20 +12,22 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
+import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.states.WaitForAction
 
 private val SpawnActionTile.positions: List<Pos> get() = listOf(this.forest, this.sea)
 
@@ -42,101 +42,23 @@ sealed class GameStage {
 fun IntRange.allPairs(other: IntRange): List<Pair<Int, Int>> =
     this.flatMap { left -> other.map { right -> Pair(left, right) } }
 
-fun ensureOneShamans(shamans: Set<Shaman>) =
-    if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
 
-fun ensureOnePos(positions: Set<Pos>) =
-    if (positions.size != 1) throw Exception("The monolith requires ONE position") else positions
-
-fun ensureThreeShamans(shamans: Set<Shaman>) =
-    if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
-
-fun ensureTwoTeams(shamans: Set<Shaman>) =
-    if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
-        "A transformation requires shamans of different teams"
-    ) else shamans
-
-fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
-    shamans.partition { s -> s.team == Team.Sea }
-        .toList()
-        .sortedByDescending { list -> list.size }
-        .flatten()
-
-fun showError(ctx: Context) =
-    { err: Throwable -> Toast.makeText(ctx, err.message, Toast.LENGTH_LONG).show() }
-
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CairnBoard(
     state: BoardState,
     stage: GameStage,
-    performMove: (shaman: Shaman, newPos: Pos) -> Boolean,
-    performJump: (shaman: Shaman, newPos: Pos) -> Boolean,
-    performSpawn: (pos: Pos) -> Boolean,
-    performEndTurn: () -> Boolean,
-    performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
-    performSelectMonolith: (monolith: MonolithType) -> Boolean,
-    activateChaosOfTheGiants: (shaman: Shaman) -> Boolean,
-    activateCairnOfDawn: (pos: Pos) -> Boolean,
+    uiState: ClickBasedCairnBoardState,
 ) {
-    var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
-    var selectedPositions by remember { mutableStateOf(emptySet<Pos>()) }
-    var selectedMonolith by remember { mutableStateOf<MonolithType?>(null) }
-    val context = LocalContext.current
-
-    fun handleBoardClick(pos: Pos) {
-        val shaman = state.shamanAt(pos)
-        selectedPositions = if (pos in selectedPositions) selectedPositions - pos else selectedPositions + pos
-
-        if (shaman != null) {
-            selectedShamans =
-                if (selectedShamans.contains(shaman))
-                    selectedShamans - shaman
-                else
-                    selectedShamans + shaman
-        } else if (selectedShamans.size == 1) {
-            val selectedShaman = selectedShamans.first()
-            val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
-            if (isAdjacent)
-                performMove(selectedShaman, pos)
-            else
-                performJump(selectedShaman, pos)
-            selectedShamans = emptySet()
-            selectedPositions = emptySet()
-        } else if (selectedShamans.size > 1) {
-            Toast.makeText(
-                context,
-                "Can only move ONE shaman at once",
-                Toast.LENGTH_LONG
-            ).show()
-        } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
-                state.activeTeam
-            ) == pos
-        ) {
-            performSpawn(pos)
-            selectedPositions = emptySet()
-        }
-    }
-
-    fun onVillageClick(team: Team): () -> Unit = {
-        Result.success(selectedShamans)
-            .mapCatching(::ensureOneShamans)
-            .onSuccess {
-                val shaman = selectedShamans.first()
-                state.board.villageRowFor(team).firstOrNull { performMove(shaman, it) }
-                selectedShamans = emptySet()
-            }
-            .onFailure(showError(context))
-    }
-
+    val selectedPositions = uiState.selectedPositions
+    val selectedShamans = uiState.selectedShamans
+    val selectedMonolith = uiState.selectedMonolith
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Village(
             Team.Forest,
             state.activeTeam == Team.Forest,
             state.scores.forestTeam,
-            onVillageClick(Team.Forest)
+            uiState.handleVillageClick(Team.Forest, state)
         )
         Column {
             LazyVerticalGrid(
@@ -157,13 +79,13 @@ fun CairnBoard(
                     BoardPiece(
                         type = pieceType,
                         selected = stage is GameStage.ActivatingMonolith && pos in selectedPositions,
-                        onClick = { handleBoardClick(pos) }
+                        onClick = { uiState.handleBoardClick(pos, state) }
                     ) {
                         state.monolithAt(pos)?.let {
                             MonolithPiece(
                                 monolithType = it.type,
-                                onClick = { handleBoardClick(pos) },
-                                onLongClick = { selectedMonolith = it.type })
+                                onClick = { uiState.handleBoardClick(pos, state) },
+                                onLongClick = { uiState.showMonolithInfo(it.type) })
                         }
                         state.shamanAt(pos)?.let {
                             ShamanPiece(
@@ -179,7 +101,7 @@ fun CairnBoard(
             Team.Sea,
             state.activeTeam == Team.Sea,
             state.scores.seaTeam,
-            onVillageClick(Team.Sea)
+            uiState.handleVillageClick(Team.Sea, state)
         )
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
@@ -205,53 +127,31 @@ fun CairnBoard(
             if (stage == GameStage.SelectMonolith)
                 UpcomingMonoliths(
                     state.upcomingMonoliths,
-                    { performSelectMonolith(it) },
+                    { uiState.handleUpcomingMonolithClick(it) },
                 )
 
             if (stage == GameStage.Transformation)
                 TransformButton(
                     onClick = {
-                        Result.success(selectedShamans)
-                            .mapCatching(::ensureThreeShamans)
-                            .mapCatching(::ensureTwoTeams)
-                            .map(::orderShamansAsTransformationArguments)
-                            .onSuccess {
-                                val (s1, s2, target) = it
-                                performTransformation(s1, s2, target)
-                                selectedShamans = emptySet()
-                            }
-                            .onFailure(showError(context))
+                        uiState.handleTransformClick()
                     })
 
             if (stage == GameStage.Transformation)
                 EndRoundButton(
-                    onClick = {
-                        performEndTurn()
-                        selectedShamans = emptySet()
-                    })
+                    onClick = { uiState.handleEndTurnClick() })
 
             if (stage is GameStage.ActivatingMonolith)
                 ActivateMonolithButton(onClick = {
-                    when (stage.monolith) {
-                        MonolithType.ChaosOfTheGiants -> Result.success(selectedShamans)
-                            .mapCatching(::ensureOneShamans)
-                            .onSuccess { activateChaosOfTheGiants(selectedShamans.first()) }
-                            .onFailure(showError(context))
-                        MonolithType.CairnOfDawn -> Result.success(selectedMonolith)
-                            .mapCatching { ::ensureOnePos }
-                            .onSuccess { activateCairnOfDawn(selectedPositions.first()) }
-                            .onFailure { showError(context) }
-                        else -> throw NotImplementedError("Activate not implemented for ${stage.monolith.name}")
-                    }
+                    uiState.handleActivateMonolith(stage.monolith)
                 })
         }
 
         if (selectedMonolith != null)
             AlertDialog(
-                onDismissRequest = { selectedMonolith = null },
-                confirmButton = { TextButton({ selectedMonolith = null }) { Text("Ok") } },
-                title = { Text(selectedMonolith?.name ?: "") },
-                text = { Text(selectedMonolith?.description ?: "") }
+                onDismissRequest = { uiState.hideMonolithInfo() },
+                confirmButton = { TextButton({ uiState.hideMonolithInfo() }) { Text("Ok") } },
+                title = { Text(selectedMonolith.name) },
+                text = { Text(selectedMonolith.description) }
             )
     }
 }
@@ -273,7 +173,7 @@ fun BoardPiece(
         Modifier
             .size(75.dp)
             .padding(4.dp)
-            .background(if(selected) Color.Red else type.color)
+            .background(if (selected) Color.Red else type.color)
             .padding(4.dp)
             .background(type.color)
             .clickable(onClick = onClick),
@@ -363,16 +263,10 @@ fun CairnBoardPreview() {
             positionStartMonoliths()
         }
     }
+    val uiState = rememberClickBasedCairnBoardState(Game(WaitForAction(state), {}))
     CairnBoard(
         state,
         GameStage.Action,
-        { id, pos -> false },
-        { id, pos -> false },
-        { false },
-        { false },
-        { s1, s2, s3 -> false },
-        { false },
-        { false },
-        { false },
+        uiState
     )
 }

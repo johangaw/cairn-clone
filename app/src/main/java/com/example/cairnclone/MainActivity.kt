@@ -8,15 +8,14 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
-import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
-import com.example.cairnclone.game.states.monoliths.ActivateCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.monoliths.MonolithGameState
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.GameStage
+import com.example.cairnclone.ui.rememberClickBasedCairnBoardState
 import com.example.cairnclone.ui.theme.CairnCloneTheme
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -45,41 +44,11 @@ class MainActivity : ComponentActivity() {
             CairnCloneTheme {
                 val state by gameStateFlow.collectAsState(initial = game.gameState.boardState)
                 val phase by gamePhaseFlow.collectAsState(initial = GameStage.Action)
+                val uiState = rememberClickBasedCairnBoardState(game)
                 CairnBoard(
                     state = state,
                     stage = phase,
-                    performMove = { shaman, newPos ->
-                        game.perform(
-                            MoveShaman(
-                                shaman,
-                                state.activeTeam,
-                                newPos
-                            )
-                        )
-                    },
-                    performJump = { shaman, newPos ->
-                        game.perform(JumpOverShaman(shaman, newPos))
-                    },
-                    performSpawn = { pos ->
-                        game.perform(SpawnShaman(state.activeTeam, pos))
-                    },
-                    performEndTurn = {
-                        game.perform(EndTurn)
-                    },
-                    performSelectMonolith = {
-                        game.perform(SelectMonolith(it))
-                    },
-                    performTransformation = { s1, s2, target ->
-                        game.perform(
-                            TransformShaman(
-                                s1,
-                                s2,
-                                target
-                            )
-                        )
-                    },
-                    activateChaosOfTheGiants = { game.perform(ActivatingChaosOfTheGiants.Activate(it)) },
-                    activateCairnOfDawn = { game.perform(ActivateCairnOfDawn.Activate(it)) },
+                    uiState
                 )
             }
         }
