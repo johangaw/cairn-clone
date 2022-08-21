@@ -43,7 +43,7 @@ sealed class MonolithType(val name: String, val description: String, val level: 
 
     object DeerRock : MonolithType(
         "Deer Rock",
-        "Move a shaman adjacent tothis megalith one space.",
+        "Move a shaman adjacent to this megalith one space.",
         MonolithLevel.Beginner
     )
 
