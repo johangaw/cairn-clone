@@ -6,7 +6,6 @@
   - DeerRock
   - MenhirOfTheDancers
   - SanctuaryOfTheAges
-- UI - show monolith description
 - **User testing**
 - propagate error message to UI
 - Improve Game design with recursive calls only fo new "sub states"
