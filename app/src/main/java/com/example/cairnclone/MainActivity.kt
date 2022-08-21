@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
@@ -33,8 +32,6 @@ class MainActivity : ComponentActivity() {
                 emptyBoard()
                 positionStartShamans()
                 positionStartMonoliths()
-
-                positionMonolith(MonolithType.CromlechOfTheStars, Pos(0, 1))
             }
         ),
         ::publishNewState

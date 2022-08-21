@@ -1,8 +1,8 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.EndTurn
+import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.other
 
 class EndingTurn(boardState: BoardState) : GameState(boardState) {
@@ -21,7 +21,10 @@ class EndingTurn(boardState: BoardState) : GameState(boardState) {
         ActionResult.NewState(this, listOf(SwitchActiveTeam, RestartTurn))
 
     private fun handleSwitchActiveTeam(): ActionResult =
-        ActionResult.NewState(EndingTurn(boardState.copy(activeTeam = boardState.activeTeam.other())))
+        ActionResult.NewState(EndingTurn(boardState.copy(
+            activeTeam = boardState.nextActiveTeam,
+            nextActiveTeam = boardState.nextActiveTeam.other()
+        )))
 
     private fun handleResetMovedShamans(): ActionResult =
         ActionResult.NewState(EndingTurn(boardState.copy(movedShamanIds = emptyList())))

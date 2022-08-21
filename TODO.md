@@ -1,7 +1,5 @@
 # This left TODO
 - Implement more monoliths
-  - CromlechOfTheStars
-  - PillarsOfSpring
   - AlleyOfDusk
   - DeerRock
   - MenhirOfTheDancers

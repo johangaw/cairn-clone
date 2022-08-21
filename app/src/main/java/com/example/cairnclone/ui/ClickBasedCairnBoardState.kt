@@ -10,6 +10,7 @@ import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.monoliths.ActivatingCromlechOfTheStars
+import com.example.cairnclone.game.states.monoliths.ActivatingPillarsOfSpring
 
 fun ensureOneShamans(shamans: Set<Shaman>) =
     if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
@@ -131,6 +132,7 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
                 .map { boardState.monolithAt(it.first()) }
                 .mapCatching(::ensureNotNull)
                 .onSuccess { emitter(ActivatingCromlechOfTheStars.MoveToMonolith(it)) }
+            MonolithType.PillarsOfSpring -> emitter(ActivatingPillarsOfSpring.MakeNextTurnMyTurn)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }
         resetSelection()

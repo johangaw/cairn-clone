@@ -6,6 +6,7 @@ import kotlin.random.Random
 
 data class BoardState(
     val activeTeam: Team,
+    val nextActiveTeam: Team,
     val board: Board,
     val spawnActionTile: SpawnActionTile,
     val moveActionTile: MoveActionTile,
@@ -31,6 +32,7 @@ class BoardStateBuilder {
     init {
         boardState = BoardState(
             activeTeam = Team.Forest,
+            nextActiveTeam = Team.Sea,
             board = Board(),
             spawnActionTile = SpawnActionTile.Black,
             moveActionTile = MoveActionTile.Orthogonally,
