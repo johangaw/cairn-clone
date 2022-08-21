@@ -45,6 +45,9 @@ fun IntRange.allPairs(other: IntRange): List<Pair<Int, Int>> =
 fun ensureOneShamans(shamans: Set<Shaman>) =
     if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
 
+fun ensureOnePos(positions: Set<Pos>) =
+    if (positions.size != 1) throw Exception("The monolith requires ONE position") else positions
+
 fun ensureThreeShamans(shamans: Set<Shaman>) =
     if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
 
@@ -75,10 +78,46 @@ fun CairnBoard(
     performTransformation: (s1: Shaman, s2: Shaman, target: Shaman) -> Boolean,
     performSelectMonolith: (monolith: MonolithType) -> Boolean,
     activateChaosOfTheGiants: (shaman: Shaman) -> Boolean,
+    activateCairnOfDawn: (pos: Pos) -> Boolean,
 ) {
     var selectedShamans by remember { mutableStateOf(emptySet<Shaman>()) }
+    var selectedPositions by remember { mutableStateOf(emptySet<Pos>()) }
     var selectedMonolith by remember { mutableStateOf<MonolithType?>(null) }
     val context = LocalContext.current
+
+    fun handleBoardClick(pos: Pos) {
+        val shaman = state.shamanAt(pos)
+        selectedPositions = if (pos in selectedPositions) selectedPositions - pos else selectedPositions + pos
+
+        if (shaman != null) {
+            selectedShamans =
+                if (selectedShamans.contains(shaman))
+                    selectedShamans - shaman
+                else
+                    selectedShamans + shaman
+        } else if (selectedShamans.size == 1) {
+            val selectedShaman = selectedShamans.first()
+            val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
+            if (isAdjacent)
+                performMove(selectedShaman, pos)
+            else
+                performJump(selectedShaman, pos)
+            selectedShamans = emptySet()
+            selectedPositions = emptySet()
+        } else if (selectedShamans.size > 1) {
+            Toast.makeText(
+                context,
+                "Can only move ONE shaman at once",
+                Toast.LENGTH_LONG
+            ).show()
+        } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
+                state.activeTeam
+            ) == pos
+        ) {
+            performSpawn(pos)
+            selectedPositions = emptySet()
+        }
+    }
 
     fun onVillageClick(team: Team): () -> Unit = {
         Result.success(selectedShamans)
@@ -100,7 +139,6 @@ fun CairnBoard(
             onVillageClick(Team.Forest)
         )
         Column {
-
             LazyVerticalGrid(
                 cells = GridCells.Fixed(state.board.width),
                 Modifier.padding(horizontal = 24.dp)
@@ -110,55 +148,27 @@ fun CairnBoard(
                     .map { (y, x) -> Pos(x, y) }
 
                 items(positions) { pos ->
-                    val shaman = state.shamanAt(pos)
-                    val monolith = state.monolithAt(pos)
                     val pieceType = when {
                         SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
                         SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
                         else -> BoardPieceType.Normal
                     }
+
                     BoardPiece(
                         type = pieceType,
-                        onClick = {
-                            if (shaman != null) {
-                                selectedShamans =
-                                    if (selectedShamans.contains(shaman))
-                                        selectedShamans - shaman
-                                    else
-                                        selectedShamans + shaman
-                            } else if (selectedShamans.size == 1) {
-                                val selectedShaman = selectedShamans.first()
-                                val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
-                                if (isAdjacent)
-                                    performMove(selectedShaman, pos)
-                                else
-                                    performJump(selectedShaman, pos)
-                                selectedShamans = emptySet()
-                            } else if (selectedShamans.size > 1) {
-                                Toast.makeText(
-                                    context,
-                                    "Can only move ONE shaman at once",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } else if (selectedShamans.isEmpty() && state.spawnActionTile.posFor(
-                                    state.activeTeam
-                                ) == pos
-                            ) {
-                                performSpawn(pos)
-                            }
-                        }
+                        selected = stage is GameStage.ActivatingMonolith && pos in selectedPositions,
+                        onClick = { handleBoardClick(pos) }
                     ) {
-                        monolith?.let {
+                        state.monolithAt(pos)?.let {
                             MonolithPiece(
-                                monolithType = monolith.type,
-                                onLongClick = {
-                                    selectedMonolith = monolith.type
-                                })
+                                monolithType = it.type,
+                                onClick = { handleBoardClick(pos) },
+                                onLongClick = { selectedMonolith = it.type })
                         }
-                        shaman?.let {
+                        state.shamanAt(pos)?.let {
                             ShamanPiece(
-                                shaman,
-                                selected = selectedShamans.contains(shaman)
+                                it,
+                                selected = selectedShamans.contains(state.shamanAt(pos))
                             )
                         }
                     }
@@ -227,13 +237,12 @@ fun CairnBoard(
                             .mapCatching(::ensureOneShamans)
                             .onSuccess { activateChaosOfTheGiants(selectedShamans.first()) }
                             .onFailure(showError(context))
-                        else -> Toast.makeText(
-                            context,
-                            "unknown monolith ${stage.monolith.name}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        MonolithType.CairnOfDawn -> Result.success(selectedMonolith)
+                            .mapCatching { ::ensureOnePos }
+                            .onSuccess { activateCairnOfDawn(selectedPositions.first()) }
+                            .onFailure { showError(context) }
+                        else -> throw NotImplementedError("Activate not implemented for ${stage.monolith.name}")
                     }
-
                 })
         }
 
@@ -256,12 +265,15 @@ enum class BoardPieceType(val color: Color) {
 @Composable
 fun BoardPiece(
     onClick: () -> Unit,
+    selected: Boolean,
     type: BoardPieceType,
     content: @Composable () -> Unit
 ) {
     Box(
         Modifier
             .size(75.dp)
+            .padding(4.dp)
+            .background(if(selected) Color.Red else type.color)
             .padding(4.dp)
             .background(type.color)
             .clickable(onClick = onClick),
@@ -359,6 +371,7 @@ fun CairnBoardPreview() {
         { false },
         { false },
         { s1, s2, s3 -> false },
+        { false },
         { false },
         { false },
     )

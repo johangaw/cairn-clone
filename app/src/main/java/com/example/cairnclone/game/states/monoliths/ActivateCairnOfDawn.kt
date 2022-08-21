@@ -1,5 +1,6 @@
 package com.example.cairnclone.game.states.monoliths
 
+import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
@@ -14,6 +15,7 @@ class ActivateCairnOfDawn(
     val nextState: (boardState: BoardState) -> ActionResult.NewState
 ) : GameState(boardState), MonolithGameState {
 
+    override val monolith: MonolithType = MonolithType.CairnOfDawn
 
     override fun canActivate(): Boolean =
         boardState.board.firstRowFor(team).any { boardState.shamanAt(it) == null } &&
