@@ -9,6 +9,7 @@ import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
+import com.example.cairnclone.game.states.monoliths.ActivatingCromlechOfTheStars
 
 fun ensureOneShamans(shamans: Set<Shaman>) =
     if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
@@ -23,6 +24,8 @@ fun ensureTwoTeams(shamans: Set<Shaman>) =
     if (shamans.all { s -> s.team == Team.Forest } || shamans.all { s -> s.team == Team.Sea }) throw Exception(
         "A transformation requires shamans of different teams"
     ) else shamans
+
+fun <T>ensureNotNull(nullable: T?) = nullable ?: throw Exception("Nothing there")
 
 fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
     shamans.partition { s -> s.team == Team.Sea }
@@ -113,7 +116,7 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
         resetSelection()
     }
 
-    fun handleActivateMonolith(monolith: MonolithType) {
+    fun handleActivateMonolith(monolith: MonolithType, boardState: BoardState) {
         when (monolith) {
             MonolithType.ChaosOfTheGiants -> Result.success(shamans)
                 .mapCatching(::ensureOneShamans)
@@ -123,8 +126,14 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
                 .mapCatching(::ensureOnePos)
                 .onSuccess { emitter(ActivatingCairnOfDawn.Activate(positions.first())) }
                 .onFailure(::showError)
+            MonolithType.CromlechOfTheStars -> Result.success(positions)
+                .mapCatching(::ensureOnePos)
+                .map { boardState.monolithAt(it.first()) }
+                .mapCatching(::ensureNotNull)
+                .onSuccess { emitter(ActivatingCromlechOfTheStars.MoveToMonolith(it)) }
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }
+        resetSelection()
     }
 
     fun showMonolithInfo(type: MonolithType) {

@@ -136,7 +136,7 @@ fun CairnBoard(
 
             if (stage is GameStage.ActivatingMonolith)
                 ActivateMonolithButton(onClick = {
-                    uiState.handleActivateMonolith(stage.monolith)
+                    uiState.handleActivateMonolith(stage.monolith, state)
                 })
         }
 
