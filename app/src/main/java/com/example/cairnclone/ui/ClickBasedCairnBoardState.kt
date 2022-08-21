@@ -7,7 +7,7 @@ import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.*
-import com.example.cairnclone.game.states.monoliths.ActivateCairnOfDawn
+import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 
 fun ensureOneShamans(shamans: Set<Shaman>) =
@@ -121,7 +121,7 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
                 .onFailure(::showError)
             MonolithType.CairnOfDawn -> Result.success(positions)
                 .mapCatching(::ensureOnePos)
-                .onSuccess { emitter(ActivateCairnOfDawn.Activate(positions.first())) }
+                .onSuccess { emitter(ActivatingCairnOfDawn.Activate(positions.first())) }
                 .onFailure(::showError)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }

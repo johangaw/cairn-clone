@@ -9,7 +9,7 @@ import com.example.cairnclone.game.board.toShaman
 import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.GameState
 
-class ActivateCairnOfDawn(
+class ActivatingCairnOfDawn(
     boardState: BoardState,
     val team: Team,
     val nextState: (boardState: BoardState) -> ActionResult.NewState

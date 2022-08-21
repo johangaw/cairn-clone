@@ -4,7 +4,7 @@ import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.states.monoliths.ActivateCairnOfDawn
+import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 
 fun tryActivatingMonolith(
@@ -20,7 +20,7 @@ fun tryActivatingMonolith(
             team,
             nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
-        MonolithType.CairnOfDawn -> ActivateCairnOfDawn(
+        MonolithType.CairnOfDawn -> ActivatingCairnOfDawn(
             boardState,
             team,
             nextState
