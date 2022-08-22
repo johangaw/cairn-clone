@@ -2,7 +2,6 @@
 - BUG: Can't jump into a village
 - BUG: Can't select active spawn Pos when activating Monolith
 - Implement more monoliths
-  - AlleyOfDusk
   - DeerRock
   - MenhirOfTheDancers
   - SanctuaryOfTheAges

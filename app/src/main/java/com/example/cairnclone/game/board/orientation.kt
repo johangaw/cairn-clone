@@ -40,6 +40,8 @@ fun Pos.adjacentDirection(other: Pos): Direction? {
     return Direction.values().find { it.dx == dx && it.dy == dy }
 }
 
+fun Pos.isAdjacent(other: Pos): Boolean = this.adjacentDirection(other) != null
+
 enum class Direction(val dx: Int, val dy: Int) {
     Up(0, -1),
     Down(0, 1),

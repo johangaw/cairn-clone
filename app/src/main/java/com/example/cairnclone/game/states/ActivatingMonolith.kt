@@ -4,10 +4,7 @@ import android.util.Log
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
-import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
-import com.example.cairnclone.game.states.monoliths.ActivatingCromlechOfTheStars
-import com.example.cairnclone.game.states.monoliths.ActivatingPillarsOfSpring
+import com.example.cairnclone.game.states.monoliths.*
 
 fun tryActivatingMonolith(
     pos: Pos,
@@ -32,6 +29,9 @@ fun tryActivatingMonolith(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         MonolithType.PillarsOfSpring -> ActivatingPillarsOfSpring(
+            boardState, monolith, shaman, nextState
+        ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
+        MonolithType.AlleyOfDusk -> ActivatingAlleyOfDusk(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         else -> nextState(boardState)

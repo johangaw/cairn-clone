@@ -7,10 +7,7 @@ import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.*
-import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
-import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
-import com.example.cairnclone.game.states.monoliths.ActivatingCromlechOfTheStars
-import com.example.cairnclone.game.states.monoliths.ActivatingPillarsOfSpring
+import com.example.cairnclone.game.states.monoliths.*
 
 fun ensureOneShamans(shamans: Set<Shaman>) =
     if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
@@ -66,8 +63,7 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
             toggleShaman(shaman)
         } else if (shamans.size == 1) {
             val selectedShaman = shamans.first()
-            val isAdjacent = selectedShaman.pos.adjacentDirection(pos) != null
-            if (isAdjacent)
+            if (selectedShaman.pos.isAdjacent(pos))
                 emitter(MoveShaman(selectedShaman, state.activeTeam, pos))
             else
                 emitter(JumpOverShaman(selectedShaman, pos))
@@ -132,7 +128,12 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
                 .map { boardState.monolithAt(it.first()) }
                 .mapCatching(::ensureNotNull)
                 .onSuccess { emitter(ActivatingCromlechOfTheStars.MoveToMonolith(it)) }
+                .onFailure(::showError)
             MonolithType.PillarsOfSpring -> emitter(ActivatingPillarsOfSpring.MakeNextTurnMyTurn)
+            MonolithType.AlleyOfDusk -> Result.success(shamans)
+                .mapCatching(::ensureOneShamans)
+                .onSuccess { emitter(ActivatingAlleyOfDusk.BanishShaman(it.first())) }
+                .onFailure(::showError)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }
         resetSelection()
