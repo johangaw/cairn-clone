@@ -1,19 +1,24 @@
 package com.example.cairnclone.game.states.monoliths
 
+import com.example.cairnclone.game.Monolith
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Team
+import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.GameState
+import com.example.cairnclone.game.states.NextState
 
 class ActivatingPillarsOfSpring(
     override val boardState: BoardState,
-    val team: Team,
-    val nextState: (boardState: BoardState) -> ActionResult.NewState
+    override val monolith: Monolith,
+    override val shaman: Shaman,
+    override val nextState: NextState,
 ) : GameState, MonolithGameState {
 
-    override val monolith: MonolithType = MonolithType.PillarsOfSpring
+    init {
+        require(isValid(MonolithType.PillarsOfSpring))
+    }
 
     override fun canActivate(): Boolean = true
 
@@ -24,7 +29,7 @@ class ActivatingPillarsOfSpring(
         }
 
     private fun makeNextTurnMyTurn(): ActionResult =
-        nextState(boardState.copy(nextActiveTeam = team))
+        nextState(boardState.copy(nextActiveTeam = shaman.team))
 
 
     object MakeNextTurnMyTurn : Action

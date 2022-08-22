@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 is WaitForAction -> gamePhaseFlow.emit(GameStage.Action)
                 is WaitForTransformation -> gamePhaseFlow.emit(GameStage.Transformation)
                 is WaitForNewMonolith -> gamePhaseFlow.emit(GameStage.SelectMonolith)
-                is MonolithGameState -> gamePhaseFlow.emit(GameStage.ActivatingMonolith(gs.monolith))
+                is MonolithGameState -> gamePhaseFlow.emit(GameStage.ActivatingMonolith(gs.monolith.type))
                 is EndingTurn -> gamePhaseFlow.emit(GameStage.End)
                 is ActivatingChaosOfTheGiants -> gamePhaseFlow.emit(
                     GameStage.ActivatingMonolith(

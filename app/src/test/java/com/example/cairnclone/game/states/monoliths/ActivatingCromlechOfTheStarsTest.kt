@@ -25,8 +25,8 @@ private fun monolithGame(init: BoardStateBuilder.() -> Unit): Triple<Game, Team,
     }
     val state = ActivatingCromlechOfTheStars(
         boardState,
-        boardState.shamanAt(pos)!!,
         boardState.monolithAt(pos)!!,
+        boardState.shamanAt(pos)!!
     ) { ActionResult.NewState(WaitForAction(it)) }
     val game = Game(state)
     return Triple(game, team, state)

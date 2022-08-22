@@ -3,6 +3,8 @@ package com.example.cairnclone.game.states
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.board.BoardState
 
+typealias NextState = (boardState: BoardState) -> ActionResult.NewState
+
 interface GameState {
     val boardState: BoardState
     fun perform(action: Action): ActionResult

@@ -1,9 +1,9 @@
 package com.example.cairnclone.game.states
 
+import android.util.Log
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Team
 import com.example.cairnclone.game.states.monoliths.ActivatingCairnOfDawn
 import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.monoliths.ActivatingCromlechOfTheStars
@@ -11,32 +11,28 @@ import com.example.cairnclone.game.states.monoliths.ActivatingPillarsOfSpring
 
 fun tryActivatingMonolith(
     pos: Pos,
-    team: Team,
-    nextState: (boardState: BoardState) -> ActionResult.NewState,
+    nextState: NextState,
     boardState: BoardState
 ): ActionResult.NewState {
+    val shaman = boardState.shamanAt(pos)
+    if(shaman == null) {
+        Log.w("tryActivatingMonolith", "position $pos does not contain a shaman")
+        return nextState(boardState)
+    }
+
     val monolith = boardState.monolithAt(pos)
     return when (monolith?.type) {
         MonolithType.ChaosOfTheGiants -> ActivatingChaosOfTheGiants(
-            boardState,
-            team,
-            nextState
+            boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         MonolithType.CairnOfDawn -> ActivatingCairnOfDawn(
-            boardState,
-            team,
-            nextState
+            boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         MonolithType.CromlechOfTheStars -> ActivatingCromlechOfTheStars(
-            boardState,
-            boardState.shamanAt(pos)!!,
-            boardState.monolithAt(pos)!!,
-            nextState
+            boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         MonolithType.PillarsOfSpring -> ActivatingPillarsOfSpring(
-            boardState,
-            team,
-            nextState
+            boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         else -> nextState(boardState)
     }

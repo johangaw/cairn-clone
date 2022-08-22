@@ -50,7 +50,6 @@ class Jumping(override val boardState: BoardState) : GameState {
     private fun tryActivateMonolith(action: TryActivateMonolith): ActionResult =
         tryActivatingMonolith(
             action.pos,
-            action.team,
             { ActionResult.NewState(Jumping(it), listOf(action.nextAction())) },
             boardState
         )

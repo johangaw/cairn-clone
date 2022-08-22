@@ -72,7 +72,6 @@ class Spawning(override val boardState: BoardState) : GameState {
     ): ActionResult =
         tryActivatingMonolith(
             action.pos,
-            action.team,
             { ActionResult.NewState(Spawning(it), next.toList()) },
             boardState
         )

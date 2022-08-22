@@ -10,17 +10,18 @@ import org.junit.Assert.*
 import org.junit.Test
 
 private fun monolithGame(init: BoardStateBuilder.() -> Unit): Pair<Game, ActivatingChaosOfTheGiants> {
-    val team = Team.Forest
     val pos = Pos(2, 2)
+    val boardState = buildBoard {
+        emptyBoard()
+        addInactiveShamans()
+        positionMonolith(MonolithType.ChaosOfTheGiants, pos)
+        positionForestShaman(pos)
+        this.init()
+    }
     val monolithState = ActivatingChaosOfTheGiants(
-        buildBoard {
-            emptyBoard()
-            addInactiveShamans()
-            positionMonolith(MonolithType.ChaosOfTheGiants, pos)
-            positionForestShaman(pos)
-            this.init()
-        },
-        team
+        boardState,
+        boardState.monolithAt(pos)!!,
+        boardState.shamanAt(pos)!!
     ) { ActionResult.NewState(WaitForAction(it)) }
     val game = Game(
         monolithState

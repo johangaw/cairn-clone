@@ -15,15 +15,17 @@ import org.junit.Test
 private fun monolithGame(init: BoardStateBuilder.() -> Unit): Triple<Game, Team, ActivatingCairnOfDawn> {
     val team = Team.Forest
     val pos = Pos(2, 2)
+    val boardState = buildBoard {
+        emptyBoard()
+        addInactiveShamans()
+        positionMonolith(MonolithType.CairnOfDawn, pos)
+        positionForestShaman(pos)
+        this.init()
+    }
     val state = ActivatingCairnOfDawn(
-        buildBoard {
-            emptyBoard()
-            addInactiveShamans()
-            positionMonolith(MonolithType.CairnOfDawn, pos)
-            positionForestShaman(pos)
-            this.init()
-        },
-        team
+        boardState,
+        boardState.monolithAt(pos)!!,
+        boardState.shamanAt(pos)!!
     ) { ActionResult.NewState(WaitForAction(it)) }
     val game = Game(state)
     return Triple(game, team, state)
@@ -98,8 +100,8 @@ class ActivateCairnOfDawnTest {
     @Test
     fun `when a shaman is spawned on a monolith it is activated`() {
         val (game) = monolithGame {
-            positionMonolith(MonolithType.CromlechOfTheStars, Pos(2,0))
-            positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0,3))
+            positionMonolith(MonolithType.CromlechOfTheStars, Pos(2, 0))
+            positionMonolith(MonolithType.ChaosOfTheGiants, Pos(0, 3))
         }
         val result = game.perform(ActivatingCairnOfDawn.Activate(Pos(2, 0)))
         assertTrue(result)

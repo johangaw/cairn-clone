@@ -62,7 +62,6 @@ class Moving(override val boardState: BoardState) : GameState {
     ): ActionResult =
         tryActivatingMonolith(
             action.pos,
-            action.team,
             { ActionResult.NewState(Moving(it), next.toList()) },
             boardState
         )
