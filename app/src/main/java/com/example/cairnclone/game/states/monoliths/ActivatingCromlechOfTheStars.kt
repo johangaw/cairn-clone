@@ -10,11 +10,11 @@ import com.example.cairnclone.game.states.GameState
 import com.example.cairnclone.game.states.tryActivatingMonolith
 
 class ActivatingCromlechOfTheStars(
-    boardState: BoardState,
+    override val boardState: BoardState,
     val shaman: Shaman,
     val current: Monolith,
     val nextState: (boardState: BoardState) -> ActionResult.NewState
-) : GameState(boardState), MonolithGameState {
+) : GameState, MonolithGameState {
 
     init {
         require(current in boardState.activeMonoliths) { "the monolith it not active" }

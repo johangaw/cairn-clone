@@ -5,7 +5,7 @@ import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.TransformShaman
 import com.example.cairnclone.game.board.*
 
-class Transforming(boardState: BoardState) : GameState(boardState) {
+class Transforming(override val boardState: BoardState) : GameState {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is TransformShaman -> ActionResult.NewState(

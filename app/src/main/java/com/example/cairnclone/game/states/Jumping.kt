@@ -2,9 +2,12 @@ package com.example.cairnclone.game.states
 
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.JumpOverShaman
-import com.example.cairnclone.game.board.*
+import com.example.cairnclone.game.board.BoardState
+import com.example.cairnclone.game.board.Pos
+import com.example.cairnclone.game.board.Shaman
+import com.example.cairnclone.game.board.Team
 
-class Jumping(boardState: BoardState) : GameState(boardState) {
+class Jumping(override val boardState: BoardState) : GameState {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is JumpOverShaman -> ActionResult.NothingToDo(

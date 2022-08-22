@@ -7,10 +7,10 @@ import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.GameState
 
 class ActivatingChaosOfTheGiants(
-    boardState: BoardState,
+    override val boardState: BoardState,
     val team: Team,
     val nextState: (boardState: BoardState) -> ActionResult.NewState
-) : GameState(boardState), MonolithGameState {
+) : GameState, MonolithGameState {
 
     override val monolith: MonolithType = MonolithType.ChaosOfTheGiants
 

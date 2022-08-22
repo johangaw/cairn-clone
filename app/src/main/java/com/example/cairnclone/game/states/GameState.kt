@@ -3,10 +3,9 @@ package com.example.cairnclone.game.states
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.board.BoardState
 
-abstract class GameState(
+interface GameState {
     val boardState: BoardState
-) {
-    abstract fun perform(action: Action): ActionResult
+    fun perform(action: Action): ActionResult
 }
 
 sealed class ActionResult {

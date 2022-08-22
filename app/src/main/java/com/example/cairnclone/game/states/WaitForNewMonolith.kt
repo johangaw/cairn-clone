@@ -1,17 +1,17 @@
 package com.example.cairnclone.game.states
 
+import com.example.cairnclone.game.actions.Action
+import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.actions.Action
-import com.example.cairnclone.game.actions.SelectMonolith
 
 class WaitForNewMonolith(
     private val newMonolithPos: Pos,
     private val newMonolithTeam: Team,
     private val nextState: (boardState: BoardState) -> ActionResult.NewState,
-    boardState: BoardState
-) : GameState(boardState) {
+    override val boardState: BoardState
+) : GameState {
 
     override fun perform(action: Action): ActionResult {
         return when (action) {

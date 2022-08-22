@@ -5,9 +5,8 @@ import com.example.cairnclone.game.actions.JumpOverShaman
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SpawnShaman
 import com.example.cairnclone.game.board.*
-import kotlin.math.abs
 
-class WaitForAction(boardState: BoardState) : GameState(boardState) {
+class WaitForAction(override val boardState: BoardState) : GameState {
 
     override fun perform(action: Action): ActionResult {
         return when (action) {

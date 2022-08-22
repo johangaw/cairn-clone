@@ -4,7 +4,7 @@ import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.board.*
 
-class Moving(boardState: BoardState) : GameState(boardState) {
+class Moving(override val boardState: BoardState) : GameState {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is MoveShaman -> {

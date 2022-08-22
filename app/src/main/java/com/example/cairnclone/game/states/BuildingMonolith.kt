@@ -1,6 +1,7 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game.Monolith
+import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.board.*
@@ -9,8 +10,8 @@ class BuildingMonolith(
     private val newMonolithPos: Pos,
     private val newMonolithTeam: Team,
     private val nextState: (boardState: BoardState) -> ActionResult.NewState,
-    boardState: BoardState
-) : GameState(boardState) {
+    override val boardState: BoardState
+) : GameState {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is SelectMonolith -> ActionResult.NewState(

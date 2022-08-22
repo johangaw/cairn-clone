@@ -5,7 +5,7 @@ import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.other
 
-class EndingTurn(boardState: BoardState) : GameState(boardState) {
+class EndingTurn(override val boardState: BoardState) : GameState {
 
     override fun perform(action: Action): ActionResult {
         return when (action) {

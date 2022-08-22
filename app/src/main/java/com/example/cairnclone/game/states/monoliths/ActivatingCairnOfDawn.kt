@@ -11,10 +11,10 @@ import com.example.cairnclone.game.states.GameState
 import com.example.cairnclone.game.states.tryActivatingMonolith
 
 class ActivatingCairnOfDawn(
-    boardState: BoardState,
+    override val boardState: BoardState,
     val team: Team,
     val nextState: (boardState: BoardState) -> ActionResult.NewState
-) : GameState(boardState), MonolithGameState {
+) : GameState, MonolithGameState {
 
     override val monolith: MonolithType = MonolithType.CairnOfDawn
 

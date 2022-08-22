@@ -1,11 +1,11 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.TransformShaman
+import com.example.cairnclone.game.board.BoardState
 
-class WaitForTransformation(boardState: BoardState) : GameState(boardState) {
+class WaitForTransformation(override val boardState: BoardState) : GameState {
     override fun perform(action: Action): ActionResult {
         return when (action) {
             is EndTurn -> handleEndTurn(action)
