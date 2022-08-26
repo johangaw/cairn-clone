@@ -23,7 +23,7 @@ fun ensureTwoTeams(shamans: Set<Shaman>) =
         "A transformation requires shamans of different teams"
     ) else shamans
 
-fun <T>ensureNotNull(nullable: T?) = nullable ?: throw Exception("Nothing there")
+fun <T> ensureNotNull(nullable: T?) = nullable ?: throw Exception("Nothing there")
 
 fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
     shamans.partition { s -> s.team == Team.Sea }
@@ -32,7 +32,10 @@ fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
         .flatten()
 
 
-class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val showError: (msg: String) -> Unit) {
+class ClickBasedCairnBoardState(
+    private val emitter: (Action) -> Boolean,
+    val showError: (msg: String) -> Unit
+) {
     private var shamans by mutableStateOf<Set<Shaman>>(emptySet())
     private var positions by mutableStateOf<Set<Pos>>(emptySet())
     private var monlith by mutableStateOf<MonolithType?>(null)
@@ -81,10 +84,15 @@ class ClickBasedCairnBoardState(private val emitter: (Action) -> Boolean, val sh
     fun handleVillageClick(team: Team, state: BoardState): () -> Unit = {
         Result.success(selectedShamans)
             .mapCatching(::ensureOneShamans)
-            .onSuccess {
-                val shaman = selectedShamans.first()
-                state.board.villageRowFor(team)
-                    .firstOrNull { emitter(MoveShaman(shaman, state.activeTeam, it)) }
+            .map { it.first() }
+            .map { it to state.board.villageRowFor(team) }
+            .onSuccess { (shaman, village) ->
+                village.firstOrNull {
+                    emitter(
+                        if (shaman.pos.isAdjacent(it)) MoveShaman(shaman, state.activeTeam, it)
+                        else JumpOverShaman(shaman, it)
+                    )
+                }
                 resetSelection()
             }
             .onFailure(::showError)
