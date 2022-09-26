@@ -73,12 +73,12 @@ fun CairnBoard(
                     BoardPiece(
                         type = pieceType,
                         selected = stage is GameStage.ActivatingMonolith && pos in selectedPositions,
-                        onClick = { uiState.handleBoardClick(pos, state) }
+                        onClick = { uiState.handleBoardClick(pos, state, stage) }
                     ) {
                         state.monolithAt(pos)?.let {
                             MonolithPiece(
                                 monolithType = it.type,
-                                onClick = { uiState.handleBoardClick(pos, state) },
+                                onClick = { uiState.handleBoardClick(pos, state, stage) },
                                 onLongClick = { uiState.showMonolithInfo(it.type) })
                         }
                         state.shamanAt(pos)?.let {

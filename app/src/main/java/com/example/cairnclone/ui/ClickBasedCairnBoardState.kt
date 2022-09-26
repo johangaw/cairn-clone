@@ -58,12 +58,14 @@ class ClickBasedCairnBoardState(
 
     private fun showError(err: Throwable) = err.message?.let { showError(it) }
 
-    fun handleBoardClick(pos: Pos, state: BoardState) {
+    fun handleBoardClick(pos: Pos, state: BoardState, stage: GameStage) {
         val shaman = state.shamanAt(pos)
         positions = if (pos in positions) positions - pos else positions + pos
 
         if (shaman != null) {
             toggleShaman(shaman)
+        } else if(stage !is GameStage.Action) {
+            return
         } else if (shamans.size == 1) {
             val selectedShaman = shamans.first()
             if (selectedShaman.pos.isAdjacent(pos))

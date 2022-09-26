@@ -1,5 +1,4 @@
 # This left TODO
-- BUG: Can't select active spawn Pos when activating Monolith
 - Implement more monoliths
   - DeerRock
   - MenhirOfTheDancers

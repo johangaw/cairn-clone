@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.JumpActionTile
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
@@ -27,7 +26,7 @@ class MainActivity : ComponentActivity() {
     private val LOG_TAG = Game::javaClass.name
 
     private val gameStateFlow: MutableSharedFlow<BoardState> = MutableSharedFlow(1)
-    private val gamePhaseFlow: MutableSharedFlow<GameStage> = MutableSharedFlow(1)
+    private val gameStageFlow: MutableSharedFlow<GameStage> = MutableSharedFlow(1)
     private val game: Game = Game(
         WaitForAction(
             buildBoard {
@@ -35,8 +34,7 @@ class MainActivity : ComponentActivity() {
                 positionStartShamans()
                 positionStartMonoliths()
 
-                jumpAction = JumpActionTile.OverOpponent
-                positionForestShaman(Pos(0, 3))
+                positionForestShaman(Pos(3, 1))
             }
         ),
         ::publishNewState
@@ -48,11 +46,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             CairnCloneTheme {
                 val state by gameStateFlow.collectAsState(initial = game.gameState.boardState)
-                val phase by gamePhaseFlow.collectAsState(initial = GameStage.Action)
+                val stage by gameStageFlow.collectAsState(initial = GameStage.Action)
                 val uiState = rememberClickBasedCairnBoardState(game)
                 CairnBoard(
                     state = state,
-                    stage = phase,
+                    stage = stage,
                     uiState
                 )
             }
@@ -63,12 +61,12 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             gameStateFlow.emit(gs.boardState)
             when (gs) {
-                is WaitForAction -> gamePhaseFlow.emit(GameStage.Action)
-                is WaitForTransformation -> gamePhaseFlow.emit(GameStage.Transformation)
-                is WaitForNewMonolith -> gamePhaseFlow.emit(GameStage.SelectMonolith)
-                is MonolithGameState -> gamePhaseFlow.emit(GameStage.ActivatingMonolith(gs.monolith.type))
-                is EndingTurn -> gamePhaseFlow.emit(GameStage.End)
-                is ActivatingChaosOfTheGiants -> gamePhaseFlow.emit(
+                is WaitForAction -> gameStageFlow.emit(GameStage.Action)
+                is WaitForTransformation -> gameStageFlow.emit(GameStage.Transformation)
+                is WaitForNewMonolith -> gameStageFlow.emit(GameStage.SelectMonolith)
+                is MonolithGameState -> gameStageFlow.emit(GameStage.ActivatingMonolith(gs.monolith.type))
+                is EndingTurn -> gameStageFlow.emit(GameStage.End)
+                is ActivatingChaosOfTheGiants -> gameStageFlow.emit(
                     GameStage.ActivatingMonolith(
                         MonolithType.ChaosOfTheGiants
                     )
