@@ -1,9 +1,10 @@
 package com.example.cairnclone.game
 
+import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.JumpOverShaman
+import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.WaitForTransformation
-import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -164,21 +165,32 @@ class JumpingTest {
     }
 
     @Test
-    fun `when the jumper ends up on a monolith it activates the monolith and returns true`() {
+    fun `when the jumper lands in the opponents village it spawns a new monolith and returns true`() {
         val game = jumpGame {
-            positionSeaShaman(Pos(2, 0))  // shaman to banish
+            positionForestShaman(Pos(1, 3))
+            positionForestShaman(Pos(2, 4))
+        }
+        val jumper = game.boardState.shamanAt(Pos(1, 3))!!
+
+        assertTrue(game.perform(JumpOverShaman(jumper, Pos(3,5),)))
+        assertTrue(game.perform(SelectMonolith(game.boardState.upcomingMonoliths.first())))
+        assertTrue(game.perform(EndTurn))
+
+        assertEquals(1, game.boardState.activeShamans.size)
+        assertEquals(Pos(2,4), game.boardState.activeShamans.first().pos)
+        assertNotNull(game.boardState.monolithAt(Pos(1,3)))
+    }
+
+
+    @Test
+    fun `when the jumper would end up in their own village it returns false`() {
+        val game = jumpGame {
+            positionForestShaman(Pos(1, 0))
             positionForestShaman(Pos(1, 1))
-            positionForestShaman(Pos(2, 2))
-            positionMonolith(MonolithType.ChaosOfTheGiants, Pos(3,3))
         }
         val jumper = game.boardState.shamanAt(Pos(1, 1))!!
 
-        val result = game.perform(JumpOverShaman(jumper, Pos(3,3),))
-
-        assertTrue(result)
-        assertTrue(
-            "not correct class ${game.gameState.javaClass.simpleName}",
-            game.gameState is ActivatingChaosOfTheGiants
-        )
+        assertFalse(game.perform(JumpOverShaman(jumper, Pos(1,-1))))
     }
+
 }

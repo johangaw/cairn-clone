@@ -64,6 +64,7 @@ class WaitForAction(override val boardState: BoardState) : GameState {
             springboard == null -> ActionResult.InvalidAction("there is no one to jump over at $springboardPos")
             !boardState.jumpActionTile.isApplicable(jumper.team, springboard.team) -> ActionResult.InvalidAction("the jumper and the springboard are from incorrect teams")
             !boardState.board.isOnBoardOrInVillage(action.newPos) -> ActionResult.InvalidAction("the shaman would end up outside the board ${action.newPos}")
+            boardState.board.isInVillage(action.newPos, action.jumper.team) -> ActionResult.InvalidAction("the shaman can not jump into it's own village")
             boardState.shamanAt(action.newPos) != null -> ActionResult.InvalidAction("the landing location ${action.newPos} is occupied")
             else -> ActionResult.NewState(Jumping(boardState), listOf(action))
         }
@@ -83,3 +84,6 @@ fun Board.isOnBoardOrInVillage(pos: Pos) =
     isOnBoard(pos)
             || villageRowFor(Team.Forest).contains(pos)
             || villageRowFor(Team.Sea).contains(pos)
+
+fun Board.isInVillage(pos: Pos, team: Team) =
+    villageRowFor(team).contains(pos)
