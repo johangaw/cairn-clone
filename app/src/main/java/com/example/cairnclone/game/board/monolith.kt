@@ -47,53 +47,53 @@ sealed class MonolithType(val name: String, val description: String, val level: 
         MonolithLevel.Beginner
     )
 
-    object MenhirOfTheDancers : MonolithType(
-        "Menhir of the Dancers",
-        "Move the shaman from this megalith one space.",
-        MonolithLevel.Beginner
-    )
-
-    object SanctuaryOfTheAges : MonolithType(
-        "Sanctuary of the Ages",
-        "Move a megalith one space.",
-        MonolithLevel.Beginner
-    )
-
-    object TumulusOfShadows : MonolithType(
-        "Tumulus of Shadows",
-        "Banish the shaman from this megalith.",
-        MonolithLevel.Advanced
-    )
-
-    object Stormwell : MonolithType(
-        "Stormwell",
-        "Swap the locations of two megaliths in the field.",
-        MonolithLevel.Advanced
-    )
-
-    object FairiesCircle : MonolithType(
-        "Fairies Circle",
-        "Move an enemy shaman one space.",
-        MonolithLevel.Advanced
-    )
-
-    object HavenOfPurity : MonolithType(
-        "Haven of Purity",
-        "Move another friendly shaman one space.",
-        MonolithLevel.Advanced
-    )
-
-    object MemorialMound : MonolithType(
-        "Memorial Mound",
-        "Flip an Action tile.",
-        MonolithLevel.Advanced
-    )
-
-    object SourceOfSilver : MonolithType(
-        "Source of Silver",
-        "Replace a megalith in the field with one of the two upcoming megaliths. Tuck the replaced megalith under the deck and draw a new upcoming megalith.",
-        MonolithLevel.Advanced
-    )
+//    object MenhirOfTheDancers : MonolithType(
+//        "Menhir of the Dancers",
+//        "Move the shaman from this megalith one space.",
+//        MonolithLevel.Beginner
+//    )
+//
+//    object SanctuaryOfTheAges : MonolithType(
+//        "Sanctuary of the Ages",
+//        "Move a megalith one space.",
+//        MonolithLevel.Beginner
+//    )
+//
+//    object TumulusOfShadows : MonolithType(
+//        "Tumulus of Shadows",
+//        "Banish the shaman from this megalith.",
+//        MonolithLevel.Advanced
+//    )
+//
+//    object Stormwell : MonolithType(
+//        "Stormwell",
+//        "Swap the locations of two megaliths in the field.",
+//        MonolithLevel.Advanced
+//    )
+//
+//    object FairiesCircle : MonolithType(
+//        "Fairies Circle",
+//        "Move an enemy shaman one space.",
+//        MonolithLevel.Advanced
+//    )
+//
+//    object HavenOfPurity : MonolithType(
+//        "Haven of Purity",
+//        "Move another friendly shaman one space.",
+//        MonolithLevel.Advanced
+//    )
+//
+//    object MemorialMound : MonolithType(
+//        "Memorial Mound",
+//        "Flip an Action tile.",
+//        MonolithLevel.Advanced
+//    )
+//
+//    object SourceOfSilver : MonolithType(
+//        "Source of Silver",
+//        "Replace a megalith in the field with one of the two upcoming megaliths. Tuck the replaced megalith under the deck and draw a new upcoming megalith.",
+//        MonolithLevel.Advanced
+//    )
 
     companion object {
         fun getAll(): List<MonolithType> = listOf(
@@ -102,7 +102,7 @@ sealed class MonolithType(val name: String, val description: String, val level: 
             CromlechOfTheStars,
             PillarsOfSpring,
             AlleyOfDusk,
-//            DeerRock,
+            DeerRock,
 //            MenhirOfTheDancers,
 //            SanctuaryOfTheAges,
 //            TumulusOfShadows,

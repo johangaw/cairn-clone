@@ -12,7 +12,6 @@ import com.example.cairnclone.game.board.BoardState
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
-import com.example.cairnclone.game.states.monoliths.ActivatingChaosOfTheGiants
 import com.example.cairnclone.game.states.monoliths.MonolithGameState
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.GameStage
@@ -34,7 +33,9 @@ class MainActivity : ComponentActivity() {
                 positionStartShamans()
                 positionStartMonoliths()
 
-                positionForestShaman(Pos(3, 1))
+                positionMonolith(MonolithType.DeerRock, Pos(2,1))
+                positionForestShaman(Pos(2,2))
+                positionSeaShaman(Pos(3,2))
             }
         ),
         ::publishNewState
@@ -66,11 +67,6 @@ class MainActivity : ComponentActivity() {
                 is WaitForNewMonolith -> gameStageFlow.emit(GameStage.SelectMonolith)
                 is MonolithGameState -> gameStageFlow.emit(GameStage.ActivatingMonolith(gs.monolith.type))
                 is EndingTurn -> gameStageFlow.emit(GameStage.End)
-                is ActivatingChaosOfTheGiants -> gameStageFlow.emit(
-                    GameStage.ActivatingMonolith(
-                        MonolithType.ChaosOfTheGiants
-                    )
-                )
                 else -> {}
             }
         }

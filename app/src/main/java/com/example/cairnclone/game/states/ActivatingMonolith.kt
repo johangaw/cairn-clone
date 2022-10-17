@@ -18,7 +18,11 @@ fun tryActivatingMonolith(
     }
 
     val monolith = boardState.monolithAt(pos)
-    return when (monolith?.type) {
+    if(monolith == null) {
+        Log.w("tryActivatingMonolith", "position $pos does not contain a monolith")
+        return nextState(boardState)
+    }
+    return when (monolith.type) {
         MonolithType.ChaosOfTheGiants -> ActivatingChaosOfTheGiants(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
@@ -34,6 +38,11 @@ fun tryActivatingMonolith(
         MonolithType.AlleyOfDusk -> ActivatingAlleyOfDusk(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
-        else -> nextState(boardState)
+        MonolithType.DeerRock -> ActivatingDeerRock(
+            boardState, monolith, shaman, nextState
+        ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
+        else -> throw IllegalArgumentException("unable to activate monolith of type ${monolith.type}")
     }
 }
+
+

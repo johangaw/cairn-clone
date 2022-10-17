@@ -9,11 +9,11 @@ import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.monoliths.*
 
-fun ensureOneShamans(shamans: Set<Shaman>) =
-    if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans
+fun ensureOneShaman(shamans: Set<Shaman>) =
+    if (shamans.size != 1) throw Exception("The monolith requires ONE shamans") else shamans.first()
 
 fun ensureOnePos(positions: Set<Pos>) =
-    if (positions.size != 1) throw Exception("The monolith requires ONE position") else positions
+    if (positions.size != 1) throw Exception("The monolith requires ONE position") else positions.first()
 
 fun ensureThreeShamans(shamans: Set<Shaman>) =
     if (shamans.size != 3) throw Exception("A transformation requires THREE shamans") else shamans
@@ -44,12 +44,6 @@ class ClickBasedCairnBoardState(
     val selectedPositions: Set<Pos> get() = positions
     val selectedMonolith: MonolithType? get() = monlith
 
-    private fun toggleShaman(id: Shaman) {
-        shamans =
-            if (id in shamans) shamans - id
-            else shamans + id
-    }
-
     private fun resetSelection() {
         shamans = emptySet()
         positions = emptySet()
@@ -60,22 +54,41 @@ class ClickBasedCairnBoardState(
 
     fun handleBoardClick(pos: Pos, state: BoardState, stage: GameStage) {
         val shaman = state.shamanAt(pos)
-        positions = if (pos in positions) positions - pos else positions + pos
 
-        if (shaman != null) {
-            toggleShaman(shaman)
-        } else if(stage !is GameStage.Action) {
+        if(stage is GameStage.ActivatingMonolith) {
+            if (shaman != null) {
+                if (shaman !in shamans && pos !in positions) {
+                    shamans = shamans + shaman
+                } else if (shaman in shamans && pos !in positions) {
+                    positions = positions + pos
+                } else if (shaman in shamans && pos in positions) {
+                    shamans = shamans - shaman
+                } else if (shaman !in shamans && pos in positions) {
+                    positions = positions - pos
+                }
+            } else {
+                positions = if (pos in positions)
+                    positions - pos
+                else
+                    positions + pos
+            }
+        } else if(stage is GameStage.Action && shaman != null) {
+            shamans = if(shaman in shamans) shamans - shaman else shamans + shaman
+        }
+
+
+        if (stage !is GameStage.Action) {
             return
-        } else if (shamans.size == 1) {
+        } else if (shamans.size == 1 && shaman == null) {
             val selectedShaman = shamans.first()
             if (selectedShaman.pos.isAdjacent(pos))
                 emitter(MoveShaman(selectedShaman, state.activeTeam, pos))
             else
                 emitter(JumpOverShaman(selectedShaman, pos))
             resetSelection()
-        } else if (selectedShamans.size > 1) {
+        } else if (shamans.size > 1) {
             showError("Can only move ONE shaman at once")
-        } else if (selectedShamans.isEmpty()
+        } else if (shamans.isEmpty()
             && state.spawnActionTile.posFor(state.activeTeam) == pos
         ) {
             emitter(SpawnShaman(state.activeTeam, pos))
@@ -84,9 +97,8 @@ class ClickBasedCairnBoardState(
     }
 
     fun handleVillageClick(team: Team, state: BoardState): () -> Unit = {
-        Result.success(selectedShamans)
-            .mapCatching(::ensureOneShamans)
-            .map { it.first() }
+        Result.success(shamans)
+            .mapCatching(::ensureOneShaman)
             .map { it to state.board.villageRowFor(team) }
             .onSuccess { (shaman, village) ->
                 village.firstOrNull {
@@ -106,7 +118,7 @@ class ClickBasedCairnBoardState(
     }
 
     fun handleTransformClick() {
-        Result.success(selectedShamans)
+        Result.success(shamans)
             .mapCatching(::ensureThreeShamans)
             .mapCatching(::ensureTwoTeams)
             .map(::orderShamansAsTransformationArguments)
@@ -126,23 +138,27 @@ class ClickBasedCairnBoardState(
     fun handleActivateMonolith(monolith: MonolithType, boardState: BoardState) {
         when (monolith) {
             MonolithType.ChaosOfTheGiants -> Result.success(shamans)
-                .mapCatching(::ensureOneShamans)
-                .onSuccess { emitter(ActivatingChaosOfTheGiants.Activate(shamans.first())) }
+                .mapCatching(::ensureOneShaman)
+                .onSuccess { emitter(ActivatingChaosOfTheGiants.Activate(it)) }
                 .onFailure(::showError)
             MonolithType.CairnOfDawn -> Result.success(positions)
                 .mapCatching(::ensureOnePos)
-                .onSuccess { emitter(ActivatingCairnOfDawn.Activate(positions.first())) }
+                .onSuccess { emitter(ActivatingCairnOfDawn.Activate(it)) }
                 .onFailure(::showError)
             MonolithType.CromlechOfTheStars -> Result.success(positions)
                 .mapCatching(::ensureOnePos)
-                .map { boardState.monolithAt(it.first()) }
+                .map { boardState.monolithAt(it) }
                 .mapCatching(::ensureNotNull)
                 .onSuccess { emitter(ActivatingCromlechOfTheStars.MoveToMonolith(it)) }
                 .onFailure(::showError)
             MonolithType.PillarsOfSpring -> emitter(ActivatingPillarsOfSpring.MakeNextTurnMyTurn)
             MonolithType.AlleyOfDusk -> Result.success(shamans)
-                .mapCatching(::ensureOneShamans)
-                .onSuccess { emitter(ActivatingAlleyOfDusk.BanishShaman(it.first())) }
+                .mapCatching(::ensureOneShaman)
+                .onSuccess { emitter(ActivatingAlleyOfDusk.BanishShaman(it)) }
+                .onFailure(::showError)
+            MonolithType.DeerRock -> Result.success(shamans to positions)
+                .mapCatching { (sSet, pSet) -> ensureOneShaman(sSet) to ensureOnePos(pSet) }
+                .onSuccess { (s, p) -> emitter(ActivatingDeerRock.MoveShaman(s, p)) }
                 .onFailure(::showError)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }

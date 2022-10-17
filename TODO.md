@@ -1,6 +1,5 @@
 # This left TODO
 - Implement more monoliths
-  - DeerRock
   - MenhirOfTheDancers
   - SanctuaryOfTheAges
 - **User testing**
