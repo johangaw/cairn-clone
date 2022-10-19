@@ -44,6 +44,9 @@ fun tryActivatingMonolith(
         MonolithType.MenhirOfTheDancers -> ActivatingMenhirOfTheDancers(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
+        MonolithType.SanctuaryOfTheAges -> ActivatingSanctuaryOfTheAges(
+            boardState, monolith, shaman, nextState
+        ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
         else -> throw IllegalArgumentException("unable to activate monolith of type ${monolith.type}")
     }
 }

@@ -55,7 +55,7 @@ class ClickBasedCairnBoardState(
     fun handleBoardClick(pos: Pos, state: BoardState, stage: GameStage) {
         val shaman = state.shamanAt(pos)
 
-        if(stage is GameStage.ActivatingMonolith) {
+        if (stage is GameStage.ActivatingMonolith) {
             if (shaman != null) {
                 if (shaman !in shamans && pos !in positions) {
                     shamans = shamans + shaman
@@ -72,8 +72,8 @@ class ClickBasedCairnBoardState(
                 else
                     positions + pos
             }
-        } else if(stage is GameStage.Action && shaman != null) {
-            shamans = if(shaman in shamans) shamans - shaman else shamans + shaman
+        } else if (stage is GameStage.Action && shaman != null) {
+            shamans = if (shaman in shamans) shamans - shaman else shamans + shaman
         }
 
 
@@ -163,6 +163,10 @@ class ClickBasedCairnBoardState(
             MonolithType.MenhirOfTheDancers -> Result.success(positions)
                 .mapCatching(::ensureOnePos)
                 .onSuccess { emitter(ActivatingMenhirOfTheDancers.MoveShaman(it)) }
+                .onFailure(::showError)
+            MonolithType.SanctuaryOfTheAges -> Result.success(positions)
+                .mapCatching(::ensureOnePos)
+                .onSuccess { emitter(ActivatingSanctuaryOfTheAges.MoveMonolith(it)) }
                 .onFailure(::showError)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }

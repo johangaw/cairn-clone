@@ -1,10 +1,8 @@
 # This left TODO
-- Implement more monoliths
-  - SanctuaryOfTheAges
+- UI - drag and drop movement
 - **User testing**
 - propagate error message to UI
 - Improve Game design with recursive calls only fo new "sub states"
-- UI - drag and drop movement
 - Implement rest of monoliths
   - TumulusOfShadows 
   - Stormwell 

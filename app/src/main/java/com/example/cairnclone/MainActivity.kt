@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 positionStartShamans()
                 positionStartMonoliths()
 
-                positionMonolith(MonolithType.MenhirOfTheDancers, Pos(2,1))
+                positionMonolith(MonolithType.SanctuaryOfTheAges, Pos(2,1))
             }
         ),
         ::publishNewState
