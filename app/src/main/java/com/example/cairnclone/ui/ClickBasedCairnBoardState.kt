@@ -160,6 +160,10 @@ class ClickBasedCairnBoardState(
                 .mapCatching { (sSet, pSet) -> ensureOneShaman(sSet) to ensureOnePos(pSet) }
                 .onSuccess { (s, p) -> emitter(ActivatingDeerRock.MoveShaman(s, p)) }
                 .onFailure(::showError)
+            MonolithType.MenhirOfTheDancers -> Result.success(positions)
+                .mapCatching(::ensureOnePos)
+                .onSuccess { emitter(ActivatingMenhirOfTheDancers.MoveShaman(it)) }
+                .onFailure(::showError)
             else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
         }
         resetSelection()

@@ -33,9 +33,7 @@ class MainActivity : ComponentActivity() {
                 positionStartShamans()
                 positionStartMonoliths()
 
-                positionMonolith(MonolithType.DeerRock, Pos(2,1))
-                positionForestShaman(Pos(2,2))
-                positionSeaShaman(Pos(3,2))
+                positionMonolith(MonolithType.MenhirOfTheDancers, Pos(2,1))
             }
         ),
         ::publishNewState

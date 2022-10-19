@@ -47,11 +47,11 @@ sealed class MonolithType(val name: String, val description: String, val level: 
         MonolithLevel.Beginner
     )
 
-//    object MenhirOfTheDancers : MonolithType(
-//        "Menhir of the Dancers",
-//        "Move the shaman from this megalith one space.",
-//        MonolithLevel.Beginner
-//    )
+    object MenhirOfTheDancers : MonolithType(
+        "Menhir of the Dancers",
+        "Move the shaman from this megalith one space.",
+        MonolithLevel.Beginner
+    )
 //
 //    object SanctuaryOfTheAges : MonolithType(
 //        "Sanctuary of the Ages",
@@ -103,7 +103,7 @@ sealed class MonolithType(val name: String, val description: String, val level: 
             PillarsOfSpring,
             AlleyOfDusk,
             DeerRock,
-//            MenhirOfTheDancers,
+            MenhirOfTheDancers,
 //            SanctuaryOfTheAges,
 //            TumulusOfShadows,
 //            Stormwell,

@@ -22,6 +22,7 @@ data class BoardState(
     fun shamanAt(pos: Pos): Shaman? = activeShamans.find { it.pos == pos }
     fun isInVillage(pos: Pos, team: Team) = board.villageRowFor(team).contains(pos)
     fun monolithAt(pos: Pos) = activeMonoliths.find { it.pos == pos }
+    fun isFree(pos: Pos) = this.activeShamans.all { it.pos != pos }
     val upcomingMonoliths get() = monolithsStack.take(2)
 }
 

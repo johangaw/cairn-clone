@@ -1,6 +1,5 @@
 # This left TODO
 - Implement more monoliths
-  - MenhirOfTheDancers
   - SanctuaryOfTheAges
 - **User testing**
 - propagate error message to UI

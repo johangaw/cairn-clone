@@ -55,6 +55,3 @@ class ActivatingDeerRock(
 
     data class MoveShaman(val shaman: Shaman, val to: Pos) : Action
 }
-
-private fun Pos.allAdjacent() = Direction.values().map { this + it }
-private fun BoardState.isFree(pos: Pos) = this.activeShamans.all { it.pos != pos }
