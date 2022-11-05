@@ -3,10 +3,7 @@ package com.example.cairnclone.game.states.monoliths
 import com.example.cairnclone.game.Monolith
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.Action
-import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Shaman
-import com.example.cairnclone.game.board.allAdjacent
+import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.GameState
 import com.example.cairnclone.game.states.NextState
@@ -39,6 +36,7 @@ class ActivatingSanctuaryOfTheAges(
         return when {
             boardState.monolithAt(action.pos) != null -> ActionResult.InvalidAction("the selected position ${action.pos} already contains a monolith $monolith")
             !boardState.board.isOnBoard(action.pos) -> ActionResult.InvalidAction("the selected position ${action.pos} is not on  the board")
+            !action.pos.isAdjacent(monolith.pos) -> ActionResult.InvalidAction("the selected position ${action.pos} is more than one step away from the monolith $monolith")
             else -> nextState(boardState.moveMonolith(monolith, action.pos))
         }
     }

@@ -1,5 +1,4 @@
 # This left TODO
-- Fix MonolithType.SanctuaryOfTheAges can move a monolith more than one step.
 - Fix Correct package for monoliths.kt file
 - Change DADData so that it reflects the fact that monoliths can't dragged
 - Remove tea, parameter from MoveShaman Action

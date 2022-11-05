@@ -68,4 +68,11 @@ class ActivatingSanctuaryOfTheAgesTest {
         val result = game.perform(ActivatingSanctuaryOfTheAges.MoveMonolith(Pos(4,5)))
         assertFalse(result)
     }
+
+    @Test
+    fun `when the position is more than one step away, MoveMonolith returns false`() {
+        val (game) = monolithGame(Pos(1,1)) {}
+        val result = game.perform(ActivatingSanctuaryOfTheAges.MoveMonolith(Pos(2,3)))
+        assertFalse(result)
+    }
 }
