@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.cairnclone.R
-import com.example.cairnclone.game.MonolithType
+import com.example.cairnclone.game.board.MonolithType
 import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.board.Team
 

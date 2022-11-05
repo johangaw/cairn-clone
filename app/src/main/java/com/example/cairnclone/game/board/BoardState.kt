@@ -1,7 +1,5 @@
 package com.example.cairnclone.game.board
 
-import com.example.cairnclone.game.Monolith
-import com.example.cairnclone.game.MonolithType
 import kotlin.random.Random
 
 data class BoardState(

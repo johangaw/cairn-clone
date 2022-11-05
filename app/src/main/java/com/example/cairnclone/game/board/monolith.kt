@@ -1,6 +1,4 @@
-package com.example.cairnclone.game
-
-import com.example.cairnclone.game.board.Pos
+package com.example.cairnclone.game.board
 
 data class Monolith(val pos: Pos, val type: MonolithType)
 

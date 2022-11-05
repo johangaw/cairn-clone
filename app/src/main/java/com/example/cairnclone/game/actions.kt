@@ -1,6 +1,6 @@
 package com.example.cairnclone.game.actions
 
-import com.example.cairnclone.game.*
+import com.example.cairnclone.game.board.MonolithType
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.board.Team

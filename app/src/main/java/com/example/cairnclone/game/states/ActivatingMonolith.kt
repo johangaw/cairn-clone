@@ -1,8 +1,8 @@
 package com.example.cairnclone.game.states
 
 import android.util.Log
-import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
+import com.example.cairnclone.game.board.MonolithType
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.states.monoliths.*
 
@@ -47,7 +47,6 @@ fun tryActivatingMonolith(
         MonolithType.SanctuaryOfTheAges -> ActivatingSanctuaryOfTheAges(
             boardState, monolith, shaman, nextState
         ).let { if (it.canActivate()) ActionResult.NewState(it) else nextState(boardState) }
-        else -> throw IllegalArgumentException("unable to activate monolith of type ${monolith.type}")
     }
 }
 

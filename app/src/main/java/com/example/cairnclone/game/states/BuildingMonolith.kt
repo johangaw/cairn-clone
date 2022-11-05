@@ -1,7 +1,5 @@
 package com.example.cairnclone.game.states
 
-import com.example.cairnclone.game.Monolith
-import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.Action
 import com.example.cairnclone.game.actions.SelectMonolith
 import com.example.cairnclone.game.board.*

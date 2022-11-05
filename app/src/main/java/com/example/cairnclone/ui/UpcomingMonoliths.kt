@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.cairnclone.game.MonolithType
+import com.example.cairnclone.game.board.MonolithType
 
 @Composable
 fun UpcomingMonoliths(

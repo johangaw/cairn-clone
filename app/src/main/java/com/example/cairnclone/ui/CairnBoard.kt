@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.cairnclone.game.Game
-import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.WaitForAction
 import com.example.cairnclone.ui.draganddrop.DragTarget

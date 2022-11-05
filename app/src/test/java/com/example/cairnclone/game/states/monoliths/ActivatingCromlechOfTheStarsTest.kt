@@ -1,12 +1,7 @@
 package com.example.cairnclone.game.states.monoliths
 
 import com.example.cairnclone.game.Game
-import com.example.cairnclone.game.Monolith
-import com.example.cairnclone.game.MonolithType
-import com.example.cairnclone.game.board.BoardStateBuilder
-import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.board.buildBoard
+import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.boardState
 import com.example.cairnclone.game.states.ActionResult
 import com.example.cairnclone.game.states.WaitForAction

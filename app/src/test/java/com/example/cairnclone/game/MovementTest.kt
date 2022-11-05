@@ -3,6 +3,7 @@ package com.example.cairnclone.game
 import com.example.cairnclone.game.actions.EndTurn
 import com.example.cairnclone.game.actions.MoveShaman
 import com.example.cairnclone.game.actions.SelectMonolith
+import com.example.cairnclone.game.board.MonolithType
 import com.example.cairnclone.game.board.MoveActionTile
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Team

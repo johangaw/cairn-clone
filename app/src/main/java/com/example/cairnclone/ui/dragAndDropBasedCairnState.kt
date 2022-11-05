@@ -4,15 +4,11 @@ import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.cairnclone.game.Game
-import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.actions.*
-import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Pos
-import com.example.cairnclone.game.board.Team
-import com.example.cairnclone.game.board.isAdjacent
+import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.monoliths.*
 import com.example.cairnclone.ui.draganddrop.DragAndDropContext
-import com.example.cairnclone.game.Monolith as DomainMonolith
+import com.example.cairnclone.game.board.Monolith as DomainMonolith
 import com.example.cairnclone.game.board.Shaman as DomainShaman
 
 sealed class DADData {
@@ -140,7 +136,11 @@ data class DADBasedCairnBoardState(
                 .onSuccess { emitter(ActivatingMenhirOfTheDancers.MoveShaman(target)) }
                 .onFailure(::showError)
 
-            else -> throw NotImplementedError("Move to pos not implemented for ${monolith.name}")
+            MonolithType.AlleyOfDusk,
+            MonolithType.CairnOfDawn,
+            MonolithType.ChaosOfTheGiants,
+            MonolithType.PillarsOfSpring,
+            MonolithType.SanctuaryOfTheAges -> {}
         }
     }
 
@@ -196,7 +196,10 @@ data class DADBasedCairnBoardState(
                 .mapCatching(::ensureOnePos)
                 .onSuccess { emitter(ActivatingSanctuaryOfTheAges.MoveMonolith(it)) }
                 .onFailure(::showError)
-            else -> throw NotImplementedError("Activate not implemented for ${monolith.name}")
+
+            MonolithType.CromlechOfTheStars,
+            MonolithType.DeerRock,
+            MonolithType.MenhirOfTheDancers -> {}
         }
         resetSelection()
     }

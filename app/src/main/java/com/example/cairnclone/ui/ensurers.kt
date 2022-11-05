@@ -1,6 +1,6 @@
 package com.example.cairnclone.ui
 
-import com.example.cairnclone.game.Monolith
+import com.example.cairnclone.game.board.Monolith
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.board.Team

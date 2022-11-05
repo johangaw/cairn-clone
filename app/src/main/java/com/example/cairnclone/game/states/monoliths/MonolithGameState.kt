@@ -1,7 +1,7 @@
 package com.example.cairnclone.game.states.monoliths
 
-import com.example.cairnclone.game.Monolith
-import com.example.cairnclone.game.MonolithType
+import com.example.cairnclone.game.board.Monolith
+import com.example.cairnclone.game.board.MonolithType
 import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.states.NextState
 
