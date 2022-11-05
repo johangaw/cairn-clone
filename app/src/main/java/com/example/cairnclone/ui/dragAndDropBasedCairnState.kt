@@ -11,12 +11,7 @@ import com.example.cairnclone.ui.draganddrop.DragAndDropContext
 import com.example.cairnclone.game.board.Monolith as DomainMonolith
 import com.example.cairnclone.game.board.Shaman as DomainShaman
 
-sealed class DADData {
-    data class Shaman(val shaman: DomainShaman) : DADData()
-    data class Monolith(val monolith: DomainMonolith) : DADData()
-}
-
-val LocalCairnBoardDADContext = compositionLocalOf { DragAndDropContext<DADData>() }
+val LocalCairnBoardDADContext = compositionLocalOf { DragAndDropContext<DomainShaman>() }
 
 private fun <T> Set<T>.toggle(value: T) = if (this.contains(value)) this - value else this + value
 
@@ -80,28 +75,22 @@ data class DADBasedCairnBoardState(
         emitter(SpawnShaman(state.activeTeam, pos))
     }
 
-    fun handleMoveToVillage(data: DADData, villageTeam: Team, state: BoardState, stage: GameStage) {
+    fun handleMoveToVillage(shaman: DomainShaman, villageTeam: Team, state: BoardState, stage: GameStage) {
         when (stage) {
             is GameStage.ActivatingMonolith,
-            GameStage.Action -> handleMoveToVillageInActionOrActivatingMonolithPhase(data, villageTeam, state)
+            GameStage.Action -> handleMoveToVillageInActionOrActivatingMonolithPhase(shaman, villageTeam, state)
             GameStage.End, GameStage.SelectMonolith, GameStage.Transformation -> {}
         }
     }
 
-    private fun handleMoveToVillageInActionOrActivatingMonolithPhase(data: DADData, villageTeam: Team, state: BoardState) {
-        when (data) {
-            is DADData.Shaman -> {
+    private fun handleMoveToVillageInActionOrActivatingMonolithPhase(shaman: DomainShaman, villageTeam: Team, state: BoardState) {
                 state.board.villageRowFor(villageTeam)
-                    .firstOrNull { emitter(MoveShaman(data.shaman, data.shaman.team, it)) }
+                    .firstOrNull { emitter(MoveShaman(shaman, shaman.team, it)) }
                     ?: state.board.villageRowFor(villageTeam)
-                        .firstOrNull { emitter(JumpOverShaman(data.shaman, it)) }
-
-            }
-            is DADData.Monolith -> {}
-        }
+                        .firstOrNull { emitter(JumpOverShaman(shaman, it)) }
     }
 
-    fun handleMoveToPos(data: DADData, target: Pos, state: BoardState, stage: GameStage) {
+    fun handleMoveToPos(data: DomainShaman, target: Pos, state: BoardState, stage: GameStage) {
         when (stage) {
             GameStage.Action -> handleMoveToPosInActionStage(data, target)
             is GameStage.ActivatingMonolith -> handleMoveToPosInActivatingMonolithPhase(
@@ -115,26 +104,18 @@ data class DADBasedCairnBoardState(
     }
 
     private fun handleMoveToPosInActivatingMonolithPhase(
-        data: DADData,
+        shaman: DomainShaman,
         target: Pos,
         boardState: BoardState,
         monolith: MonolithType
     ) {
         when (monolith) {
-            MonolithType.CromlechOfTheStars -> Result.success(data)
-                .mapCatching(::ensureShaman)
-                .map { boardState.monolithAt(target) }
+            MonolithType.CromlechOfTheStars -> Result.success(boardState.monolithAt(target))
                 .mapCatching(::ensureNotNull)
                 .onSuccess { emitter(ActivatingCromlechOfTheStars.MoveToMonolith(it)) }
                 .onFailure(::showError)
-            MonolithType.DeerRock -> Result.success(data)
-                .mapCatching(::ensureShaman)
-                .onSuccess { shaman -> emitter(ActivatingDeerRock.MoveShaman(shaman, target)) }
-                .onFailure(::showError)
-            MonolithType.MenhirOfTheDancers -> Result.success(data)
-                .mapCatching(::ensureShaman)
-                .onSuccess { emitter(ActivatingMenhirOfTheDancers.MoveShaman(target)) }
-                .onFailure(::showError)
+            MonolithType.DeerRock -> emitter(ActivatingDeerRock.MoveShaman(shaman, target))
+            MonolithType.MenhirOfTheDancers -> emitter(ActivatingMenhirOfTheDancers.MoveShaman(target))
 
             MonolithType.AlleyOfDusk,
             MonolithType.CairnOfDawn,
@@ -144,18 +125,15 @@ data class DADBasedCairnBoardState(
         }
     }
 
-    private fun handleMoveToPosInActionStage(data: DADData, target: Pos) {
-        when (data) {
-            is DADData.Shaman -> emitter(
-                if (data.shaman.pos.isAdjacent(target)) MoveShaman(
-                    data.shaman,
-                    data.shaman.team,
-                    target
-                )
-                else JumpOverShaman(data.shaman, target)
+    private fun handleMoveToPosInActionStage(shaman: DomainShaman, target: Pos) {
+        emitter(
+            if (shaman.pos.isAdjacent(target)) MoveShaman(
+                shaman,
+                shaman.team,
+                target
             )
-            is DADData.Monolith -> TODO()
-        }
+            else JumpOverShaman(shaman, target)
+        )
     }
 
     fun handleTransformClick() {
@@ -177,7 +155,7 @@ data class DADBasedCairnBoardState(
         emitter(SelectMonolith(it))
     }
 
-    fun handleActivateMonolith(monolith: MonolithType, boardState: BoardState) {
+    fun handleActivateMonolith(monolith: MonolithType) {
         when (monolith) {
             MonolithType.ChaosOfTheGiants -> Result.success(selectedShamans)
                 .mapCatching(::ensureOneShaman)
@@ -204,7 +182,7 @@ data class DADBasedCairnBoardState(
         resetSelection()
     }
 
-    fun handleLongBoardClick(pos: Pos, state: BoardState, stage: GameStage) {
+    fun handleLongBoardClick(pos: Pos, state: BoardState) {
         val monolith = state.monolithAt(pos) ?: return
         _selectedMonolith = monolith
     }

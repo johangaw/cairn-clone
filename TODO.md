@@ -1,5 +1,4 @@
 # This left TODO
-- Change DADData so that it reflects the fact that monoliths can't dragged
 - Remove tea, parameter from MoveShaman Action
 - UI - drag and drop movement
 - When selecting monolith, long click to show info

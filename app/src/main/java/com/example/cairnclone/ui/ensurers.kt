@@ -1,6 +1,5 @@
 package com.example.cairnclone.ui
 
-import com.example.cairnclone.game.board.Monolith
 import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.Shaman
 import com.example.cairnclone.game.board.Team
@@ -21,13 +20,8 @@ fun ensureTwoTeams(shamans: Set<Shaman>) =
 
 fun <T> ensureNotNull(nullable: T?) = nullable ?: throw Exception("Nothing there")
 
-fun <T>ensureOne(set: Set<T>) =
+fun <T> ensureOne(set: Set<T>) =
     if (set.size != 1) throw Exception("The monolith requires ONE selected") else set.first()
-
-
-fun ensureShaman(data: DADData): Shaman = if(data is DADData.Shaman) data.shaman else throw Exception("Need to move a shaman")
-
-fun ensureMonolith(data: DADData): Monolith = if(data is DADData.Monolith) data.monolith else throw Exception("Need to move a monolith")
 
 fun orderShamansAsTransformationArguments(shamans: Set<Shaman>) =
     shamans.partition { s -> s.team == Team.Sea }

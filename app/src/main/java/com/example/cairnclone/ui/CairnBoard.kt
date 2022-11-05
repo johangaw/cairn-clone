@@ -66,30 +66,24 @@ fun CairnBoard(
             DropTarget(
                 dadContext = LocalCairnBoardDADContext.current,
                 onDrop = { uiState.handleMoveToPos(it, pos, state, stage) }
-            ) { dragData ->
-                val canDrop = dragData is DADData.Shaman && dragData.shaman.pos != pos
+
+            ) { draggedShaman ->
+                val canDrop = draggedShaman?.let { it.pos != pos } ?: false
 
                 BoardPiece(
                     type = pieceType,
                     selected = canDrop || selectedPositions.contains(pos),
                     onClick = { uiState.handleBoardClick(pos, state, stage) },
-                    onLongClick = { uiState.handleLongBoardClick(pos, state, stage) }
+                    onLongClick = { uiState.handleLongBoardClick(pos, state) }
                 ) {
                     state.monolithAt(pos)?.let { monolith ->
-                        DragTarget(
-                            buildDragData = { DADData.Monolith(monolith) },
-                            dadContext = LocalCairnBoardDADContext.current,
-                            modifier = Modifier.zIndex(1f),
-                        ) { dragging ->
-                            scope.dragging = dragging
-                            MonolithPiece(
-                                monolithType = monolith.type,
-                            )
-                        }
+                        MonolithPiece(
+                            monolithType = monolith.type,
+                        )
                     }
                     state.shamanAt(pos)?.let { shaman ->
                         DragTarget(
-                            buildDragData = { DADData.Shaman(shaman) },
+                            buildDragData = { shaman },
                             dadContext = LocalCairnBoardDADContext.current,
                             modifier = Modifier.zIndex(1f),
                         ) { dragging ->
@@ -159,7 +153,7 @@ fun CairnBoard(
                 ) {
                     ActivateMonolithButton(
                         onClick = {
-                            uiState.handleActivateMonolith(stage.monolith, state)
+                            uiState.handleActivateMonolith(stage.monolith)
                         },
                         disabled = setOf(
                             MonolithType.CromlechOfTheStars,
