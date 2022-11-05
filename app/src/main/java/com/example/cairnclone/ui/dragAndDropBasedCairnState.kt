@@ -138,8 +138,8 @@ data class DADBasedCairnBoardState(
 
     fun handleTransformClick() {
         Result.success(selectedShamans)
-            .mapCatching(::ensureThreeShamans)
-            .mapCatching(::ensureTwoTeams)
+            .mapCatching(ensureCount(3))
+            .mapCatching(::ensureTwoDifferentTeams)
             .map(::orderShamansAsTransformationArguments)
             .onSuccess {
                 val (s1, s2, target) = it
@@ -158,20 +158,20 @@ data class DADBasedCairnBoardState(
     fun handleActivateMonolith(monolith: MonolithType) {
         when (monolith) {
             MonolithType.ChaosOfTheGiants -> Result.success(selectedShamans)
-                .mapCatching(::ensureOneShaman)
+                .mapCatching(::ensureOne)
                 .onSuccess { emitter(ActivatingChaosOfTheGiants.Activate(it)) }
                 .onFailure(::showError)
             MonolithType.CairnOfDawn -> Result.success(selectedPositions)
-                .mapCatching(::ensureOnePos)
+                .mapCatching(::ensureOne)
                 .onSuccess { emitter(ActivatingCairnOfDawn.Activate(it)) }
                 .onFailure(::showError)
             MonolithType.PillarsOfSpring -> emitter(ActivatingPillarsOfSpring.MakeNextTurnMyTurn)
             MonolithType.AlleyOfDusk -> Result.success(selectedShamans)
-                .mapCatching(::ensureOneShaman)
+                .mapCatching(::ensureOne)
                 .onSuccess { emitter(ActivatingAlleyOfDusk.BanishShaman(it)) }
                 .onFailure(::showError)
             MonolithType.SanctuaryOfTheAges -> Result.success(selectedPositions)
-                .mapCatching(::ensureOnePos)
+                .mapCatching(::ensureOne)
                 .onSuccess { emitter(ActivatingSanctuaryOfTheAges.MoveMonolith(it)) }
                 .onFailure(::showError)
 
