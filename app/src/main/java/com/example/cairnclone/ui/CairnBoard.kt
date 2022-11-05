@@ -1,12 +1,6 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
-
 package com.example.cairnclone.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -18,10 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.cairnclone.game.Game
 import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.WaitForAction
+import com.example.cairnclone.ui.draganddrop.DragTarget
+import com.example.cairnclone.ui.draganddrop.DropTarget
 
 private val SpawnActionTile.positions: List<Pos> get() = listOf(this.forest, this.sea)
 
@@ -33,70 +30,92 @@ sealed class GameStage {
     object End : GameStage()
 }
 
-fun IntRange.allPairs(other: IntRange): List<Pair<Int, Int>> =
-    this.flatMap { left -> other.map { right -> Pair(left, right) } }
-
-
 @Composable
 fun CairnBoard(
     state: BoardState,
     stage: GameStage,
-    uiState: ClickBasedCairnBoardState,
+    uiState: DADBasedCairnBoardState,
 ) {
     val selectedPositions = uiState.selectedPositions
     val selectedShamans = uiState.selectedShamans
     val selectedMonolith = uiState.selectedMonolith
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Village(
-            Team.Forest,
-            state.activeTeam == Team.Forest,
-            state.scores.forestTeam,
-            uiState.handleVillageClick(Team.Forest, state)
-        )
-        Column {
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(state.board.width),
-                Modifier.padding(horizontal = 24.dp)
-            ) {
-                val positions = (0 until state.board.height)
-                    .allPairs((0 until state.board.width))
-                    .map { (y, x) -> Pos(x, y) }
+        DropTarget(dadContext = LocalCairnBoardDADContext.current, onDrop = {
+            uiState.handleMoveToVillage(it, Team.Forest, state, stage)
+        }) {
+            Village(
+                Team.Forest,
+                state.activeTeam == Team.Forest,
+                state.scores.forestTeam,
+                selected = it != null
+            )
+        }
 
-                items(positions) { pos ->
-                    val pieceType = when {
-                        SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
-                        SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
-                        else -> BoardPieceType.Normal
-                    }
+        PositionGrid(
+            columns = state.board.width,
+            rows = state.board.height,
+            modifier = Modifier.zIndex(1f)
+        ) {
+            val pieceType = when {
+                SpawnActionTile.Black.positions.contains(pos) -> BoardPieceType.BlackSpawn
+                SpawnActionTile.White.positions.contains(pos) -> BoardPieceType.WhiteSpawn
+                else -> BoardPieceType.Normal
+            }
 
-                    BoardPiece(
-                        type = pieceType,
-                        selected = stage is GameStage.ActivatingMonolith && pos in selectedPositions,
-                        onClick = { uiState.handleBoardClick(pos, state, stage) }
-                    ) {
-                        state.monolithAt(pos)?.let {
+            val scope = this
+            DropTarget(
+                dadContext = LocalCairnBoardDADContext.current,
+                onDrop = { uiState.handleMoveToPos(it, pos, state, stage) }
+            ) { dragData ->
+                val canDrop = dragData is DADData.Shaman && dragData.shaman.pos != pos
+
+                BoardPiece(
+                    type = pieceType,
+                    selected = canDrop || selectedPositions.contains(pos),
+                    onClick = { uiState.handleBoardClick(pos, state, stage) },
+                    onLongClick = { uiState.handleLongBoardClick(pos, state, stage) }
+                ) {
+                    state.monolithAt(pos)?.let { monolith ->
+                        DragTarget(
+                            buildDragData = { DADData.Monolith(monolith) },
+                            dadContext = LocalCairnBoardDADContext.current,
+                            modifier = Modifier.zIndex(1f),
+                        ) { dragging ->
+                            scope.dragging = dragging
                             MonolithPiece(
-                                monolithType = it.type,
-                                onClick = { uiState.handleBoardClick(pos, state, stage) },
-                                onLongClick = { uiState.showMonolithInfo(it.type) })
+                                monolithType = monolith.type,
+                            )
                         }
-                        state.shamanAt(pos)?.let {
+                    }
+                    state.shamanAt(pos)?.let { shaman ->
+                        DragTarget(
+                            buildDragData = { DADData.Shaman(shaman) },
+                            dadContext = LocalCairnBoardDADContext.current,
+                            modifier = Modifier.zIndex(1f),
+                        ) { dragging ->
+                            scope.dragging = dragging
                             ShamanPiece(
-                                it,
-                                selected = selectedShamans.contains(state.shamanAt(pos))
+                                shaman,
+                                selected = dragging || selectedShamans.contains(shaman),
+                                modifier = Modifier.zIndex(1f)
                             )
                         }
                     }
                 }
             }
         }
-        Village(
-            Team.Sea,
-            state.activeTeam == Team.Sea,
-            state.scores.seaTeam,
-            uiState.handleVillageClick(Team.Sea, state)
-        )
+
+        DropTarget(dadContext = LocalCairnBoardDADContext.current, onDrop = {
+            uiState.handleMoveToVillage(it, Team.Sea, state, stage)
+        }) {
+            Village(
+                Team.Sea,
+                state.activeTeam == Team.Sea,
+                state.scores.seaTeam,
+                selected = it != null
+            )
+        }
 
         Divider(thickness = 4.dp, color = Color.Black, modifier = Modifier.padding(8.dp, 8.dp))
 
@@ -121,31 +140,45 @@ fun CairnBoard(
             if (stage == GameStage.SelectMonolith)
                 UpcomingMonoliths(
                     state.upcomingMonoliths,
-                    { uiState.handleUpcomingMonolithClick(it) },
+                    {
+                        uiState.handleUpcomingMonolithClick(it)
+                    },
                 )
 
             if (stage == GameStage.Transformation)
                 TransformButton(
-                    onClick = {
-                        uiState.handleTransformClick()
-                    })
+                    onClick = { uiState.handleTransformClick() })
 
             if (stage == GameStage.Transformation)
                 EndRoundButton(
                     onClick = { uiState.handleEndTurnClick() })
 
             if (stage is GameStage.ActivatingMonolith)
-                ActivateMonolithButton(onClick = {
-                    uiState.handleActivateMonolith(stage.monolith, state)
-                })
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    ActivateMonolithButton(
+                        onClick = {
+                            uiState.handleActivateMonolith(stage.monolith, state)
+                        },
+                        disabled = setOf(
+                            MonolithType.CromlechOfTheStars,
+                            MonolithType.DeerRock,
+                            MonolithType.MenhirOfTheDancers,
+                        ).contains(stage.monolith)
+                    )
+
+                    Text(stage.monolith.description)
+                }
         }
 
         if (selectedMonolith != null)
             AlertDialog(
-                onDismissRequest = { uiState.hideMonolithInfo() },
-                confirmButton = { TextButton({ uiState.hideMonolithInfo() }) { Text("Ok") } },
-                title = { Text(selectedMonolith.name) },
-                text = { Text(selectedMonolith.description) }
+                onDismissRequest = { uiState.unselectMonolith() },
+                confirmButton = { TextButton({ uiState.unselectMonolith() }) { Text("Ok") } },
+                title = { Text(selectedMonolith.type.name) },
+                text = { Text(selectedMonolith.type.description) }
             )
     }
 }
@@ -161,7 +194,7 @@ fun CairnBoardPreview() {
             positionStartMonoliths()
         }
     }
-    val uiState = rememberClickBasedCairnBoardState(Game(WaitForAction(state), {}))
+    val uiState = rememberDADBasedCairnBoardState(Game(WaitForAction(state), {}))
     CairnBoard(
         state,
         GameStage.Action,

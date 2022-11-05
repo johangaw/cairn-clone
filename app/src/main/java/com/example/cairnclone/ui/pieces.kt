@@ -2,7 +2,10 @@
 
 package com.example.cairnclone.ui
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,9 +34,10 @@ enum class BoardPieceType(val color: Color) {
 
 @Composable
 fun BoardPiece(
-    onClick: () -> Unit,
     selected: Boolean,
     type: BoardPieceType,
+    onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -43,7 +47,11 @@ fun BoardPiece(
             .background(if (selected) Color.Red else type.color)
             .padding(4.dp)
             .background(type.color)
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                enabled = onClick != null || onLongClick != null,
+                onClick = { onClick?.invoke() },
+                onLongClick = { onLongClick?.invoke() }
+            ),
         contentAlignment = Alignment.Center,
     ) {
         content()
@@ -74,8 +82,6 @@ fun ShamanPiece(
 @Composable
 fun MonolithPiece(
     monolithType: MonolithType,
-    onClick: (() -> Unit)? = null,
-    onLongClick: (() -> Unit)? = null
 ) {
     Box(
         contentAlignment = Alignment.Center, modifier = Modifier
@@ -85,11 +91,6 @@ fun MonolithPiece(
                 CircleShape
             )
             .background(Color.Yellow)
-            .combinedClickable(
-                enabled = true,
-                onClick = { onClick?.invoke() },
-                onLongClick = { onLongClick?.invoke() }
-            )
     ) {
         Text(text = monolithType.name)
     }

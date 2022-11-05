@@ -7,15 +7,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import com.example.cairnclone.game.Game
-import com.example.cairnclone.game.MonolithType
 import com.example.cairnclone.game.board.BoardState
-import com.example.cairnclone.game.board.Pos
 import com.example.cairnclone.game.board.buildBoard
 import com.example.cairnclone.game.states.*
 import com.example.cairnclone.game.states.monoliths.MonolithGameState
 import com.example.cairnclone.ui.CairnBoard
 import com.example.cairnclone.ui.GameStage
-import com.example.cairnclone.ui.rememberClickBasedCairnBoardState
+import com.example.cairnclone.ui.rememberDADBasedCairnBoardState
 import com.example.cairnclone.ui.theme.CairnCloneTheme
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -32,8 +30,6 @@ class MainActivity : ComponentActivity() {
                 emptyBoard()
                 positionStartShamans()
                 positionStartMonoliths()
-
-                positionMonolith(MonolithType.SanctuaryOfTheAges, Pos(2,1))
             }
         ),
         ::publishNewState
@@ -46,7 +42,7 @@ class MainActivity : ComponentActivity() {
             CairnCloneTheme {
                 val state by gameStateFlow.collectAsState(initial = game.gameState.boardState)
                 val stage by gameStageFlow.collectAsState(initial = GameStage.Action)
-                val uiState = rememberClickBasedCairnBoardState(game)
+                val uiState = rememberDADBasedCairnBoardState(game)
                 CairnBoard(
                     state = state,
                     stage = stage,
