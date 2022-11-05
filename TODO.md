@@ -1,6 +1,5 @@
 # This left TODO
 - Remove tea, parameter from MoveShaman Action
-- UI - drag and drop movement
 - When selecting monolith, long click to show info
 - **User testing**
 - propagate error message to UI
