@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntOffset
@@ -60,9 +59,9 @@ fun <T> DragTarget(
                     },
                     onDragCancel = { resetCurrentContext() },
                     onDrag = { change, dragAmount ->
-                        change.consumeAllChanges()
+                        change.consume()
                         dadContext.dragOffset += dragAmount
-                    },
+                    }
                 )
             }
     ) {
