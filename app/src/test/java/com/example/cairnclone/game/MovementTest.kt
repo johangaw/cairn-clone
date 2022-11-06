@@ -21,8 +21,8 @@ class MovementTest {
             positionForestShaman(Pos(4, 2))
             moveAction = MoveActionTile.Orthogonally
         }
-        val shaman = game.gameState.boardState.activeShamans.first()
-        val result = game.perform(MoveShaman(shaman, Team.Forest, newPos = Pos(5, 2)))
+        val shaman = game.boardState.shamanAt(Pos(4,2))!!
+        val result = game.perform(MoveShaman(shaman, newPos = Pos(5, 2)))
 
         assertFalse(result)
     }
@@ -34,9 +34,8 @@ class MovementTest {
             positionForestShaman(Pos(1, 1))
             moveAction = MoveActionTile.Orthogonally
         }
-        val shaman = game.gameState.boardState.activeShamans.first()
-
-        val result = game.perform(MoveShaman(shaman, Team.Forest, newPos = Pos(1, 2)))
+        val shaman = game.boardState.shamanAt(Pos(1,1))!!
+        val result = game.perform(MoveShaman(shaman, newPos = Pos(1, 2)))
 
         assertTrue(result)
         assertEquals(game.gameState.boardState.activeShamans.first().pos, Pos(1, 2))
@@ -49,9 +48,8 @@ class MovementTest {
             positionForestShaman(Pos(3, 3))
             moveAction = MoveActionTile.Diagonally
         }
-        val shaman = game.gameState.boardState.activeShamans.first()
-
-        val result = game.perform(MoveShaman(shaman, Team.Forest, newPos = Pos(2, 2)))
+        val shaman = game.boardState.shamanAt(Pos(3,3))!!
+        val result = game.perform(MoveShaman(shaman, newPos = Pos(2, 2)))
 
         assertTrue(result)
         assertEquals(game.gameState.boardState.activeShamans.first().pos, Pos(2, 2))
@@ -64,10 +62,10 @@ class MovementTest {
             positionForestShaman(Pos(1, 0))
             moveAction = MoveActionTile.Orthogonally
         }
-        val shaman = game.gameState.boardState.activeShamans.first()
+        val shaman = game.boardState.shamanAt(Pos(1,0))!!
 
         val result = game.perform(
-            MoveShaman(shaman, Team.Forest, newPos = Pos(1, 1)),
+            MoveShaman(shaman, newPos = Pos(1, 1)),
             EndTurn
         )
 
@@ -88,7 +86,7 @@ class MovementTest {
             positionSeaShaman(Pos(2, 0))  // shaman to banish
         }
         val shaman = game.boardState.shamanAt(Pos(0, 0))!!
-        val result = game.perform(MoveShaman(shaman, Team.Forest, Pos(0, 1)))
+        val result = game.perform(MoveShaman(shaman, Pos(0, 1)))
 
         assertTrue(result)
         assertTrue(
@@ -108,7 +106,7 @@ class MovementTest {
         }
         val shaman = game.boardState.shamanAt(pos)!!
 
-        val result = game.perform(MoveShaman(shaman, Team.Forest, Pos(0, -1)))
+        val result = game.perform(MoveShaman(shaman, Pos(0, -1)))
         assertFalse(result)
     }
 
@@ -124,7 +122,7 @@ class MovementTest {
         val newMonolith = game.boardState.monolithsStack.first()
         val shaman = game.boardState.shamanAt(pos)!!
 
-        val res1 = game.perform(MoveShaman(shaman, Team.Forest, Pos(-1, 5)))
+        val res1 = game.perform(MoveShaman(shaman, Pos(-1, 5)))
         val res2 = game.perform(SelectMonolith(newMonolith))
 
         assertTrue(res1)

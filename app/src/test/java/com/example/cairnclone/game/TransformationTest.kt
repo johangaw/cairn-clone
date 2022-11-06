@@ -25,7 +25,7 @@ class TransformationTest {
         val s1 = game.gameState.boardState.shamanAt(Pos(0, 0))!!
 
         game.apply {
-            perform(MoveShaman(s1, Team.Forest, Pos(1, 0)))
+            perform(MoveShaman(s1, Pos(1, 0)))
             perform(
                 TransformShaman(
                     game.gameState.boardState.shamanAt(Pos(1, 0))!!,
@@ -55,7 +55,7 @@ class TransformationTest {
         val newMonolith = game.gameState.boardState.monolithsStack.first()
 
         game.apply {
-            perform(MoveShaman(s1, Team.Forest, Pos(1, 0)))
+            perform(MoveShaman(s1, Pos(1, 0)))
             perform(
                 TransformShaman(
                     game.gameState.boardState.shamanAt(Pos(1, 0))!!,
@@ -84,7 +84,7 @@ class TransformationTest {
         }
         val s1 = game.gameState.boardState.shamanAt(Pos(0, 0))!!
 
-        game.perform(MoveShaman(s1, Team.Forest, Pos(0, 1)))
+        game.perform(MoveShaman(s1, Pos(0, 1)))
         val result = game.perform(
             TransformShaman(
                 game.gameState.boardState.shamanAt(Pos(1, 0))!!,

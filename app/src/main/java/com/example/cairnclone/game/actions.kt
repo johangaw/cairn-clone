@@ -9,7 +9,7 @@ interface Action
 
 data class SpawnShaman(val team: Team, val pos: Pos): Action
 
-data class MoveShaman(val shaman: Shaman, val team: Team, val newPos: Pos): Action
+data class MoveShaman(val shaman: Shaman, val newPos: Pos): Action
 
 data class JumpOverShaman(val jumper: Shaman, val newPos: Pos): Action
 

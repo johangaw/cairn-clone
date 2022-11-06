@@ -27,7 +27,7 @@ class ActivatingPillarsOfSpringTest {
         }
 
         assertTrue(
-            game.perform(MoveShaman(game.boardState.shamanAt(Pos(2, 1))!!, Team.Forest, Pos(2, 2)))
+            game.perform(MoveShaman(game.boardState.shamanAt(Pos(2, 1))!!, Pos(2, 2)))
         )
         assertTrue(
             game.perform(ActivatingPillarsOfSpring.MakeNextTurnMyTurn)

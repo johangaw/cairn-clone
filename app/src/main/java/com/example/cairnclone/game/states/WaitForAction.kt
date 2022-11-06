@@ -37,8 +37,6 @@ class WaitForAction(override val boardState: BoardState) : GameState {
         return when {
             !boardState.board.isOnBoardOrInVillage(action.newPos) -> ActionResult.InvalidAction("the selected pos ${action.newPos} is not on the board or in any village")
             !boardState.activeShamans.contains(shaman) -> ActionResult.InvalidAction("the selected shaman ${action.shaman} is not active")
-            boardState.activeTeam != action.team -> ActionResult.InvalidAction("the team ${action.team} is not allowed to move a shaman right now")
-            shaman.team != action.team -> ActionResult.InvalidAction("the selected shaman ${action.shaman} is not part of the ${action.team} team")
             action.newPos.x !in -1..boardState.board.width -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
             action.newPos.y !in -1..boardState.board.height -> ActionResult.InvalidAction("newPos ${action.newPos} is outside of board and villages")
             boardState.shamanAt(action.newPos) != null -> ActionResult.InvalidAction("${action.newPos} already contains a shaman")
@@ -46,7 +44,7 @@ class WaitForAction(override val boardState: BoardState) : GameState {
                 .contains(action.newPos) -> ActionResult.InvalidAction("${boardState.moveActionTile} does not allow moving $shaman to ${action.newPos}")
             boardState.isInVillage(
                 action.newPos,
-                action.team
+                action.shaman.team
             ) -> ActionResult.InvalidAction("shaman $shaman can't move into it's own village")
             else -> ActionResult.NewState(Moving(boardState), listOf(action))
         }

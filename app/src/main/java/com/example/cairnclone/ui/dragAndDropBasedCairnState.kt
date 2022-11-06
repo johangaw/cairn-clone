@@ -85,7 +85,7 @@ data class DADBasedCairnBoardState(
 
     private fun handleMoveToVillageInActionOrActivatingMonolithPhase(shaman: DomainShaman, villageTeam: Team, state: BoardState) {
                 state.board.villageRowFor(villageTeam)
-                    .firstOrNull { emitter(MoveShaman(shaman, shaman.team, it)) }
+                    .firstOrNull { emitter(MoveShaman(shaman, it)) }
                     ?: state.board.villageRowFor(villageTeam)
                         .firstOrNull { emitter(JumpOverShaman(shaman, it)) }
     }
@@ -129,7 +129,6 @@ data class DADBasedCairnBoardState(
         emitter(
             if (shaman.pos.isAdjacent(target)) MoveShaman(
                 shaman,
-                shaman.team,
                 target
             )
             else JumpOverShaman(shaman, target)
