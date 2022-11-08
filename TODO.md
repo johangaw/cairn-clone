@@ -1,5 +1,4 @@
 # This left TODO
-- When selecting monolith, long click to show info
 - **User testing**
 - propagate error message to UI
 - Improve Game design with recursive calls only fo new "sub states"

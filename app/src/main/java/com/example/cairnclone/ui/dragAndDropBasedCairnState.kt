@@ -8,7 +8,6 @@ import com.example.cairnclone.game.actions.*
 import com.example.cairnclone.game.board.*
 import com.example.cairnclone.game.states.monoliths.*
 import com.example.cairnclone.ui.draganddrop.DragAndDropContext
-import com.example.cairnclone.game.board.Monolith as DomainMonolith
 import com.example.cairnclone.game.board.Shaman as DomainShaman
 
 val LocalCairnBoardDADContext = compositionLocalOf { DragAndDropContext<DomainShaman>() }
@@ -26,8 +25,8 @@ data class DADBasedCairnBoardState(
     private var _selectedPositions by mutableStateOf<Set<Pos>>(emptySet())
     val selectedPositions get(): Set<Pos> = _selectedPositions
 
-    private var _selectedMonolith by mutableStateOf<DomainMonolith?>(null)
-    val selectedMonolith get(): DomainMonolith? = _selectedMonolith
+    private var _selectedMonolith by mutableStateOf<MonolithType?>(null)
+    val selectedMonolith get(): MonolithType? = _selectedMonolith
 
     private fun resetSelection() {
         _selectedShamans = emptySet()
@@ -183,11 +182,15 @@ data class DADBasedCairnBoardState(
 
     fun handleLongBoardClick(pos: Pos, state: BoardState) {
         val monolith = state.monolithAt(pos) ?: return
-        _selectedMonolith = monolith
+        _selectedMonolith = monolith.type
     }
 
     fun unselectMonolith() {
         _selectedMonolith = null
+    }
+
+    fun handleUpcomingMonolithLongClick(type: MonolithType) {
+        _selectedMonolith = type
     }
 }
 

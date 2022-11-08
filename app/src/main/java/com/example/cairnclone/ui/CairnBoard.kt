@@ -133,9 +133,8 @@ fun CairnBoard(
             if (stage == GameStage.SelectMonolith)
                 UpcomingMonoliths(
                     state.upcomingMonoliths,
-                    {
-                        uiState.handleUpcomingMonolithClick(it)
-                    },
+                    onClick = { uiState.handleUpcomingMonolithClick(it) },
+                    onLongClick = { uiState.handleUpcomingMonolithLongClick(it) },
                 )
 
             if (stage == GameStage.Transformation)
@@ -170,8 +169,8 @@ fun CairnBoard(
             AlertDialog(
                 onDismissRequest = { uiState.unselectMonolith() },
                 confirmButton = { TextButton({ uiState.unselectMonolith() }) { Text("Ok") } },
-                title = { Text(selectedMonolith.type.name) },
-                text = { Text(selectedMonolith.type.description) }
+                title = { Text(selectedMonolith.name) },
+                text = { Text(selectedMonolith.description) }
             )
     }
 }
